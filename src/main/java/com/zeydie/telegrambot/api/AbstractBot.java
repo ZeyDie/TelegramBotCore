@@ -11,21 +11,27 @@ import org.jetbrains.annotations.NotNull;
 
 @Data
 @Getter
-public class AbstractBot {
+public final class AbstractBot {
+    @NotNull
     private final String name;
+    @NotNull
     private final TelegramBot telegramBot;
+    @NotNull
 
     private final CacheUpdates cacheUpdates;
 
+    @NotNull
     private final Status status;
 
-    public AbstractBot(@NotNull final BotFileConfig botFileConfig) {
+    public AbstractBot(@NotNull final BotFileConfig.Data botFileConfig) {
         this.name = botFileConfig.getName();
         this.telegramBot = new TelegramBot(botFileConfig.getToken());
 
         this.cacheUpdates = new CacheUpdates();
 
         this.status = new Status();
+
+        this.defaultInit();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -35,8 +41,10 @@ public class AbstractBot {
         });
     }
 
-    protected void defaultInit() {
+    private void defaultInit() {
         this.telegramBot.setUpdatesListener(new UpdatesListenerImpl(), new ExceptionHandlerImpl());
+
+        this.cacheUpdates.init();
 
         this.status.setUpdatingMessages(true);
     }

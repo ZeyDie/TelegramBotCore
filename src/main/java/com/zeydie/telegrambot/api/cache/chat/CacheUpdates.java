@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.api.data.cache.ChatMessagesData;
+import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,18 +16,24 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Log
-public final class CacheUpdates {
+public class CacheUpdates {
     @NotNull
     private final Cache<Long, List<Message>> chatMessageCache = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build();
 
+    @SneakyThrows
     public void init() {
-        for (final File file : AbstractFileConfig.CACHE_FOLDER.toFile().listFiles()) {
+        final File cacheFolder = AbstractFileConfig.CACHE_FOLDER.toFile();
+
+        if (!cacheFolder.exists())
+            cacheFolder.mkdirs();
+
+        for (final File file : cacheFolder.listFiles()) {
             final SGsonFile gsonFile = new SGsonFile(file);
             final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData());
 
-            final long id = Long.valueOf(file.getName().split(".")[0]);
+            final long id = Long.parseLong(file.getName().split("\\.")[0]);
             final List<Message> messages = chatMessagesData.getMessages();
 
             log.info(String.format("Chat: %d restored %d messages", id, messages.size()));

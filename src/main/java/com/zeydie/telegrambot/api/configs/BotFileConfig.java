@@ -1,18 +1,25 @@
 package com.zeydie.telegrambot.api.configs;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.experimental.NonFinal;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
-public final class BotFileConfig extends AbstractFileConfig {
-    @NonFinal
-    private String name;
-    @NonFinal
-    private String token;
+
+public final class BotFileConfig {
+    private static final AbstractFileConfig config = new AbstractFileConfig(Data.class, "bot");
+    @Getter
+    private static Data data;
 
     public BotFileConfig() {
-        super(BotFileConfig.class, "bot");
+        data = config.init();
+    }
+
+    @lombok.Data
+    @EqualsAndHashCode(callSuper = false)
+    public static class Data {
+        @NonFinal
+        private String name = "name";
+        @NonFinal
+        private String token = "token";
     }
 }

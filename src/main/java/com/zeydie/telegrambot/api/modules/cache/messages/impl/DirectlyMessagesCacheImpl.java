@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 @Log
 public final class DirectlyMessagesCacheImpl implements IMessagesCache {
     @Override
-    public void init() {
+    public void load() {
         // TODO
     }
 
     @Override
-    public void shutdown() {
+    public void save() {
         // TODO
     }
 
@@ -26,6 +26,6 @@ public final class DirectlyMessagesCacheImpl implements IMessagesCache {
         final User user = message.from();
 
         TelegramBotApp.getUserCache().put(user);
-        TelegramBotApp.getUserCache().shutdown();
+        TelegramBotApp.getUserCache().save();
     }
 }

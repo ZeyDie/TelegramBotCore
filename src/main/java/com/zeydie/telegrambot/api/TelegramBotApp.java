@@ -59,14 +59,14 @@ public final class TelegramBotApp {
         telegramBot = new TelegramBot(botFileConfig.getToken());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            messagesCache.shutdown();
-            userCache.shutdown();
+            messagesCache.save();
+            userCache.save();
         }));
     }
 
     public static void init() {
-        messagesCache.init();
-        userCache.init();
+        messagesCache.load();
+        userCache.load();
 
         status.setUpdatingMessages(true);
 

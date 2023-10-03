@@ -7,7 +7,6 @@ import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
-import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -16,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER;
 
 @Log
 public final class UserCacheImpl implements IUserCache {
@@ -32,10 +33,10 @@ public final class UserCacheImpl implements IUserCache {
 
     @SneakyThrows
     @Override
-    public void init() {
-        AbstractFileConfig.CACHE_USERS_FOLDER.toFile().mkdirs();
+    public void load() {
+        CACHE_USERS_FOLDER.toFile().mkdirs();
 
-        for (final File file : AbstractFileConfig.CACHE_USERS_FOLDER.toFile().listFiles()) {
+        for (final File file : CACHE_USERS_FOLDER.toFile().listFiles()) {
             final long userId = Long.valueOf(FileUtil.getFileName(file));
             final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData());
 
@@ -46,12 +47,12 @@ public final class UserCacheImpl implements IUserCache {
     }
 
     @Override
-    public void shutdown() {
-        AbstractFileConfig.CACHE_USERS_FOLDER.toFile().mkdirs();
+    public void save() {
+        CACHE_USERS_FOLDER.toFile().mkdirs();
 
         this.userDataCache.asMap().forEach((id, userData) -> {
             new SGsonFile(
-                    AbstractFileConfig.CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, ".json"))
+                    CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, ".json"))
             ).writeJsonFile(userData);
 
             log.info(String.format("Saving user data cache for %d", id));

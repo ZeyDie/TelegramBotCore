@@ -13,9 +13,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER;
+
 @Log
 public class SingleLanguage implements ILanguage {
-    public final Path LANGUAGE_FOLDER = Paths.get("language");
     private LanguageData defaultLanguage;
 
     @Override

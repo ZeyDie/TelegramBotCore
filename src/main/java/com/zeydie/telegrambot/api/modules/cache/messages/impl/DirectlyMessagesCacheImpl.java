@@ -1,9 +1,9 @@
-package com.zeydie.telegrambot.api.cache.messages.impl;
+package com.zeydie.telegrambot.api.modules.cache.messages.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.telegrambot.api.TelegramBotApp;
-import com.zeydie.telegrambot.api.cache.messages.IMessagesCache;
+import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 

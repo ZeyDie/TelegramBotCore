@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.cache;
+package com.zeydie.telegrambot.api.modules.cache;
 
 public interface IDataCache {
     void init();

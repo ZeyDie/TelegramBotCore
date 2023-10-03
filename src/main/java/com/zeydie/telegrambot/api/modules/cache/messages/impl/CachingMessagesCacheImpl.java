@@ -1,13 +1,12 @@
-package com.zeydie.telegrambot.api.cache.messages.impl;
+package com.zeydie.telegrambot.api.modules.cache.messages.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.pengrad.telegrambot.model.Message;
 import com.zeydie.sgson.SGsonFile;
-import com.zeydie.telegrambot.api.cache.messages.IMessagesCache;
-import com.zeydie.telegrambot.api.cache.messages.data.ChatMessagesData;
+import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
+import com.zeydie.telegrambot.api.modules.cache.messages.data.ChatMessagesData;
 import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import lombok.SneakyThrows;

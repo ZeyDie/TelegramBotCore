@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.cache.messages.data;
+package com.zeydie.telegrambot.api.modules.cache.messages.data;
 
 import com.pengrad.telegrambot.model.Message;
 import lombok.Data;

@@ -1,30 +1,21 @@
 package com.zeydie.telegrambot.api.configs;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
 
-
 public final class BotFileConfig {
-    private static final AbstractFileConfig config = new AbstractFileConfig(Data.class, "bot");
     @Getter
-    private static Data data;
+    private static Json json = new AbstractFileConfig(new Json(), "bot").init();
 
-    public BotFileConfig() {
-        data = config.init();
-    }
-
-    @lombok.Data
+    @Data
     @EqualsAndHashCode(callSuper = false)
-    public static class Data {
+    public static class Json {
         @NonFinal
         private @NotNull String name = "name";
         @NonFinal
         private @NotNull String token = "token";
-        @NonFinal
-        private boolean caching = true;
-        @NonFinal
-        private boolean chatingOlyUsers = true;
     }
 }

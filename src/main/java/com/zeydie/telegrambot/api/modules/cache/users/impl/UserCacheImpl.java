@@ -37,6 +37,8 @@ public final class UserCacheImpl implements IUserCache {
         CACHE_USERS_FOLDER.toFile().mkdirs();
 
         for (final File file : CACHE_USERS_FOLDER.toFile().listFiles()) {
+            log.info(String.format("Restoring %s", file.getName()));
+
             final long userId = Long.valueOf(FileUtil.getFileName(file));
             final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData());
 
@@ -52,7 +54,7 @@ public final class UserCacheImpl implements IUserCache {
 
         this.userDataCache.asMap().forEach((id, userData) -> {
             new SGsonFile(
-                    CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, ".json"))
+                    CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, "json"))
             ).writeJsonFile(userData);
 
             log.info(String.format("Saving user data cache for %d", id));

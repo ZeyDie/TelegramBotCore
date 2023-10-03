@@ -21,8 +21,8 @@ public final class BotChatFileConfig {
         private boolean multiLanguage = true;
         @NonFinal
         private LanguageData defaultLanguageData = LanguageData.builder()
-                .label("Russian")
-                .uniqueId("RU")
+                .label("English")
+                .uniqueId("EN")
                 .build();
     }
 }

@@ -15,5 +15,6 @@ public final class LanguageData {
     @NonFinal
     private String uniqueId;
     @NonFinal
+    @Builder.Default
     private Map<String, String> messages = new HashMap<>();
 }

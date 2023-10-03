@@ -40,7 +40,7 @@ public final class FileUtil {
     public static String getFileNameOrType(@NotNull final String fullFileName, final boolean type) throws Exception {
         if (!fullFileName.contains(".")) throw new Exception("Bad file name!");
 
-        final String[] splitted = fullFileName.split(".");
+        final String[] splitted = fullFileName.split("\\.");
 
         final String fileName = splitted[0];
         final String fileType = splitted[1];

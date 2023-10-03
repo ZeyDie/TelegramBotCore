@@ -22,7 +22,7 @@ public final class BotChatFileConfig {
         @NonFinal
         private LanguageData defaultLanguageData = LanguageData.builder()
                 .label("English")
-                .uniqueId("EN")
+                .uniqueId("en")
                 .build();
     }
 }

@@ -17,6 +17,15 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
             return;
         }
 
-        log.severe(String.format("%d: %s", baseResponse.errorCode(), baseResponse.description()));
+        final int code = baseResponse.errorCode();
+        final String description = baseResponse.description();
+
+        log.severe(String.format("%d: %s", code, description));
+
+        if (code == 404) {
+            log.severe("Bad token");
+
+            System.exit(0);
+        }
     }
 }

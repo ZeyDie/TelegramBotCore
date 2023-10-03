@@ -3,6 +3,7 @@ package com.zeydie.telegrambot.api.configs;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.NonFinal;
+import org.jetbrains.annotations.NotNull;
 
 
 public final class BotFileConfig {
@@ -18,8 +19,12 @@ public final class BotFileConfig {
     @EqualsAndHashCode(callSuper = false)
     public static class Data {
         @NonFinal
-        private String name = "name";
+        private @NotNull String name = "name";
         @NonFinal
-        private String token = "token";
+        private @NotNull String token = "token";
+        @NonFinal
+        private boolean caching = true;
+        @NonFinal
+        private boolean chatingOlyUsers = true;
     }
 }

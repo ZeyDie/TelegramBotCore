@@ -9,20 +9,20 @@ import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER;
 
 @Log
-public class SingleLanguage implements ILanguage {
+public class SingleLanguageImpl implements ILanguage {
     private LanguageData defaultLanguage;
 
     @Override
     public void register(@NotNull final LanguageData languageData) throws Exception {
-        final String label = languageData.getLabel();
-        final String uniqueId = languageData.getUniqueId();
+        final String label = languageData.label();
+        final String uniqueId = languageData.uniqueId();
 
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);
@@ -38,14 +38,20 @@ public class SingleLanguage implements ILanguage {
         );
     }
 
+    @NotNull
+    @Override
+    public List<LanguageData> getRegisteredLanguages() {
+        return Collections.singletonList(this.defaultLanguage);
+    }
+
     @Override
     public boolean isRegistered(@NotNull final LanguageData languageData) {
-        return isRegistered(languageData.getUniqueId());
+        return isRegistered(languageData.uniqueId());
     }
 
     @Override
     public boolean isRegistered(@NotNull final String uniqueId) {
-        return this.defaultLanguage == null ? false : this.defaultLanguage.getUniqueId().equals(uniqueId);
+        return this.defaultLanguage == null ? false : this.defaultLanguage.uniqueId().equals(uniqueId);
     }
 
     @Override
@@ -59,12 +65,12 @@ public class SingleLanguage implements ILanguage {
     }
 
     public @NotNull LanguageData initLangFile(@NotNull final LanguageData languageData) {
-        languageData.setMessages(Map.of("welcome", "Hello!"));
+        languageData.localization().putAll(Map.of("welcome", "Hello!"));
 
         return new SGsonFile(
                 LANGUAGE_FOLDER.resolve(
                         FileUtil.createFileWithType(
-                                languageData.getUniqueId(),
+                                languageData.uniqueId(),
                                 "json"
                         )
                 )

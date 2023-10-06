@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class LanguageRegisteredException extends Exception {
     @Getter
-    private final String message ;
+    private final String message;
 
     public LanguageRegisteredException(
             @NotNull final String uniqueId,

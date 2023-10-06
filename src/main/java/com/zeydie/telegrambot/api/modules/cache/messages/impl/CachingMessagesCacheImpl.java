@@ -7,7 +7,6 @@ import com.pengrad.telegrambot.model.Message;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.ChatMessagesData;
-import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -40,9 +39,9 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
         for (final File file : CACHE_MESSAGES_FOLDER.toFile().listFiles()) {
             final long chatId = Long.valueOf(FileUtil.getFileName(file));
-            final ChatMessagesData chatMessagesData =  new SGsonFile(file).fromJsonToObject(new ChatMessagesData());
+            final ChatMessagesData chatMessagesData =  new SGsonFile(file).fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
 
-            final List<Message> messages = chatMessagesData.getMessages();
+            final List<Message> messages = chatMessagesData.messages();
 
             log.info(String.format("Chat: %d restored %d messages", chatId, messages.size()));
 
@@ -56,9 +55,9 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
         this.chatMessageCache.asMap().forEach((chat, message) -> {
             final SGsonFile gsonFile = new SGsonFile(CACHE_MESSAGES_FOLDER.resolve(String.valueOf(chat)));
-            final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData());
+            final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
 
-            chatMessagesData.getMessages().addAll(message);
+            chatMessagesData.messages().addAll(message);
 
             gsonFile.writeJsonFile(chatMessagesData);
 

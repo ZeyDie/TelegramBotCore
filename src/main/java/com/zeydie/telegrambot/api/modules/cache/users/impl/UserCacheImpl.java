@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER;
 
 @Log
-public final class UserCacheImpl implements IUserCache {
+public class UserCacheImpl implements IUserCache {
     @NotNull
     private final Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
             .expireAfterWrite(4, TimeUnit.HOURS)
@@ -40,7 +40,7 @@ public final class UserCacheImpl implements IUserCache {
             log.info(String.format("Restoring %s", file.getName()));
 
             final long userId = Long.valueOf(FileUtil.getFileName(file));
-            final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData());
+            final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
             log.info(String.format("User %d restored %s", userId, userData));
 

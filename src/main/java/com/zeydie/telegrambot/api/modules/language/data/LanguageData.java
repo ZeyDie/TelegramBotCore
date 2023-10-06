@@ -1,20 +1,13 @@
 package com.zeydie.telegrambot.api.modules.language.data;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.experimental.NonFinal;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
-@Builder
-public final class LanguageData {
-    @NonFinal
-    private String label;
-    @NonFinal
-    private String uniqueId;
-    @NonFinal
-    @Builder.Default
-    private Map<String, String> messages = new HashMap<>();
+public record LanguageData(@NotNull String label, @NotNull String uniqueId, @NotNull Map<String, String> localization) {
+    public LanguageData {
+        if (localization == null)
+            localization = new HashMap<>();
+    }
 }

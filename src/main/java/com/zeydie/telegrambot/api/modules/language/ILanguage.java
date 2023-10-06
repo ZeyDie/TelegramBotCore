@@ -4,8 +4,13 @@ import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface ILanguage {
     void register(@NotNull final LanguageData languageData) throws Exception;
+
+    @NotNull
+    List<LanguageData> getRegisteredLanguages();
 
     boolean isRegistered(@NotNull final LanguageData languageData);
 

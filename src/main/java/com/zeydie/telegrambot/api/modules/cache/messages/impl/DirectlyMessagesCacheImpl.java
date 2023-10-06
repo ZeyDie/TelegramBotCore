@@ -8,7 +8,7 @@ import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 
 @Log
-public final class DirectlyMessagesCacheImpl implements IMessagesCache {
+public class DirectlyMessagesCacheImpl implements IMessagesCache {
     @Override
     public void load() {
         // TODO
@@ -21,7 +21,7 @@ public final class DirectlyMessagesCacheImpl implements IMessagesCache {
 
     @Override
     public void put(@NotNull final Message message) {
-        log.info(String.format("[%d] message %s", message.chat().id(), message));
+        log.info(String.format("[%d] %s", message.chat().id(), message));
 
         final User user = message.from();
 

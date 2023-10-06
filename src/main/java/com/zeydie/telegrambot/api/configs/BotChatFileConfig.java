@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.NonFinal;
 
+import java.util.HashMap;
+
 public final class BotChatFileConfig {
     @Getter
     private static Json json = new AbstractFileConfig(new Json(), "bot_chat").init();
@@ -20,9 +22,6 @@ public final class BotChatFileConfig {
         @NonFinal
         private boolean multiLanguage = true;
         @NonFinal
-        private LanguageData defaultLanguageData = LanguageData.builder()
-                .label("English")
-                .uniqueId("en")
-                .build();
+        private LanguageData defaultLanguageData = new LanguageData("English", "en", new HashMap<>());
     }
 }

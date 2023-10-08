@@ -1,12 +1,8 @@
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.zeydie.telegrambot.api.TelegramBotApp;
 import com.zeydie.telegrambot.api.configs.BotFileConfig;
-import com.zeydie.telegrambot.api.modules.keyboard.IKeyboard;
-import com.zeydie.telegrambot.api.modules.keyboard.impl.UserKeyboardImpl;
-import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
-
-import java.util.function.Consumer;
+import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
+import com.zeydie.telegrambot.api.modules.keyboard.impl.MessageKeyboardImpl;
 
 public class MainDefault {
     public static void main(String[] args) {
@@ -14,6 +10,19 @@ public class MainDefault {
         TelegramBotApp.init();
 
         final long chatId = 5099834947L;
+
+        final IMessageKeyboard messageKeyboard = new MessageKeyboardImpl();
+
+        TelegramBotApp.getLanguage()
+                .getRegisteredLanguages()
+                .forEach(
+                        languageData -> messageKeyboard.addButton(
+                                new InlineKeyboardButton(languageData.label())
+                                        .callbackData(languageData.uniqueId())
+                        )
+                );
+
+        messageKeyboard.sendKeyboard(chatId, "Change language");
 
         /*sendMessage.replyMarkup(
                 new ReplyKeyboardMarkup(
@@ -50,13 +59,13 @@ public class MainDefault {
                 .addButton(new KeyboardButton("Баня\uD83E\uDDDC"))
                 .completeRow()
                 .addButton(new KeyboardButton("Посмотреть объявления на Avito\uD83D\uDCD1"))
-                .sendKeyboard(chatId, "Информация");*/
+                .sendKeyboard(chatId, "Информация");
 
-        /*final IKeyboard userKeyboard = new UserKeyboardImpl().minimizeButtons(true);
+        final IUserKeyboard userKeyboard = new UserKeyboardImpl().minimizeButtons(true);
 
-        TelegramBotApp.getLanguage().getRegisteredLanguages().forEach(languageData -> userKeyboard.addButton(new KeyboardButton(languageData.getLabel())));
+        TelegramBotApp.getLanguage().getRegisteredLanguages().forEach(languageData -> userKeyboard.addButton(new KeyboardButton(languageData.label())));
 
-        userKeyboard.sendKeyboard(chatId, "Change language");*/
+        ((AbstractKeyboardImpl) userKeyboard).sendKeyboard(chatId, "Change language");*/
     }
 }
 

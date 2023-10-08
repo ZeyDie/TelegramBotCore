@@ -1,5 +1,6 @@
 package com.zeydie.telegrambot.api.modules.language;
 
+import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +8,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface ILanguage {
-    void register(@NotNull final LanguageData languageData) throws Exception;
+    void init() throws LanguageRegisteredException;
+
+    boolean register(@NotNull final LanguageData languageData) throws LanguageRegisteredException;
 
     @NotNull
     List<LanguageData> getRegisteredLanguages();

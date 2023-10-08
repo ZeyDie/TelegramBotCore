@@ -1,16 +1,15 @@
 package com.zeydie.telegrambot.api.configs;
 
-import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.NonFinal;
 
-import java.util.HashMap;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CONFIGS_FOLDER;
 
 public final class BotChatFileConfig {
     @Getter
-    private static Json json = new AbstractFileConfig(new Json(), "bot_chat").init();
+    private static final Json json = new AbstractFileConfig(CONFIGS_FOLDER, new Json(), "bot_chat").init();
 
     @Data
     @EqualsAndHashCode(callSuper = false)
@@ -22,6 +21,6 @@ public final class BotChatFileConfig {
         @NonFinal
         private boolean multiLanguage = true;
         @NonFinal
-        private LanguageData defaultLanguageData = new LanguageData("English", "en", new HashMap<>());
+        private String defaultLanguageId = "en";
     }
 }

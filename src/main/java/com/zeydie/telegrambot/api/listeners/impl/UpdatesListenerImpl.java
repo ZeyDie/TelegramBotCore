@@ -4,12 +4,12 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.zeydie.telegrambot.api.TelegramBotApp;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-@Log
+@Log4j2
 public class UpdatesListenerImpl implements UpdatesListener {
     @Override
     public int process(@NotNull final List<Update> updates) {

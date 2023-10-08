@@ -22,11 +22,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.experimental.NonFinal;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@Log
+@Log4j2
 public final class TelegramBotApp {
     @Getter
     private static String name;
@@ -44,13 +44,16 @@ public final class TelegramBotApp {
     private static IUserCache userCache;
 
     @Getter
-    private static Status status = new Status();
+    private static final Status status = new Status();
 
     @Getter
     private static TelegramBot telegramBot;
 
     @SneakyThrows
     public static void setup(@NotNull final BotFileConfig.Json botFileConfig) {
+        final long startTime = System.currentTimeMillis();
+        log.info("Starting setup...");
+
         final BotChatFileConfig.Json botChatFileConfig = BotChatFileConfig.getJson();
 
         name = botFileConfig.getName();
@@ -60,7 +63,7 @@ public final class TelegramBotApp {
         messagesCache = botChatFileConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         userCache = new UserCacheImpl();
 
-        language.register(botChatFileConfig.getDefaultLanguageData());
+        language.init();
 
         telegramBot = new TelegramBot(botFileConfig.getToken());
 
@@ -69,16 +72,21 @@ public final class TelegramBotApp {
             userCache.save();
         }));
 
-        log.info("App's started!\n");
+        log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     public static void init() {
+        final long startTime = System.currentTimeMillis();
+        log.info("Starting initialize...");
+
         messagesCache.load();
         userCache.load();
 
         status.setUpdatingMessages(true);
 
         telegramBot.setUpdatesListener(updatesListener, exceptionHandler);
+
+        log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Setter

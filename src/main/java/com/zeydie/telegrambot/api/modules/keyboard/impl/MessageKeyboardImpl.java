@@ -1,44 +1,44 @@
 package com.zeydie.telegrambot.api.modules.keyboard.impl;
 
-import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.zeydie.telegrambot.api.modules.keyboard.IKeyboard;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-// TODO
-public class MessageKeyboardImpl implements IKeyboard {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MessageKeyboardImpl extends AbstractKeyboardImpl implements IMessageKeyboard {
     @NotNull
-    @Override
-    public Keyboard getKeyboard() {
-        return null;
-    }
+    private final List<InlineKeyboardButton> rowKeyboardButtonList = new ArrayList<>();
+
+    @Getter
+    @NotNull
+    private final InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(this.rowKeyboardButtonList.toArray(new InlineKeyboardButton[]{}));
 
     @NotNull
     @Override
-    public IKeyboard addButton(@NotNull final KeyboardButton keyboardButton) {
+    public IMessageKeyboard addButton(@NotNull final InlineKeyboardButton keyboardButton) {
+        this.rowKeyboardButtonList.add(keyboardButton);
+
         return this;
     }
 
     @NotNull
     @Override
-    public IKeyboard completeRow() {
+    public IMessageKeyboard completeRow() {
+        this.keyboard.addRow(this.rowKeyboardButtonList.toArray(new InlineKeyboardButton[]{}));
+        this.rowKeyboardButtonList.clear();
+
         return this;
     }
 
     @Override
-    public void sendKeyboard(
-            @NotNull final User user,
-            @NotNull final String text
-    ) {
-        this.sendKeyboard(user.id(), text);
-    }
+    public void sendKeyboard(final long chatId, @NotNull final String text) {
+        if (!this.rowKeyboardButtonList.isEmpty())
+            this.completeRow();
 
-    @Override
-    public void sendKeyboard(
-            final long chatId,
-            @NotNull final String text
-    ) {
-
+        super.sendKeyboard(chatId, text);
     }
 }

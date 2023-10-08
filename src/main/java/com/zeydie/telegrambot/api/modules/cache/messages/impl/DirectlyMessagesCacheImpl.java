@@ -4,10 +4,10 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.telegrambot.api.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
-@Log
+@Log4j2
 public class DirectlyMessagesCacheImpl implements IMessagesCache {
     @Override
     public void load() {

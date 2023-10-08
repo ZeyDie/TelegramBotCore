@@ -9,16 +9,17 @@ import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER;
 
-@Log
+@Log4j2
 public class UserCacheImpl implements IUserCache {
     @NotNull
     private final Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
@@ -27,7 +28,7 @@ public class UserCacheImpl implements IUserCache {
                 final long userId = notification.getKey();
                 final UserData userData = notification.getValue();
 
-                log.warning(String.format("Cleanup %d %s", userId, userData));
+                log.debug("Cleanup {} {}", userId, userData);
             })
             .build();
 
@@ -36,16 +37,21 @@ public class UserCacheImpl implements IUserCache {
     public void load() {
         CACHE_USERS_FOLDER.toFile().mkdirs();
 
-        for (final File file : CACHE_USERS_FOLDER.toFile().listFiles()) {
-            log.info(String.format("Restoring %s", file.getName()));
+        Arrays.stream(Objects.requireNonNull(CACHE_USERS_FOLDER.toFile().listFiles()))
+                .forEach(file -> {
+                    try {
+                        log.info("Restoring {}", file.getName());
 
-            final long userId = Long.valueOf(FileUtil.getFileName(file));
-            final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                        final long userId = Long.parseLong(FileUtil.getFileName(file));
+                        final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
-            log.info(String.format("User %d restored %s", userId, userData));
+                        log.info("User {} restored {}", userId, userData);
 
-            this.userDataCache.put(userId, userData);
-        }
+                        this.userDataCache.put(userId, userData);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     @Override
@@ -57,7 +63,7 @@ public class UserCacheImpl implements IUserCache {
                     CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, "json"))
             ).writeJsonFile(userData);
 
-            log.info(String.format("Saving user data cache for %d", id));
+            log.info("Saving user data cache for {}", id);
         });
     }
 

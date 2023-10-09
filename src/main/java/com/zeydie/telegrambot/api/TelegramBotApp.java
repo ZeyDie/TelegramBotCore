@@ -7,7 +7,14 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.configs.BotChatFileConfig;
 import com.zeydie.telegrambot.api.configs.BotFileConfig;
-import com.zeydie.telegrambot.api.handlers.impl.ExceptionHandlerImpl;
+import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
+import com.zeydie.telegrambot.api.handlers.events.callbacks.ICallbackQueryEventHandler;
+import com.zeydie.telegrambot.api.handlers.events.callbacks.impl.CallbackQueryEventHandlerImpl;
+import com.zeydie.telegrambot.api.handlers.events.messages.IMessageEventHandler;
+import com.zeydie.telegrambot.api.handlers.events.messages.impl.MessageEventHandlerImpl;
+import com.zeydie.telegrambot.api.handlers.events.updates.IUpdateEventHandler;
+import com.zeydie.telegrambot.api.handlers.events.updates.impl.UpdateEventHandlerImpl;
+import com.zeydie.telegrambot.api.handlers.exceptions.impl.ExceptionHandlerImpl;
 import com.zeydie.telegrambot.api.listeners.impl.UpdatesListenerImpl;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.impl.CachingMessagesCacheImpl;
@@ -29,9 +36,12 @@ import org.jetbrains.annotations.Nullable;
 @Log4j2
 public final class TelegramBotApp {
     @Getter
-    private static String name;
+    private static final BotChatFileConfig.Json chatSettings = BotChatFileConfig.getJson();
     @Getter
-    private static boolean chatingOlyUsers;
+    private static final Status status = new Status();
+
+    @Getter
+    private static String name;
 
     @Setter
     @Getter
@@ -42,9 +52,15 @@ public final class TelegramBotApp {
     @Setter
     @Getter
     private static IUserCache userCache;
-
+    @Setter
     @Getter
-    private static final Status status = new Status();
+    private static IUpdateEventHandler updateHandler = new UpdateEventHandlerImpl();
+    @Setter
+    @Getter
+    private static IMessageEventHandler messageHandler = new MessageEventHandlerImpl();
+    @Setter
+    @Getter
+    private static ICallbackQueryEventHandler callbackQueryHandler = new CallbackQueryEventHandlerImpl();
 
     @Getter
     private static TelegramBot telegramBot;
@@ -54,16 +70,11 @@ public final class TelegramBotApp {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
 
-        final BotChatFileConfig.Json botChatFileConfig = BotChatFileConfig.getJson();
-
         name = botFileConfig.getName();
-        chatingOlyUsers = botChatFileConfig.isChatingOlyUsers();
 
-        language = botChatFileConfig.isMultiLanguage() ? new MultiLanguageImpl() : new SingleLanguageImpl();
-        messagesCache = botChatFileConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
+        language = chatSettings.isMultiLanguage() ? new MultiLanguageImpl() : new SingleLanguageImpl();
+        messagesCache = chatSettings.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         userCache = new UserCacheImpl();
-
-        language.init();
 
         telegramBot = new TelegramBot(botFileConfig.getToken());
 
@@ -75,12 +86,17 @@ public final class TelegramBotApp {
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
-    public static void init() {
+    public static void init() throws LanguageRegisteredException {
         final long startTime = System.currentTimeMillis();
         log.info("Starting initialize...");
 
+        language.load();
         messagesCache.load();
         userCache.load();
+
+        updateHandler.load();
+        messageHandler.load();
+        callbackQueryHandler.load();
 
         status.setUpdatingMessages(true);
 

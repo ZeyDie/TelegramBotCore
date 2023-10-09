@@ -7,7 +7,7 @@ public record LanguageData(String label, String uniqueId, Map<String, String> lo
     public LanguageData {
         if (localization == null) {
             localization = new HashMap<>();
-            localization.put("welcome", "Hello!");
+            localization.put("messages.select_language", "Select a language");
         }
     }
 }

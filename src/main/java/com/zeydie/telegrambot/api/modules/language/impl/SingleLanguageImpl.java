@@ -22,7 +22,7 @@ public class SingleLanguageImpl implements ILanguage {
     private LanguageData defaultLanguage;
 
     @Override
-    public void init() throws LanguageRegisteredException {
+    public void load() throws LanguageRegisteredException {
         final String defaultLanguageId = BotChatFileConfig.getJson().getDefaultLanguageId();
 
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER.toFile().listFiles()))

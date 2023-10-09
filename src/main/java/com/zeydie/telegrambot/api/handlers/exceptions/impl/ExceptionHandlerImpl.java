@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.handlers.impl;
+package com.zeydie.telegrambot.api.handlers.exceptions.impl;
 
 import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramException;

@@ -17,13 +17,15 @@ public class UpdatesListenerImpl implements UpdatesListener {
 
         if (status == CONFIRMED_UPDATES_ALL) {
             updates.forEach(update -> {
-                log.info(update.toString());
+                log.debug(update.toString());
+
+                TelegramBotApp.getUpdateHandler().handle(update);
 
                 final Message message = update.message();
 
                 if (message != null)
                     if (
-                            TelegramBotApp.isChatingOlyUsers() ?
+                            TelegramBotApp.getChatSettings().isChatingOlyUsers() ?
                                     (message.from().isBot() ? false : true) :
                                     true
                     )

@@ -1,6 +1,12 @@
 package com.zeydie.telegrambot.api.modules.cache.users.data;
 
 import com.pengrad.telegrambot.model.User;
+import lombok.Data;
+import org.jetbrains.annotations.Nullable;
 
-public record UserData (User user) {
+@Data
+public class UserData {
+    private final User user;
+    @Nullable
+    private String languageUniqueId;
 }

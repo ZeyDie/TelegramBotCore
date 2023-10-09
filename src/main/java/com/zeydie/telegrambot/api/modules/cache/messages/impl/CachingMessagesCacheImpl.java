@@ -7,6 +7,7 @@ import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
 import com.pengrad.telegrambot.model.Message;
 import com.zeydie.sgson.SGsonFile;
+import com.zeydie.telegrambot.api.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.ChatMessagesData;
 import com.zeydie.telegrambot.api.utils.FileUtil;
@@ -53,7 +54,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
                 log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messages).toArray()));
 
-                //TODO Processing message
+                messages.forEach(message -> TelegramBotApp.getMessageHandler().handle(message));
             })
             .build();
 

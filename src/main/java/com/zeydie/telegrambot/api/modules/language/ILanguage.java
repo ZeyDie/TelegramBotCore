@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public interface ILanguage {
-    void init() throws LanguageRegisteredException;
+    void load() throws LanguageRegisteredException;
 
     boolean register(@NotNull final LanguageData languageData) throws LanguageRegisteredException;
 

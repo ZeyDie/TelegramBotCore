@@ -23,7 +23,7 @@ public class MultiLanguageImpl implements ILanguage {
     private final List<LanguageData> registeredLanguages = new ArrayList<>();
 
     @Override
-    public void init() {
+    public void load() {
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER.toFile().listFiles()))
                 .forEach(file -> {
                     try {

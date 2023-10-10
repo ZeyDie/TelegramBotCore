@@ -7,6 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 @Data
 public class UserData {
-    private final @NotNull User user;
+    private final User user;
     private @Nullable String languageUniqueId;
 }

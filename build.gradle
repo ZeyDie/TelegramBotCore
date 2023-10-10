@@ -54,6 +54,18 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 }
 
+jar {
+    from {
+        configurations.runtimeClasspath.collect {
+            exclude('**/kotlin/**')
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+}
+
 test {
     useJUnitPlatform()
 }

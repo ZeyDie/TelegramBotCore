@@ -7,7 +7,6 @@ import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.EventSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
-import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
@@ -26,15 +25,10 @@ public abstract class AbstractEventHandler {
     @Nullable
     public abstract Class<?>[] getParameters();
 
-    @Getter
     private final @NotNull Cache<Method, Class<?>> highestClassMethods = CacheBuilder.newBuilder().build();
-    @Getter
     private final @NotNull Cache<Method, Class<?>> highClassMethods = CacheBuilder.newBuilder().build();
-    @Getter
     private final @NotNull Cache<Method, Class<?>> defaultClassMethods = CacheBuilder.newBuilder().build();
-    @Getter
     private final @NotNull Cache<Method, Class<?>> lowClassMethods = CacheBuilder.newBuilder().build();
-    @Getter
     private final @NotNull Cache<Method, Class<?>> lowestClassMethods = CacheBuilder.newBuilder().build();
 
     protected void load() {
@@ -55,9 +49,11 @@ public abstract class AbstractEventHandler {
                                             @NotNull final Class<?>[] parameterTypes = method.getParameterTypes();
 
                                             if (Arrays.equals(parameterTypes, eventParameters)) {
-                                                @NotNull final EventPriority eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ? method.getAnnotation(PrioritySubscribe.class).priority() : EventPriority.DEFAULT;
+                                                @NotNull final EventPriority eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
+                                                        method.getAnnotation(PrioritySubscribe.class).priority() :
+                                                        EventPriority.DEFAULT;
 
-                                                Cache<Method, Class<?>> methodClassCache = null;
+                                                @Nullable Cache<Method, Class<?>> methodClassCache = null;
 
                                                 switch (eventPriority) {
                                                     case HIGHEST -> methodClassCache = this.highestClassMethods;

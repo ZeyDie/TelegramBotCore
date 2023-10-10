@@ -9,6 +9,8 @@ import java.lang.annotation.*;
 @Inherited
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EventSubscribe {
+public @interface EventSubscribesRegister {
+    boolean enable() default true;
+
     @Nullable String comment() default "";
 }

@@ -5,7 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
-import com.zeydie.telegrambot.api.events.subscribes.EventSubscribe;
+import com.zeydie.telegrambot.api.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
@@ -37,39 +37,40 @@ public abstract class AbstractEventHandler {
 
         log.debug("Scanning {}...", eventAnnotation);
 
-        ClassIndex.getAnnotated(EventSubscribe.class)
+        ClassIndex.getAnnotated(EventSubscribesRegister.class)
                 .forEach(annotatedClass -> {
                             log.debug("{}", annotatedClass);
 
-                            Arrays.stream(annotatedClass.getMethods())
-                                    .forEach(method -> {
-                                        if (method.isAnnotationPresent(eventAnnotation)) {
-                                            log.debug("{}", method);
+                            if (annotatedClass.getAnnotation(EventSubscribesRegister.class).enable())
+                                Arrays.stream(annotatedClass.getMethods())
+                                        .forEach(method -> {
+                                            if (method.isAnnotationPresent(eventAnnotation)) {
+                                                log.debug("{}", method);
 
-                                            @NotNull final Class<?>[] parameterTypes = method.getParameterTypes();
+                                                @NotNull final Class<?>[] parameterTypes = method.getParameterTypes();
 
-                                            if (Arrays.equals(parameterTypes, eventParameters)) {
-                                                @NotNull final EventPriority eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
-                                                        method.getAnnotation(PrioritySubscribe.class).priority() :
-                                                        EventPriority.DEFAULT;
+                                                if (Arrays.equals(parameterTypes, eventParameters)) {
+                                                    @NotNull final EventPriority eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
+                                                            method.getAnnotation(PrioritySubscribe.class).priority() :
+                                                            EventPriority.DEFAULT;
 
-                                                @Nullable Cache<Method, Class<?>> methodClassCache = null;
+                                                    @Nullable Cache<Method, Class<?>> methodClassCache = null;
 
-                                                switch (eventPriority) {
-                                                    case HIGHEST -> methodClassCache = this.highestClassMethods;
-                                                    case HIGHT -> methodClassCache = this.highClassMethods;
-                                                    case DEFAULT -> methodClassCache = this.defaultClassMethods;
-                                                    case LOW -> methodClassCache = this.lowClassMethods;
-                                                    case LOWEST -> methodClassCache = this.lowestClassMethods;
-                                                }
+                                                    switch (eventPriority) {
+                                                        case HIGHEST -> methodClassCache = this.highestClassMethods;
+                                                        case HIGHT -> methodClassCache = this.highClassMethods;
+                                                        case DEFAULT -> methodClassCache = this.defaultClassMethods;
+                                                        case LOW -> methodClassCache = this.lowClassMethods;
+                                                        case LOWEST -> methodClassCache = this.lowestClassMethods;
+                                                    }
 
-                                                if (methodClassCache != null) {
-                                                    methodClassCache.put(method, annotatedClass);
-                                                    log.debug("{} == {}", parameterTypes, eventParameters);
+                                                    if (methodClassCache != null) {
+                                                        methodClassCache.put(method, annotatedClass);
+                                                        log.debug("{} == {}", parameterTypes, eventParameters);
+                                                    }
                                                 }
                                             }
-                                        }
-                                    });
+                                        });
                         }
                 );
     }

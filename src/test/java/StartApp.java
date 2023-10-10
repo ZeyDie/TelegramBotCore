@@ -1,11 +1,11 @@
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.zeydie.telegrambot.api.TelegramBotApp;
+import com.zeydie.telegrambot.api.configs.BotChatFileConfig;
 import com.zeydie.telegrambot.api.configs.BotFileConfig;
 import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
 import com.zeydie.telegrambot.api.modules.keyboard.impl.MessageKeyboardImpl;
 import org.jetbrains.annotations.Nullable;
-
 
 // AnswerCallBackQuery - всплывающее окно
 // InlineKeyboardButton - кнопка по горизонтале
@@ -20,15 +20,17 @@ public class StartApp {
 
         final IMessageKeyboard messageKeyboard = new MessageKeyboardImpl();
 
-        TelegramBotApp.getLanguage()
-                .getRegisteredLanguages()
-                .forEach(
-                        languageData -> messageKeyboard.addButton(
-                                new InlineKeyboardButton(languageData.label())
-                                        .callbackData(languageData.uniqueId())
-                        )
-                );
+        if (BotChatFileConfig.getJson().isMultiLanguage()) {
+            TelegramBotApp.getLanguage()
+                    .getRegisteredLanguages()
+                    .forEach(
+                            languageData -> messageKeyboard.addButton(
+                                    new InlineKeyboardButton(languageData.label())
+                                            .callbackData(languageData.uniqueId())
+                            )
+                    );
 
-        messageKeyboard.sendKeyboard(chatId, "Change language");
+            messageKeyboard.sendKeyboard(chatId, "Change language");
+        }
     }
 }

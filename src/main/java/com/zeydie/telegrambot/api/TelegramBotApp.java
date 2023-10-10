@@ -1,8 +1,6 @@
 package com.zeydie.telegrambot.api;
 
-import com.pengrad.telegrambot.ExceptionHandler;
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.configs.BotChatFileConfig;
@@ -52,6 +50,7 @@ public final class TelegramBotApp {
     @Setter
     @Getter
     private static IUserCache userCache;
+
     @Setter
     @Getter
     private static @NotNull IUpdateEventHandler updateHandler = new UpdateEventHandlerImpl();
@@ -114,6 +113,13 @@ public final class TelegramBotApp {
 
     public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NotNull final BaseRequest<T, R> baseRequest) {
         return telegramBot.execute(baseRequest);
+    }
+
+    public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Cancellable execute(
+            @NotNull final T request,
+            @NotNull final Callback<T, R> callback
+    ) {
+        return telegramBot.execute(request, callback);
     }
 
     @Data

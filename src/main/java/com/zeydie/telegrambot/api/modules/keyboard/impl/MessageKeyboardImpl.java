@@ -10,24 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageKeyboardImpl extends AbstractKeyboardImpl implements IMessageKeyboard {
-    @NotNull
-    private final List<InlineKeyboardButton> rowKeyboardButtonList = new ArrayList<>();
+    private final @NotNull List<InlineKeyboardButton> rowKeyboardButtonList = new ArrayList<>();
 
     @Getter
-    @NotNull
-    private final InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(this.rowKeyboardButtonList.toArray(new InlineKeyboardButton[]{}));
+    private final @NotNull InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(this.rowKeyboardButtonList.toArray(new InlineKeyboardButton[]{}));
 
-    @NotNull
     @Override
-    public IMessageKeyboard addButton(@NotNull final InlineKeyboardButton keyboardButton) {
+    public @NotNull IMessageKeyboard addButton(@NotNull final InlineKeyboardButton keyboardButton) {
         this.rowKeyboardButtonList.add(keyboardButton);
 
         return this;
     }
 
-    @NotNull
     @Override
-    public IMessageKeyboard completeRow() {
+    public @NotNull IMessageKeyboard completeRow() {
         this.keyboard.addRow(this.rowKeyboardButtonList.toArray(new InlineKeyboardButton[]{}));
         this.rowKeyboardButtonList.clear();
 

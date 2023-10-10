@@ -1,8 +1,12 @@
 package com.zeydie.telegrambot.api.handlers;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
-import com.zeydie.telegrambot.api.events.EventSubscribe;
-import com.zeydie.telegrambot.api.events.PrioritySubscribe;
+import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
+import com.zeydie.telegrambot.api.events.subscribes.EventSubscribe;
+import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
@@ -13,8 +17,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @Log4j2
 public abstract class AbstractEventHandler {
@@ -24,15 +26,20 @@ public abstract class AbstractEventHandler {
     @Nullable
     public abstract Class<?>[] getParameters();
 
-    @NotNull
     @Getter
-    protected final Map<Method, Class<?>> classMethods = new HashMap<>();
+    private final @NotNull Cache<Method, Class<?>> highestClassMethods = CacheBuilder.newBuilder().build();
+    @Getter
+    private final @NotNull Cache<Method, Class<?>> highClassMethods = CacheBuilder.newBuilder().build();
+    @Getter
+    private final @NotNull Cache<Method, Class<?>> defaultClassMethods = CacheBuilder.newBuilder().build();
+    @Getter
+    private final @NotNull Cache<Method, Class<?>> lowClassMethods = CacheBuilder.newBuilder().build();
+    @Getter
+    private final @NotNull Cache<Method, Class<?>> lowestClassMethods = CacheBuilder.newBuilder().build();
 
     protected void load() {
-        final Map<Method, Class<?>> methodClassMap = new HashMap<>();
-
-        final Class<? extends Annotation> eventAnnotation = this.getEventAnnotation();
-        final Class<?>[] eventParameters = this.getParameters();
+        @NotNull final Class<? extends Annotation> eventAnnotation = this.getEventAnnotation();
+        @Nullable final Class<?>[] eventParameters = this.getParameters();
 
         log.debug("Scanning {}...", eventAnnotation);
 
@@ -45,37 +52,38 @@ public abstract class AbstractEventHandler {
                                         if (method.isAnnotationPresent(eventAnnotation)) {
                                             log.debug("{}", method);
 
-                                            final Class<?>[] parameterTypes = method.getParameterTypes();
+                                            @NotNull final Class<?>[] parameterTypes = method.getParameterTypes();
 
                                             if (Arrays.equals(parameterTypes, eventParameters)) {
-                                                methodClassMap.put(method, annotatedClass);
-                                                log.debug("{} == {}", parameterTypes, eventParameters);
+                                                @NotNull final EventPriority eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ? method.getAnnotation(PrioritySubscribe.class).priority() : EventPriority.DEFAULT;
+
+                                                Cache<Method, Class<?>> methodClassCache = null;
+
+                                                switch (eventPriority) {
+                                                    case HIGHEST -> methodClassCache = this.highestClassMethods;
+                                                    case HIGHT -> methodClassCache = this.highClassMethods;
+                                                    case DEFAULT -> methodClassCache = this.defaultClassMethods;
+                                                    case LOW -> methodClassCache = this.lowClassMethods;
+                                                    case LOWEST -> methodClassCache = this.lowestClassMethods;
+                                                }
+
+                                                if (methodClassCache != null) {
+                                                    methodClassCache.put(method, annotatedClass);
+                                                    log.debug("{} == {}", parameterTypes, eventParameters);
+                                                }
                                             }
                                         }
                                     });
                         }
                 );
+    }
 
-        methodClassMap
-                .entrySet()
-                .stream()
-                .sorted((o1, o2) -> {
-                    //TODO FIX Sorting
-                    final Method methodO1 = o1.getKey();
-                    final Method methodO2 = o2.getKey();
-
-                    final PrioritySubscribe prioritySubscribeO1 = methodO1.isAnnotationPresent(PrioritySubscribe.class) ? methodO1.getAnnotation(PrioritySubscribe.class) : null;
-                    final PrioritySubscribe prioritySubscribeO2 = methodO2.isAnnotationPresent(PrioritySubscribe.class) ? methodO2.getAnnotation(PrioritySubscribe.class) : null;
-
-                    final EventPriority eventPriorityO1 = prioritySubscribeO1 != null ? prioritySubscribeO1.priority() : EventPriority.DEFAULT;
-                    final EventPriority eventPriorityO2 = prioritySubscribeO2 != null ? prioritySubscribeO2.priority() : EventPriority.DEFAULT;
-
-                    return -eventPriorityO2.compareTo(eventPriorityO1);
-                })
-                .forEach(methodClassEntry -> {
-                    log.debug("sort {} {}", methodClassEntry.getKey(), methodClassEntry.getValue());
-                    this.classMethods.put(methodClassEntry.getKey(), methodClassEntry.getValue());
-                });
+    protected void invoke(@NotNull final Object... objects) {
+        this.highestClassMethods.asMap().forEach((method, annotatedClass) -> invoke(annotatedClass, method, objects));
+        this.highClassMethods.asMap().forEach((method, annotatedClass) -> invoke(annotatedClass, method, objects));
+        this.defaultClassMethods.asMap().forEach((method, annotatedClass) -> invoke(annotatedClass, method, objects));
+        this.lowClassMethods.asMap().forEach((method, annotatedClass) -> invoke(annotatedClass, method, objects));
+        this.lowestClassMethods.asMap().forEach((method, annotatedClass) -> invoke(annotatedClass, method, objects));
     }
 
     protected void invoke(
@@ -83,14 +91,40 @@ public abstract class AbstractEventHandler {
             @NotNull final Method method,
             @NotNull final Object... objects
     ) {
-        try {
-            method.invoke(annotatedClass.newInstance(), objects);
-        } catch (
-                final IllegalAccessException |
-                      InvocationTargetException |
-                      InstantiationException exception
-        ) {
-            exception.printStackTrace();
+        final boolean canInvoke = !this.isCancelable(method) || !this.hasCancelledEvent(objects);
+
+        if (canInvoke)
+            try {
+                method.invoke(annotatedClass.newInstance(), objects);
+            } catch (
+                    final IllegalAccessException |
+                          InvocationTargetException |
+                          InstantiationException exception
+            ) {
+                exception.printStackTrace();
+            }
+    }
+
+    public boolean isCancelable(@NotNull final Method method) {
+        return method.isAnnotationPresent(CancelableSubscribe.class);
+    }
+
+    public boolean hasCancelledEvent(@NotNull final Object... objects) {
+        for (final Object object : objects)
+            if (this.isCancelled(object))
+                return true;
+
+        return false;
+    }
+
+    public boolean isCancelled(@NotNull final Object object) {
+        if (object instanceof AbstractEvent) {
+            @NotNull final AbstractEvent abstractEvent = (AbstractEvent) object;
+
+            if (abstractEvent.isCancelled())
+                return true;
         }
+
+        return false;
     }
 }

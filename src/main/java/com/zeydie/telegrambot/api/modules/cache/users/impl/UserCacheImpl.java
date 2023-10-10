@@ -21,12 +21,11 @@ import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER
 
 @Log4j2
 public class UserCacheImpl implements IUserCache {
-    @NotNull
-    private final Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
+    private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
             .expireAfterWrite(4, TimeUnit.HOURS)
             .removalListener((RemovalListener<Long, UserData>) notification -> {
                 final long userId = notification.getKey();
-                final UserData userData = notification.getValue();
+                @NotNull final UserData userData = notification.getValue();
 
                 log.debug("Cleanup {} {}", userId, userData);
             })
@@ -43,13 +42,13 @@ public class UserCacheImpl implements IUserCache {
                         log.info("Restoring {}", file.getName());
 
                         final long userId = Long.parseLong(FileUtil.getFileName(file));
-                        final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                        @NotNull final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
                         log.info("User {} restored {}", userId, userData);
 
                         this.userDataCache.put(userId, userData);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 });
     }
@@ -59,9 +58,7 @@ public class UserCacheImpl implements IUserCache {
         CACHE_USERS_FOLDER.toFile().mkdirs();
 
         this.userDataCache.asMap().forEach((id, userData) -> {
-            new SGsonFile(
-                    CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, "json"))
-            ).writeJsonFile(userData);
+            new SGsonFile(CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, "json"))).writeJsonFile(userData);
 
             log.info("Saving user data cache for {}", id);
         });
@@ -83,15 +80,13 @@ public class UserCacheImpl implements IUserCache {
             this.userDataCache.put(user.id(), new UserData(user));
     }
 
-    @Nullable
     @Override
-    public UserData getUserData(@NotNull final User user) {
+    public @Nullable UserData getUserData(@NotNull final User user) {
         return this.getUserData(user.id());
     }
 
-    @Nullable
     @Override
-    public UserData getUserData(final long userId) {
+    public @Nullable UserData getUserData(final long userId) {
         return this.userDataCache.getIfPresent(userId);
     }
 }

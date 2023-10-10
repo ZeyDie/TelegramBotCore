@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +28,7 @@ import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_MESSAGES_FOL
 @Log4j2
 public class CachingMessagesCacheImpl implements IMessagesCache {
     @Getter
-    @NotNull
-    private final Service scheduledService;
+    private final @NotNull Service scheduledService;
 
     public CachingMessagesCacheImpl() {
         this.scheduledService = new AbstractScheduledService() {
@@ -37,20 +37,18 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                 chatMessageCache.cleanUp();
             }
 
-            @NotNull
             @Override
-            protected Scheduler scheduler() {
+            protected @NotNull Scheduler scheduler() {
                 return Scheduler.newFixedRateSchedule(0, 250, TimeUnit.MILLISECONDS);
             }
         }.startAsync();
     }
 
-    @NotNull
-    private final Cache<Long, List<Message>> chatMessageCache = CacheBuilder.newBuilder()
+    private final @NotNull Cache<Long, List<Message>> chatMessageCache = CacheBuilder.newBuilder()
             .expireAfterWrite(100, TimeUnit.MILLISECONDS)
             .removalListener((RemovalListener<Long, List<Message>>) notification -> {
                 final long chatId = notification.getKey();
-                final List<Message> messages = notification.getValue();
+                @NotNull final List<Message> messages = notification.getValue();
 
                 log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messages).toArray()));
 
@@ -67,15 +65,14 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                 .forEach(file -> {
                     try {
                         final long chatId = Long.parseLong(FileUtil.getFileName(file));
-                        final ChatMessagesData chatMessagesData = new SGsonFile(file).fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
-
-                        final List<Message> messages = chatMessagesData.messages();
+                        @NotNull final ChatMessagesData chatMessagesData = new SGsonFile(file).fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
+                        @NotNull final List<Message> messages = chatMessagesData.messages();
 
                         log.info(String.format("Chat: %d restored %d messages", chatId, messages.size()));
 
                         this.chatMessageCache.put(chatId, messages);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 });
     }
@@ -85,8 +82,8 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
         CACHE_MESSAGES_FOLDER.toFile().mkdirs();
 
         this.chatMessageCache.asMap().forEach((chat, message) -> {
-            final SGsonFile gsonFile = new SGsonFile(CACHE_MESSAGES_FOLDER.resolve(String.valueOf(chat)));
-            final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
+            @NotNull final SGsonFile gsonFile = new SGsonFile(CACHE_MESSAGES_FOLDER.resolve(String.valueOf(chat)));
+            @NotNull final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
 
             chatMessagesData.messages().addAll(message);
 
@@ -100,7 +97,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
     public void put(@NotNull final Message message) {
         final long id = message.chat().id();
 
-        List<Message> messages = this.chatMessageCache.getIfPresent(id);
+        @Nullable List<Message> messages = this.chatMessageCache.getIfPresent(id);
 
         if (messages == null) {
             messages = new ArrayList<>();

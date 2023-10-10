@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.events;
+package com.zeydie.telegrambot.api.events.subscribes;
 
 import org.atteo.classindex.IndexAnnotated;
 import org.jetbrains.annotations.Nullable;

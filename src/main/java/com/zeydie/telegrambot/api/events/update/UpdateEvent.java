@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class UpdateEvent extends AbstractEvent {
-    private final Update update;
+    private final @NotNull Update update;
 
     public UpdateEvent(@NotNull final Update update) {
         this.update = update;

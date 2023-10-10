@@ -23,7 +23,7 @@ public class SingleLanguageImpl implements ILanguage {
 
     @Override
     public void load() throws LanguageRegisteredException {
-        final String defaultLanguageId = BotChatFileConfig.getJson().getDefaultLanguageId();
+        @NotNull final String defaultLanguageId = BotChatFileConfig.getJson().getDefaultLanguageId();
 
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER.toFile().listFiles()))
                 .forEach(file -> {
@@ -38,16 +38,16 @@ public class SingleLanguageImpl implements ILanguage {
 
                         if (languageData.uniqueId().equals(defaultLanguageId))
                             this.register(languageData);
-                    } catch (LanguageRegisteredException e) {
-                        throw new RuntimeException(e);
+                    } catch (LanguageRegisteredException exception) {
+                        exception.printStackTrace();
                     }
                 });
     }
 
     @Override
     public boolean register(@NotNull final LanguageData languageData) throws LanguageRegisteredException {
-        final String label = languageData.label();
-        final String uniqueId = languageData.uniqueId();
+        @NotNull final String label = languageData.label();
+        @NotNull final String uniqueId = languageData.uniqueId();
 
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);
@@ -59,9 +59,8 @@ public class SingleLanguageImpl implements ILanguage {
         return true;
     }
 
-    @NotNull
     @Override
-    public List<LanguageData> getRegisteredLanguages() {
+    public @NotNull List<LanguageData> getRegisteredLanguages() {
         return Collections.singletonList(this.defaultLanguage);
     }
 

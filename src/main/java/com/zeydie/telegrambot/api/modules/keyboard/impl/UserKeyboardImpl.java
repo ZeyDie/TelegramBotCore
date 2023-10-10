@@ -10,32 +10,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserKeyboardImpl extends AbstractKeyboardImpl implements IUserKeyboard {
-    @NotNull
-    private final List<KeyboardButton> rowKeyboardButtonList = new ArrayList<>();
+    private final @NotNull List<KeyboardButton> rowKeyboardButtonList = new ArrayList<>();
 
     @Getter
-    @NotNull
-    private final ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(this.rowKeyboardButtonList.toArray(new KeyboardButton[]{}));
+    private final @NotNull ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(this.rowKeyboardButtonList.toArray(new KeyboardButton[]{}));
 
-    @NotNull
     @Override
-    public IUserKeyboard addButton(@NotNull final KeyboardButton keyboardButton) {
+    public @NotNull IUserKeyboard addButton(@NotNull final KeyboardButton keyboardButton) {
         this.rowKeyboardButtonList.add(keyboardButton);
 
         return this;
     }
 
-    @NotNull
     @Override
-    public IUserKeyboard completeRow() {
+    public @NotNull IUserKeyboard completeRow() {
         this.keyboard.addRow(this.rowKeyboardButtonList.toArray(new KeyboardButton[]{}));
         this.rowKeyboardButtonList.clear();
 
         return this;
     }
 
-    @NotNull
-    public IUserKeyboard minimizeButtons(final boolean value) {
+    public @NotNull IUserKeyboard minimizeButtons(final boolean value) {
         this.keyboard.resizeKeyboard(value);
 
         return this;

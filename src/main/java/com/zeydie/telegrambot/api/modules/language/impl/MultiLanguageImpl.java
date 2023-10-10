@@ -19,8 +19,7 @@ import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER;
 @Log4j2
 public class MultiLanguageImpl implements ILanguage {
     @Getter
-    @NotNull
-    private final List<LanguageData> registeredLanguages = new ArrayList<>();
+    private final @NotNull List<LanguageData> registeredLanguages = new ArrayList<>();
 
     @Override
     public void load() {
@@ -34,16 +33,16 @@ public class MultiLanguageImpl implements ILanguage {
                                         null
                                 )
                         ));
-                    } catch (LanguageRegisteredException e) {
-                        throw new RuntimeException(e);
+                    } catch (LanguageRegisteredException exception) {
+                        exception.printStackTrace();
                     }
                 });
     }
 
     @Override
     public boolean register(@NotNull final LanguageData languageData) throws LanguageRegisteredException {
-        final String label = languageData.label();
-        final String uniqueId = languageData.uniqueId();
+        @NotNull final String label = languageData.label();
+        @NotNull final String uniqueId = languageData.uniqueId();
 
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);

@@ -10,7 +10,7 @@ import static com.zeydie.telegrambot.api.utils.ReferencePaths.CONFIGS_FOLDER;
 
 public final class BotFileConfig {
     @Getter
-    private static final Json json = new AbstractFileConfig(CONFIGS_FOLDER, new Json(), "bot").init();
+    private static final @NotNull Json json = new AbstractFileConfig(CONFIGS_FOLDER, new Json(), "bot").init();
 
     @Data
     @EqualsAndHashCode(callSuper = false)

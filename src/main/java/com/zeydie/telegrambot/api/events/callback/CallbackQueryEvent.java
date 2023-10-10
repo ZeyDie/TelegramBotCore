@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class CallbackQueryEvent extends AbstractEvent {
-    private final CallbackQuery callbackQuery;
+    private final @NotNull CallbackQuery callbackQuery;
 
     public CallbackQueryEvent(@NotNull final CallbackQuery callbackQuery) {
         this.callbackQuery = callbackQuery;

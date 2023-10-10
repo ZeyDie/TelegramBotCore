@@ -14,15 +14,13 @@ import java.util.Collections;
 
 @Log4j2
 public class MessageEventHandlerImpl extends AbstractEventHandler implements IMessageEventHandler {
-    @NotNull
     @Override
-    public Class<? extends Annotation> getEventAnnotation() {
+    public @NotNull Class<? extends Annotation> getEventAnnotation() {
         return MessageSubscribe.class;
     }
 
-    @Nullable
     @Override
-    public Class<?>[] getParameters() {
+    public @Nullable Class<?>[] getParameters() {
         return Collections.singleton(MessageEvent.class).toArray(new Class[]{});
     }
 
@@ -33,15 +31,6 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
     @Override
     public void handle(@NotNull final Message message) {
-        final MessageEvent messageEvent = new MessageEvent(message);
-
-        this.getClassMethods()
-                .forEach((method, annotatedClass)-> {
-                    final MessageSubscribe messageSubscribe = (MessageSubscribe) method.getAnnotation(this.getEventAnnotation());
-                    final boolean invoke = messageSubscribe.ignoreCancelled() || !messageEvent.isCancelled();
-
-                    if (invoke)
-                        super.invoke(annotatedClass, method, messageEvent);
-                });
+        super.invoke(new MessageEvent(message));
     }
 }

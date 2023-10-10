@@ -11,7 +11,5 @@ import java.lang.annotation.*;
 public @interface CallbackQuerySubscribe {
     @NotNull String[] callbackDatas();
 
-    boolean ignoreCancelled() default false;
-
     @Nullable String comment() default "";
 }

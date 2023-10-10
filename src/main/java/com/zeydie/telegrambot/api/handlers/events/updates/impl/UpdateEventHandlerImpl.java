@@ -16,15 +16,13 @@ import java.util.Collections;
 
 @Log4j2
 public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpdateEventHandler {
-    @NotNull
     @Override
-    public Class<? extends Annotation> getEventAnnotation() {
+    public @NotNull Class<? extends Annotation> getEventAnnotation() {
         return UpdateSubscribe.class;
     }
 
-    @Nullable
     @Override
-    public Class<?>[] getParameters() {
+    public @Nullable Class<?>[] getParameters() {
         return Collections.singleton(UpdateEvent.class).toArray(new Class[]{});
     }
 
@@ -35,20 +33,17 @@ public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpd
 
     @Override
     public void handle(@NotNull final Update update) {
-        final CallbackQuery callbackQuery = update.callbackQuery();
+        @NotNull final UpdateEvent updateEvent = new UpdateEvent(update);
 
-        if (callbackQuery != null)
-            TelegramBotApp.getCallbackQueryHandler().handle(callbackQuery);
+        super.invoke(updateEvent);
 
-        final UpdateEvent updateEvent = new UpdateEvent(update);
+        if (!updateEvent.isCancelled()) {
+            @NotNull final CallbackQuery callbackQuery = update.callbackQuery();
 
-        this.getClassMethods()
-                .forEach((method, annotatedClass) -> {
-                    final UpdateSubscribe updateSubscribe = (UpdateSubscribe) method.getAnnotation(this.getEventAnnotation());
-                    final boolean invoke = updateSubscribe.ignoreCancelled() || !updateEvent.isCancelled();
+            if (callbackQuery != null)
+                TelegramBotApp.getCallbackQueryHandler().handle(callbackQuery);
 
-                    if (invoke)
-                        super.invoke(annotatedClass, method, updateEvent);
-                });
+            TelegramBotApp.getMessagesCache().put(update.message());
+        }
     }
 }

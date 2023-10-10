@@ -36,9 +36,9 @@ import org.jetbrains.annotations.Nullable;
 @Log4j2
 public final class TelegramBotApp {
     @Getter
-    private static final BotChatFileConfig.Json chatSettings = BotChatFileConfig.getJson();
+    private static final @NotNull BotChatFileConfig.Json chatSettings = BotChatFileConfig.getJson();
     @Getter
-    private static final Status status = new Status();
+    private static final @NotNull Status status = new Status();
 
     @Getter
     private static String name;
@@ -54,13 +54,13 @@ public final class TelegramBotApp {
     private static IUserCache userCache;
     @Setter
     @Getter
-    private static IUpdateEventHandler updateHandler = new UpdateEventHandlerImpl();
+    private static @NotNull IUpdateEventHandler updateHandler = new UpdateEventHandlerImpl();
     @Setter
     @Getter
-    private static IMessageEventHandler messageHandler = new MessageEventHandlerImpl();
+    private static @NotNull ICallbackQueryEventHandler callbackQueryHandler = new CallbackQueryEventHandlerImpl();
     @Setter
     @Getter
-    private static ICallbackQueryEventHandler callbackQueryHandler = new CallbackQueryEventHandlerImpl();
+    private static @NotNull IMessageEventHandler messageHandler = new MessageEventHandlerImpl();
 
     @Getter
     private static TelegramBot telegramBot;
@@ -95,8 +95,8 @@ public final class TelegramBotApp {
         userCache.load();
 
         updateHandler.load();
-        messageHandler.load();
         callbackQueryHandler.load();
+        messageHandler.load();
 
         status.setUpdatingMessages(true);
 
@@ -106,8 +106,10 @@ public final class TelegramBotApp {
     }
 
     @Setter
+    @Getter
     private static @NotNull UpdatesListener updatesListener = new UpdatesListenerImpl();
     @Setter
+    @Getter
     private static @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
 
     public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NotNull final BaseRequest<T, R> baseRequest) {

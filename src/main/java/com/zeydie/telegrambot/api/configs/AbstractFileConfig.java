@@ -9,7 +9,7 @@ import java.nio.file.Path;
 public record AbstractFileConfig(@NotNull Path path, @NotNull Object parent, @NotNull String name) {
     public @NotNull <T> T init() {
         return (T) new SGsonFile(
-                path.resolve(
+                this.path.resolve(
                         FileUtil.createFileWithType(
                                 this.name,
                                 "json"

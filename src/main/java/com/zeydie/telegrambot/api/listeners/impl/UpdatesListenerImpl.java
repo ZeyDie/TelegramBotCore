@@ -1,7 +1,6 @@
 package com.zeydie.telegrambot.api.listeners.impl;
 
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.zeydie.telegrambot.api.TelegramBotApp;
 import lombok.extern.log4j.Log4j2;
@@ -18,18 +17,7 @@ public class UpdatesListenerImpl implements UpdatesListener {
         if (status == CONFIRMED_UPDATES_ALL) {
             updates.forEach(update -> {
                 log.debug(update.toString());
-
                 TelegramBotApp.getUpdateHandler().handle(update);
-
-                final Message message = update.message();
-
-                if (message != null)
-                    if (
-                            TelegramBotApp.getChatSettings().isChatingOlyUsers() ?
-                                    (message.from().isBot() ? false : true) :
-                                    true
-                    )
-                        TelegramBotApp.getMessagesCache().put(update.message());
             });
         }
 

@@ -1,11 +1,13 @@
 package com.zeydie.telegrambot.api.utils;
 
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 
+@Log4j2
 public final class ReflectionUtil {
     @SneakyThrows
     public static Object instance(@NotNull final Class<?> clazz) {
@@ -30,6 +32,10 @@ public final class ReflectionUtil {
             @NotNull final Object classInstance,
             @Nullable final Object value
     ) {
+        final boolean accessible = field.isAccessible();
+
+        field.setAccessible(true);
         field.set(classInstance, value);
+        field.setAccessible(accessible);
     }
 }

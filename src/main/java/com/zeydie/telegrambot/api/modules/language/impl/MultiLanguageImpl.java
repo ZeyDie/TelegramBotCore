@@ -23,6 +23,8 @@ public class MultiLanguageImpl implements ILanguage {
 
     @Override
     public void load() {
+        LANGUAGE_FOLDER_PATH.toFile().mkdirs();
+
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
                     try {

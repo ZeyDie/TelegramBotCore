@@ -1,6 +1,7 @@
 package com.zeydie.telegrambot.api.modules.language.impl;
 
 import com.zeydie.sgson.SGsonFile;
+import com.zeydie.telegrambot.api.TelegramBotApp;
 import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.api.configs.ConfigStore;
 import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
@@ -23,7 +24,7 @@ public class SingleLanguageImpl implements ILanguage {
 
     @Override
     public void load() throws LanguageRegisteredException {
-        @NotNull final String defaultLanguageId = ConfigStore.getConfigStore().getBotChatFileConfig().getDefaultLanguageId();
+        @NotNull final String defaultLanguageId = ConfigStore.getBotChatFileConfig().getDefaultLanguageId();
 
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {

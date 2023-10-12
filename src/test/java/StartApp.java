@@ -13,14 +13,14 @@ import org.jetbrains.annotations.Nullable;
 public class StartApp {
     public static void main(@Nullable final String[] args) throws LanguageRegisteredException {
         TelegramBotApp.start();
-        TelegramBotApp.setup(ConfigStore.getConfigStore().getBotFileConfig(), ConfigStore.getConfigStore().getBotChatFileConfig());
+        TelegramBotApp.setup(ConfigStore.getBotFileConfig(), ConfigStore.getBotChatFileConfig());
         TelegramBotApp.init();
 
         final long chatId = 5099834947L;
 
         final IMessageKeyboard messageKeyboard = new MessageKeyboardImpl();
 
-        if (ConfigStore.getConfigStore().getBotChatFileConfig().isMultiLanguage()) {
+        if (ConfigStore.getBotChatFileConfig().isMultiLanguage()) {
             TelegramBotApp.getLanguage()
                     .getRegisteredLanguages()
                     .forEach(

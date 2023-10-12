@@ -6,18 +6,16 @@ import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import lombok.Getter;
 import lombok.experimental.NonFinal;
+import org.jetbrains.annotations.NotNull;
 
 @ConfigSubscribesRegister
 public class ConfigStore {
     @Getter
-    public static final ConfigStore configStore = new ConfigStore();
-
-    @Getter
     @NonFinal
     @ConfigSubscribe(name = "bot")
-    public BotFileConfig botFileConfig = new BotFileConfig();
+    public static @NotNull BotFileConfig botFileConfig = new BotFileConfig();
     @Getter
     @NonFinal
     @ConfigSubscribe(name = "bot_chat")
-    public BotChatFileConfig botChatFileConfig = new BotChatFileConfig();
+    public static @NotNull BotChatFileConfig botChatFileConfig = new BotChatFileConfig();
 }

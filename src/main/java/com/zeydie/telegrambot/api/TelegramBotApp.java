@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
+import com.zeydie.telegrambot.api.configs.ConfigStore;
 import com.zeydie.telegrambot.api.configs.data.BotChatFileConfig;
 import com.zeydie.telegrambot.api.configs.data.BotFileConfig;
 import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
@@ -80,11 +81,9 @@ public final class TelegramBotApp {
                             if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
                                 @NotNull final Object annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
 
-                                Arrays.stream(annotatedClass.getDeclaredFields())
+                                Arrays.stream(annotatedClassInstance.getClass().getDeclaredFields())
                                         .forEach(field -> {
                                                     if (field.isAnnotationPresent(ConfigSubscribe.class)) {
-                                                        log.debug("{}", field);
-
                                                         @NotNull final ConfigSubscribe configSubscribe = field.getAnnotation(ConfigSubscribe.class);
 
                                                         @NotNull final Object objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
@@ -96,8 +95,6 @@ public final class TelegramBotApp {
                                                                 ).init();
 
                                                         ReflectionUtil.setValueField(field, annotatedClassInstance, config);
-
-                                                        log.debug("{}", config);
                                                     }
                                                 }
                                         );

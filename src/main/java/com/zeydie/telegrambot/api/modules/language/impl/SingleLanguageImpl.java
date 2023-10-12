@@ -2,7 +2,7 @@ package com.zeydie.telegrambot.api.modules.language.impl;
 
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
-import com.zeydie.telegrambot.api.configs.BotChatFileConfig;
+import com.zeydie.telegrambot.api.configs.ConfigStore;
 import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER_PATH;
 
 @Log4j2
 public class SingleLanguageImpl implements ILanguage {
@@ -23,25 +23,26 @@ public class SingleLanguageImpl implements ILanguage {
 
     @Override
     public void load() throws LanguageRegisteredException {
-        @NotNull final String defaultLanguageId = BotChatFileConfig.getJson().getDefaultLanguageId();
+        @NotNull final String defaultLanguageId = ConfigStore.getConfigStore().getBotChatFileConfig().getDefaultLanguageId();
 
-        Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER.toFile().listFiles()))
+        Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
-                    try {
-                        final LanguageData languageData = new SGsonFile(file).fromJsonToObject(
-                                new LanguageData(
-                                        null,
-                                        null,
-                                        null
-                                )
-                        );
+                            try {
+                                final LanguageData languageData = new SGsonFile(file).fromJsonToObject(
+                                        new LanguageData(
+                                                null,
+                                                null,
+                                                null
+                                        )
+                                );
 
-                        if (languageData.uniqueId().equals(defaultLanguageId))
-                            this.register(languageData);
-                    } catch (LanguageRegisteredException exception) {
-                        exception.printStackTrace();
-                    }
-                });
+                                if (languageData.uniqueId().equals(defaultLanguageId))
+                                    this.register(languageData);
+                            } catch (LanguageRegisteredException exception) {
+                                exception.printStackTrace();
+                            }
+                        }
+                );
     }
 
     @Override
@@ -86,7 +87,7 @@ public class SingleLanguageImpl implements ILanguage {
 
     public static @NotNull LanguageData initLangFile(@NotNull final LanguageData languageData) {
         return new AbstractFileConfig(
-                LANGUAGE_FOLDER,
+                LANGUAGE_FOLDER_PATH,
                 languageData,
                 languageData.uniqueId()
         ).init();

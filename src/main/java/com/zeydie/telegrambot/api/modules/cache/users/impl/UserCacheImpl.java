@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER_PATH;
 
 @Log4j2
 public class UserCacheImpl implements IUserCache {
@@ -34,9 +34,9 @@ public class UserCacheImpl implements IUserCache {
     @SneakyThrows
     @Override
     public void load() {
-        CACHE_USERS_FOLDER.toFile().mkdirs();
+        CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
 
-        Arrays.stream(Objects.requireNonNull(CACHE_USERS_FOLDER.toFile().listFiles()))
+        Arrays.stream(Objects.requireNonNull(CACHE_USERS_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
                     try {
                         log.info("Restoring {}", file.getName());
@@ -55,10 +55,10 @@ public class UserCacheImpl implements IUserCache {
 
     @Override
     public void save() {
-        CACHE_USERS_FOLDER.toFile().mkdirs();
+        CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
 
         this.userDataCache.asMap().forEach((id, userData) -> {
-            new SGsonFile(CACHE_USERS_FOLDER.resolve(FileUtil.createFileWithType(id, "json"))).writeJsonFile(userData);
+            new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileWithType(id, "json"))).writeJsonFile(userData);
 
             log.info("Saving user data cache for {}", id);
         });

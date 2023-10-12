@@ -3,8 +3,11 @@ package com.zeydie.telegrambot.api;
 import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
-import com.zeydie.telegrambot.api.configs.BotChatFileConfig;
-import com.zeydie.telegrambot.api.configs.BotFileConfig;
+import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
+import com.zeydie.telegrambot.api.configs.data.BotChatFileConfig;
+import com.zeydie.telegrambot.api.configs.data.BotFileConfig;
+import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
+import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.api.handlers.events.callbacks.ICallbackQueryEventHandler;
 import com.zeydie.telegrambot.api.handlers.events.callbacks.impl.CallbackQueryEventHandlerImpl;
@@ -22,19 +25,22 @@ import com.zeydie.telegrambot.api.modules.cache.users.impl.UserCacheImpl;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.language.impl.MultiLanguageImpl;
 import com.zeydie.telegrambot.api.modules.language.impl.SingleLanguageImpl;
+import com.zeydie.telegrambot.api.utils.ReflectionUtil;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
+import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Paths;
+import java.util.Arrays;
+
 @Log4j2
 public final class TelegramBotApp {
-    @Getter
-    private static final @NotNull BotChatFileConfig.Json chatSettings = BotChatFileConfig.getJson();
     @Getter
     private static final @NotNull Status status = new Status();
 
@@ -64,18 +70,57 @@ public final class TelegramBotApp {
     @Getter
     private static TelegramBot telegramBot;
 
+    public static void start() {
+        log.debug("Scanning configs...");
+
+        ClassIndex.getAnnotated(ConfigSubscribesRegister.class)
+                .forEach(annotatedClass -> {
+                            log.debug("{}", annotatedClass);
+
+                            if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
+                                @NotNull final Object annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
+
+                                Arrays.stream(annotatedClass.getDeclaredFields())
+                                        .forEach(field -> {
+                                                    if (field.isAnnotationPresent(ConfigSubscribe.class)) {
+                                                        log.debug("{}", field);
+
+                                                        @NotNull final ConfigSubscribe configSubscribe = field.getAnnotation(ConfigSubscribe.class);
+
+                                                        @NotNull final Object objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
+                                                        @NotNull final Object config = !configSubscribe.file() ? objectInstance :
+                                                                new AbstractFileConfig(
+                                                                        Paths.get(configSubscribe.category().toString(), configSubscribe.path()),
+                                                                        objectInstance,
+                                                                        configSubscribe.name()
+                                                                ).init();
+
+                                                        ReflectionUtil.setValueField(field, annotatedClassInstance, config);
+
+                                                        log.debug("{}", config);
+                                                    }
+                                                }
+                                        );
+                            }
+                        }
+                );
+    }
+
     @SneakyThrows
-    public static void setup(@NotNull final BotFileConfig.Json botFileConfig) {
+    public static void setup(
+            @NotNull final BotFileConfig config,
+            @NotNull final BotChatFileConfig chatSettings
+    ) {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
 
-        name = botFileConfig.getName();
+        name = config.getName();
 
         language = chatSettings.isMultiLanguage() ? new MultiLanguageImpl() : new SingleLanguageImpl();
         messagesCache = chatSettings.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         userCache = new UserCacheImpl();
 
-        telegramBot = new TelegramBot(botFileConfig.getToken());
+        telegramBot = new TelegramBot(config.getToken());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             messagesCache.save();

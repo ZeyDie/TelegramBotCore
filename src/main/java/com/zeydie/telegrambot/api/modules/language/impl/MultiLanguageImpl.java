@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.LANGUAGE_FOLDER_PATH;
 
 @Log4j2
 public class MultiLanguageImpl implements ILanguage {
@@ -23,7 +23,7 @@ public class MultiLanguageImpl implements ILanguage {
 
     @Override
     public void load() {
-        Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER.toFile().listFiles()))
+        Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
                     try {
                         this.register(new SGsonFile(file).fromJsonToObject(

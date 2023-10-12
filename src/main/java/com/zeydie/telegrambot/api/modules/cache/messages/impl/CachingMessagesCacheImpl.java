@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_MESSAGES_FOLDER;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_PATH;
 
 @Log4j2
 public class CachingMessagesCacheImpl implements IMessagesCache {
@@ -59,9 +59,9 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
     @SneakyThrows
     @Override
     public void load() {
-        CACHE_MESSAGES_FOLDER.toFile().mkdirs();
+        CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
 
-        Arrays.stream(Objects.requireNonNull(CACHE_MESSAGES_FOLDER.toFile().listFiles()))
+        Arrays.stream(Objects.requireNonNull(CACHE_MESSAGES_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
                     try {
                         final long chatId = Long.parseLong(FileUtil.getFileName(file));
@@ -79,10 +79,10 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
     @Override
     public void save() {
-        CACHE_MESSAGES_FOLDER.toFile().mkdirs();
+        CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
 
         this.chatMessageCache.asMap().forEach((chat, message) -> {
-            @NotNull final SGsonFile gsonFile = new SGsonFile(CACHE_MESSAGES_FOLDER.resolve(String.valueOf(chat)));
+            @NotNull final SGsonFile gsonFile = new SGsonFile(CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chat)));
             @NotNull final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
 
             chatMessagesData.messages().addAll(message);

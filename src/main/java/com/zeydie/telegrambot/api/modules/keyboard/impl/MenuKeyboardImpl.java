@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 // TODO
 public class MenuKeyboardImpl extends AbstractKeyboardImpl implements IUserKeyboard {
-
     @Override
     public @NotNull Keyboard getKeyboard() {
         return null;

@@ -19,11 +19,9 @@ import java.util.Arrays;
 
 @Log4j2
 public abstract class AbstractEventHandler {
-    @NotNull
-    public abstract Class<? extends Annotation> getEventAnnotation();
+    public abstract @NotNull Class<? extends Annotation> getEventAnnotation();
 
-    @Nullable
-    public abstract Class<?>[] getParameters();
+    public abstract @Nullable Class<?>[] getParameters();
 
     private final @NotNull Cache<Method, Class<?>> highestClassMethods = CacheBuilder.newBuilder().build();
     private final @NotNull Cache<Method, Class<?>> highClassMethods = CacheBuilder.newBuilder().build();

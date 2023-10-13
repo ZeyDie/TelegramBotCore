@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class StartApp {
     public static void main(@Nullable final String[] args) throws LanguageRegisteredException {
         TelegramBotApp.start();
-        TelegramBotApp.setup(ConfigStore.getBotFileConfig(), ConfigStore.getBotChatFileConfig());
+        TelegramBotApp.setup();
         TelegramBotApp.init();
 
         final long chatId = 5099834947L;

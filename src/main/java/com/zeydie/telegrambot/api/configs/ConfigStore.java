@@ -9,7 +9,7 @@ import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
 
 @ConfigSubscribesRegister
-public class ConfigStore {
+public final class ConfigStore {
     @Getter
     @NonFinal
     @ConfigSubscribe(name = "bot")

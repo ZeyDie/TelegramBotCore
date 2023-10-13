@@ -19,7 +19,7 @@ public final class ReferencePaths {
         CONFIGS, CACHE, LANGUAGE;
 
         @Override
-        public String toString() {
+        public @NotNull String toString() {
             return this.name().toLowerCase(Locale.ROOT);
         }
     }

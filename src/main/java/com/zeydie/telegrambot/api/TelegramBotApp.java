@@ -104,6 +104,14 @@ public final class TelegramBotApp {
     }
 
     @SneakyThrows
+    public static void setup() {
+        setup(
+                ConfigStore.getBotFileConfig(),
+                ConfigStore.getBotChatFileConfig()
+        );
+    }
+
+    @SneakyThrows
     public static void setup(
             @NotNull final BotFileConfig config,
             @NotNull final BotChatFileConfig chatSettings

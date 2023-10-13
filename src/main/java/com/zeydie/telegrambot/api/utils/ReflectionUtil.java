@@ -10,11 +10,11 @@ import java.lang.reflect.Field;
 @Log4j2
 public final class ReflectionUtil {
     @SneakyThrows
-    public static Object instance(@NotNull final Class<?> clazz) {
+    public static @NotNull Object instance(@NotNull final Class<?> clazz) {
         return clazz.newInstance();
     }
 
-    public static Class<?> getClassField(@NotNull final Field field) {
+    public static @NotNull Class<?> getClassField(@NotNull final Field field) {
         return field.getType();
     }
 

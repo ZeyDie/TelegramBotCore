@@ -24,7 +24,7 @@ public final class TestUpdates {
     public void low(@NotNull final UpdateEvent updateEvent) {
         log.debug("low {}", updateEvent);
 
-        updateEvent.setCancelled(true);
+        //updateEvent.setCancelled(true);
     }
 
     @PrioritySubscribe(priority = EventPriority.DEFAULT)

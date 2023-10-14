@@ -15,6 +15,10 @@ public final class ReferencePaths {
 
     public static final @NotNull Path LANGUAGE_FOLDER_PATH = Paths.get(Category.LANGUAGE.toString());
 
+    public static @NotNull String CONFIG_TYPE = "cfg";
+    public static @NotNull String LANGUAGE_TYPE = "lang";
+    public static @NotNull String DATA_TYPE = "data";
+
     public enum Category {
         CONFIGS, CACHE, LANGUAGE;
 

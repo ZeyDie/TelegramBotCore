@@ -5,17 +5,13 @@ import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.api.configs.ConfigStore;
-import com.zeydie.telegrambot.api.configs.data.BotChatFileConfig;
-import com.zeydie.telegrambot.api.configs.data.BotFileConfig;
+import com.zeydie.telegrambot.api.configs.data.BotConfig;
+import com.zeydie.telegrambot.api.configs.data.CachingConfig;
 import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
-import com.zeydie.telegrambot.api.handlers.events.callbacks.ICallbackQueryEventHandler;
-import com.zeydie.telegrambot.api.handlers.events.callbacks.impl.CallbackQueryEventHandlerImpl;
-import com.zeydie.telegrambot.api.handlers.events.messages.IMessageEventHandler;
-import com.zeydie.telegrambot.api.handlers.events.messages.impl.MessageEventHandlerImpl;
-import com.zeydie.telegrambot.api.handlers.events.updates.IUpdateEventHandler;
-import com.zeydie.telegrambot.api.handlers.events.updates.impl.UpdateEventHandlerImpl;
+import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
+import com.zeydie.telegrambot.api.handlers.events.language.impl.LanguageEventHandlerImpl;
 import com.zeydie.telegrambot.api.handlers.exceptions.impl.ExceptionHandlerImpl;
 import com.zeydie.telegrambot.api.listeners.impl.UpdatesListenerImpl;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
@@ -24,8 +20,13 @@ import com.zeydie.telegrambot.api.modules.cache.messages.impl.DirectlyMessagesCa
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.impl.UserCacheImpl;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
-import com.zeydie.telegrambot.api.modules.language.impl.MultiLanguageImpl;
-import com.zeydie.telegrambot.api.modules.language.impl.SingleLanguageImpl;
+import com.zeydie.telegrambot.api.modules.language.impl.LanguageImpl;
+import com.zeydie.telegrambot.api.telegram.handlers.events.callbacks.ICallbackQueryEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.callbacks.impl.CallbackQueryEventHandlerImpl;
+import com.zeydie.telegrambot.api.telegram.handlers.events.messages.IMessageEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.messages.impl.MessageEventHandlerImpl;
+import com.zeydie.telegrambot.api.telegram.handlers.events.updates.IUpdateEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.updates.impl.UpdateEventHandlerImpl;
 import com.zeydie.telegrambot.api.utils.ReflectionUtil;
 import lombok.Data;
 import lombok.Getter;
@@ -57,6 +58,10 @@ public final class TelegramBotApp {
     @Setter
     @Getter
     private static IUserCache userCache;
+
+    @Setter
+    @Getter
+    public static @NotNull ILanguageEventHandler languageEventHandler = new LanguageEventHandlerImpl();
 
     @Setter
     @Getter
@@ -106,23 +111,23 @@ public final class TelegramBotApp {
     @SneakyThrows
     public static void setup() {
         setup(
-                ConfigStore.getBotFileConfig(),
-                ConfigStore.getBotChatFileConfig()
+                ConfigStore.getBotConfig(),
+                ConfigStore.getCachingConfig()
         );
     }
 
     @SneakyThrows
     public static void setup(
-            @NotNull final BotFileConfig config,
-            @NotNull final BotChatFileConfig chatSettings
+            @NotNull final BotConfig config,
+            @NotNull final CachingConfig cachingConfig
     ) {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
 
         name = config.getName();
 
-        language = chatSettings.isMultiLanguage() ? new MultiLanguageImpl() : new SingleLanguageImpl();
-        messagesCache = chatSettings.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
+        language = new LanguageImpl();
+        messagesCache = cachingConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         userCache = new UserCacheImpl();
 
         telegramBot = new TelegramBot(config.getToken());
@@ -139,13 +144,14 @@ public final class TelegramBotApp {
         final long startTime = System.currentTimeMillis();
         log.info("Starting initialize...");
 
-        language.load();
-        messagesCache.load();
-        userCache.load();
-
+        languageEventHandler.load();
         updateHandler.load();
         callbackQueryHandler.load();
         messageHandler.load();
+
+        language.load();
+        messagesCache.load();
+        userCache.load();
 
         status.setUpdatingMessages(true);
 

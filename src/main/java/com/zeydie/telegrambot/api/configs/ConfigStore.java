@@ -1,7 +1,8 @@
 package com.zeydie.telegrambot.api.configs;
 
-import com.zeydie.telegrambot.api.configs.data.BotChatFileConfig;
-import com.zeydie.telegrambot.api.configs.data.BotFileConfig;
+import com.zeydie.telegrambot.api.configs.data.BotConfig;
+import com.zeydie.telegrambot.api.configs.data.CachingConfig;
+import com.zeydie.telegrambot.api.configs.data.LanguageConfig;
 import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import lombok.Getter;
@@ -12,10 +13,14 @@ import org.jetbrains.annotations.NotNull;
 public final class ConfigStore {
     @Getter
     @NonFinal
-    @ConfigSubscribe(name = "bot")
-    public static @NotNull BotFileConfig botFileConfig = new BotFileConfig();
+    @ConfigSubscribe(name = "config")
+    public static @NotNull BotConfig botConfig = new BotConfig();
     @Getter
     @NonFinal
-    @ConfigSubscribe(name = "bot_chat")
-    public static @NotNull BotChatFileConfig botChatFileConfig = new BotChatFileConfig();
+    @ConfigSubscribe(name = "language")
+    public static @NotNull LanguageConfig languageConfig = new LanguageConfig();
+    @Getter
+    @NonFinal
+    @ConfigSubscribe(name = "caching")
+    public static @NotNull CachingConfig cachingConfig = new CachingConfig();
 }

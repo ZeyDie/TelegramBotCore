@@ -6,13 +6,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CONFIG_TYPE;
+
 public record AbstractFileConfig(@NotNull Path path, @NotNull Object parent, @NotNull String name) {
     public @NotNull <T> T init() {
         return (T) new SGsonFile(
                 this.path.resolve(
                         FileUtil.createFileWithType(
                                 this.name,
-                                "json"
+                                CONFIG_TYPE
                         )
                 )
         ).fromJsonToObject(this.parent);

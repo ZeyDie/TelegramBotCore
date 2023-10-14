@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_USERS_FOLDER_PATH;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.DATA_TYPE;
 
 @Log4j2
 public class UserCacheImpl implements IUserCache {
@@ -44,9 +45,9 @@ public class UserCacheImpl implements IUserCache {
                         final long userId = Long.parseLong(FileUtil.getFileName(file));
                         @NotNull final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
-                        log.info("User {} restored {}", userId, userData);
-
                         this.userDataCache.put(userId, userData);
+
+                        log.info("User {} restored {}", userId, userData);
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
@@ -58,9 +59,8 @@ public class UserCacheImpl implements IUserCache {
         CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
 
         this.userDataCache.asMap().forEach((id, userData) -> {
-            new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileWithType(id, "json"))).writeJsonFile(userData);
-
             log.info("Saving user data cache for {}", id);
+            new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileWithType(id, DATA_TYPE))).writeJsonFile(userData);
         });
     }
 
@@ -81,8 +81,10 @@ public class UserCacheImpl implements IUserCache {
     }
 
     @Override
-    public @Nullable UserData getUserData(@NotNull final User user) {
-        return this.getUserData(user.id());
+    public @NotNull UserData getUserData(@NotNull final User user) {
+        @Nullable final UserData userData = this.getUserData(user.id());
+
+        return userData == null ? new UserData(user) : userData;
     }
 
     @Override

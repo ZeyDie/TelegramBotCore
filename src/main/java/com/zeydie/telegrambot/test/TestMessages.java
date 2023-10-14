@@ -1,11 +1,11 @@
 package com.zeydie.telegrambot.test;
 
 import com.zeydie.telegrambot.api.events.EventPriority;
-import com.zeydie.telegrambot.api.events.message.MessageEvent;
-import com.zeydie.telegrambot.api.events.message.MessageSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
-import com.zeydie.telegrambot.api.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
+import com.zeydie.telegrambot.api.telegram.events.message.MessageEvent;
+import com.zeydie.telegrambot.api.telegram.events.message.MessageEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,13 +14,13 @@ import org.jetbrains.annotations.NotNull;
 public final class TestMessages {
     @PrioritySubscribe(priority = EventPriority.LOWEST)
     @CancelableSubscribe
-    @MessageSubscribe
+    @MessageEventSubscribe
     public void lowest(@NotNull final MessageEvent messageEvent) {
         log.debug("lowest {}", messageEvent);
     }
 
     @PrioritySubscribe(priority = EventPriority.LOW)
-    @MessageSubscribe
+    @MessageEventSubscribe
     public void low(@NotNull final MessageEvent messageEvent) {
         log.debug("low {}", messageEvent);
 
@@ -28,24 +28,24 @@ public final class TestMessages {
     }
 
     @PrioritySubscribe(priority = EventPriority.DEFAULT)
-    @MessageSubscribe
+    @MessageEventSubscribe
     public void defaultA(@NotNull final MessageEvent messageEvent) {
         log.debug("defaultA {}", messageEvent);
     }
 
-    @MessageSubscribe
+    @MessageEventSubscribe
     public void defaultB(@NotNull final MessageEvent messageEvent) {
         log.debug("defaultB {}", messageEvent);
     }
 
     @PrioritySubscribe(priority = EventPriority.HIGHT)
-    @MessageSubscribe
+    @MessageEventSubscribe
     public void hight(@NotNull final MessageEvent messageEvent) {
         log.debug("hight {}", messageEvent);
     }
 
     @PrioritySubscribe(priority = EventPriority.HIGHEST)
-    @MessageSubscribe
+    @MessageEventSubscribe
     public void highest(@NotNull final MessageEvent messageEvent) {
         log.debug("highest {}", messageEvent);
     }

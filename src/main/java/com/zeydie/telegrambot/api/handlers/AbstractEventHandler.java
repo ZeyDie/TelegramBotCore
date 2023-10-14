@@ -5,8 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
-import com.zeydie.telegrambot.api.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
+import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
@@ -114,13 +114,6 @@ public abstract class AbstractEventHandler {
     }
 
     public boolean isCancelled(@NotNull final Object object) {
-        if (object instanceof AbstractEvent) {
-            @NotNull final AbstractEvent abstractEvent = (AbstractEvent) object;
-
-            if (abstractEvent.isCancelled())
-                return true;
-        }
-
-        return false;
+        return object instanceof AbstractEvent abstractEvent && abstractEvent.isCancelled();
     }
 }

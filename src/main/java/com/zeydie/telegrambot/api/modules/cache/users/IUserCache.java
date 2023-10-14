@@ -13,7 +13,7 @@ public interface IUserCache extends IDataCache {
 
     void put(@NotNull final User user);
 
-    @Nullable
+    @NotNull
     UserData getUserData(@NotNull final User user);
 
     @Nullable

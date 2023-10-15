@@ -1,7 +1,7 @@
 package com.zeydie.telegrambot.api.modules.language;
 
-import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
+import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

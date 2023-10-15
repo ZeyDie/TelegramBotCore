@@ -4,8 +4,8 @@ import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
-import com.zeydie.telegrambot.api.telegram.events.update.UpdateEvent;
 import com.zeydie.telegrambot.api.telegram.events.update.UpdateEventSubscribe;
+import com.zeydie.telegrambot.telegram.events.update.UpdateEvent;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,8 +23,6 @@ public final class TestUpdates {
     @UpdateEventSubscribe
     public void low(@NotNull final UpdateEvent updateEvent) {
         log.debug("low {}", updateEvent);
-
-        //updateEvent.setCancelled(true);
     }
 
     @PrioritySubscribe(priority = EventPriority.DEFAULT)

@@ -1,11 +1,11 @@
 package com.zeydie.telegrambot.test.launch;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.zeydie.telegrambot.api.TelegramBotApp;
-import com.zeydie.telegrambot.api.configs.ConfigStore;
-import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
+import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
-import com.zeydie.telegrambot.api.modules.keyboard.impl.MessageKeyboardImpl;
+import com.zeydie.telegrambot.configs.ConfigStore;
+import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
+import com.zeydie.telegrambot.modules.keyboard.impl.MessageKeyboardImpl;
 import org.jetbrains.annotations.Nullable;
 
 // AnswerCallBackQuery - всплывающее окно

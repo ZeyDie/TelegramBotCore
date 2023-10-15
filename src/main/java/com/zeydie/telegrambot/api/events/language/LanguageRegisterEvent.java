@@ -1,8 +1,8 @@
 package com.zeydie.telegrambot.api.events.language;
 
 import com.zeydie.telegrambot.api.events.AbstractEvent;
-import com.zeydie.telegrambot.api.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
+import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

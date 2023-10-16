@@ -2,6 +2,7 @@ package com.zeydie.telegrambot.telegram.handlers.events.messages.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
+import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.api.telegram.events.message.MessageEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.handlers.events.messages.IMessageEventHandler;
 import com.zeydie.telegrambot.telegram.events.message.MessageEvent;
@@ -27,6 +28,11 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
     @Override
     public void load() {
         super.load();
+    }
+
+    @Override
+    public void handle(@NotNull final MessageData messageData) {
+        this.handle(messageData.message());
     }
 
     @Override

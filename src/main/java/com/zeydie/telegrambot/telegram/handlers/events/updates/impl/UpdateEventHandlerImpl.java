@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
+import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.api.telegram.events.update.UpdateEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.handlers.events.updates.IUpdateEventHandler;
 import com.zeydie.telegrambot.telegram.events.update.UpdateEvent;
@@ -47,7 +48,7 @@ public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpd
             @Nullable final Message message = update.message();
 
             if (message != null)
-                TelegramBotApp.getMessagesCache().put(message);
+                TelegramBotApp.getMessagesCache().put(new MessageData(message));
         }
     }
 }

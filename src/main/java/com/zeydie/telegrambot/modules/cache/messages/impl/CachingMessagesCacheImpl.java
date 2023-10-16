@@ -5,11 +5,11 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
-import com.pengrad.telegrambot.model.Message;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
-import com.zeydie.telegrambot.modules.cache.messages.data.ChatMessagesData;
+import com.zeydie.telegrambot.api.modules.cache.messages.data.ListMessagesData;
+import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.utils.FileUtil;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -44,15 +44,16 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
         }.startAsync();
     }
 
-    private final @NotNull Cache<Long, List<Message>> chatMessageCache = CacheBuilder.newBuilder()
+    private final @NotNull Cache<Long, ListMessagesData> chatMessageCache = CacheBuilder.newBuilder()
             .expireAfterWrite(100, TimeUnit.MILLISECONDS)
-            .removalListener((RemovalListener<Long, List<Message>>) notification -> {
+            .removalListener((RemovalListener<Long, ListMessagesData>) notification -> {
                         final long chatId = notification.getKey();
-                        @NotNull final List<Message> messages = notification.getValue();
+                        @NotNull final ListMessagesData listMessagesData = notification.getValue();
+                        @Nullable final List<MessageData> messageDatas = listMessagesData.messages();
 
-                        log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messages).toArray()));
+                        log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messageDatas).toArray()));
 
-                        messages.forEach(message -> TelegramBotApp.getMessageHandler().handle(message));
+                        messageDatas.forEach(messageData -> TelegramBotApp.getMessageHandler().handle(messageData.message()));
                     }
             ).build();
 
@@ -65,12 +66,12 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                 .forEach(file -> {
                             try {
                                 final long chatId = Long.parseLong(FileUtil.getFileName(file));
-                                @NotNull final ChatMessagesData chatMessagesData = new SGsonFile(file).fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
-                                @NotNull final List<Message> messages = chatMessagesData.messages();
+                                @NotNull final ListMessagesData listMessagesData = new SGsonFile(file).fromJsonToObject(new ListMessagesData(null));
+                                @Nullable final List<MessageData> messages = listMessagesData.messages();
 
                                 log.info(String.format("Chat: %d restored %d messages", chatId, messages.size()));
 
-                                this.chatMessageCache.put(chatId, messages);
+                                this.chatMessageCache.put(chatId, listMessagesData);
                             } catch (final Exception exception) {
                                 exception.printStackTrace();
                             }
@@ -83,12 +84,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
         CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
 
         this.chatMessageCache.asMap().forEach((chat, message) -> {
-                    @NotNull final SGsonFile gsonFile = new SGsonFile(CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chat)));
-                    @NotNull final ChatMessagesData chatMessagesData = gsonFile.fromJsonToObject(new ChatMessagesData(new ArrayList<>()));
-
-                    chatMessagesData.messages().addAll(message);
-
-                    gsonFile.writeJsonFile(chatMessagesData);
+                    new SGsonFile(CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chat))).writeJsonFile(message);
 
                     log.info(String.format("Saving message cache for %d", chat));
                 }
@@ -96,17 +92,17 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
     }
 
     @Override
-    public void put(@NotNull final Message message) {
-        final long id = message.chat().id();
+    public void put(@NotNull final MessageData messageData) {
+        final long id = messageData.message().chat().id();
 
-        @Nullable List<Message> messages = this.chatMessageCache.getIfPresent(id);
+        @Nullable ListMessagesData listMessagesData = this.chatMessageCache.getIfPresent(id);
 
-        if (messages == null) {
-            messages = new ArrayList<>();
+        if (listMessagesData == null) {
+            listMessagesData = new ListMessagesData(null);
 
-            this.chatMessageCache.put(id, messages);
+            this.chatMessageCache.put(id, listMessagesData);
         }
 
-        messages.add(message);
+        listMessagesData.add(messageData);
     }
 }

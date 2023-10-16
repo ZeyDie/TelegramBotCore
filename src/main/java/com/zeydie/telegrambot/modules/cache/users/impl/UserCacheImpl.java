@@ -25,12 +25,12 @@ public class UserCacheImpl implements IUserCache {
     private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
             .expireAfterWrite(4, TimeUnit.HOURS)
             .removalListener((RemovalListener<Long, UserData>) notification -> {
-                final long userId = notification.getKey();
-                @NotNull final UserData userData = notification.getValue();
+                        final long userId = notification.getKey();
+                        @NotNull final UserData userData = notification.getValue();
 
-                log.debug("Cleanup {} {}", userId, userData);
-            })
-            .build();
+                        log.debug("Cleanup {} {}", userId, userData);
+                    }
+            ).build();
 
     @SneakyThrows
     @Override
@@ -39,19 +39,20 @@ public class UserCacheImpl implements IUserCache {
 
         Arrays.stream(Objects.requireNonNull(CACHE_USERS_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
-                    try {
-                        log.info("Restoring {}", file.getName());
+                            try {
+                                log.info("Restoring {}", file.getName());
 
-                        final long userId = Long.parseLong(FileUtil.getFileName(file));
-                        @NotNull final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                                final long userId = Long.parseLong(FileUtil.getFileName(file));
+                                @NotNull final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
-                        this.userDataCache.put(userId, userData);
+                                this.userDataCache.put(userId, userData);
 
-                        log.info("User {} restored {}", userId, userData);
-                    } catch (Exception exception) {
-                        exception.printStackTrace();
-                    }
-                });
+                                log.info("User {} restored {}", userId, userData);
+                            } catch (final Exception exception) {
+                                exception.printStackTrace();
+                            }
+                        }
+                );
     }
 
     @Override
@@ -59,9 +60,10 @@ public class UserCacheImpl implements IUserCache {
         CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
 
         this.userDataCache.asMap().forEach((id, userData) -> {
-            log.info("Saving user data cache for {}", id);
-            new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileWithType(id, DATA_TYPE))).writeJsonFile(userData);
-        });
+                    log.info("Saving user data cache for {}", id);
+                    new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileWithType(id, DATA_TYPE))).writeJsonFile(userData);
+                }
+        );
     }
 
     @Override

@@ -41,7 +41,7 @@ public class LanguageImpl implements ILanguage {
                                                 null
                                         )
                                 ));
-                            } catch (LanguageRegisteredException exception) {
+                            } catch (final LanguageRegisteredException exception) {
                                 exception.printStackTrace();
                             }
                         }
@@ -57,7 +57,7 @@ public class LanguageImpl implements ILanguage {
                             try {
                                 if (!this.isRegistered(languageData))
                                     this.register(languageData);
-                            } catch (LanguageRegisteredException exception) {
+                            } catch (final LanguageRegisteredException exception) {
                                 exception.printStackTrace();
                             }
                         }

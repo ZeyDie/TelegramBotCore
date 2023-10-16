@@ -7,9 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IUserCache extends IDataCache {
+    boolean contains(@NotNull final UserData userData);
+
     boolean contains(@NotNull final User user);
 
     boolean contains(final long userId);
+
+    void put(@NotNull final UserData userData);
 
     void put(@NotNull final User user);
 

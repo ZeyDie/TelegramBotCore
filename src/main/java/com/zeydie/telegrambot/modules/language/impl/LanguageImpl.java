@@ -1,10 +1,14 @@
 package com.zeydie.telegrambot.modules.language.impl;
 
+import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.events.language.LanguageRegisterEvent;
+import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
+import com.zeydie.telegrambot.configs.ConfigStore;
+import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.utils.FileUtil;
 import lombok.Getter;
@@ -101,6 +105,64 @@ public class LanguageImpl implements ILanguage {
                 .filter(languageData -> languageData.uniqueId().equals(uniqueId))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public @NotNull String localize(
+            @Nullable final Object object,
+            @NotNull final String key
+    ) throws LanguageNotRegisteredException {
+        switch (object) {
+            User -> this.localize(object, key);
+            Long -> this.localize(object, key);
+        }
+    }
+
+    @Override
+    public @NotNull String localize(
+            @Nullable final UserData userData,
+            @NotNull final String key
+    ) throws LanguageNotRegisteredException {
+        return userData == null ? this.localize(key) : this.localize(userData.getUser(), key);
+    }
+
+    @Override
+    public @NotNull String localize(
+            @Nullable final User user,
+            @NotNull final String key
+    ) throws LanguageNotRegisteredException {
+        return user == null ? this.localize(key) : this.localize(user.id(), key);
+    }
+
+    @Override
+    public @NotNull String localize(
+            final long id,
+            @NotNull final String key
+    ) throws LanguageNotRegisteredException {
+        @Nullable final UserData userData = TelegramBotApp.getUserCache().getUserData(id);
+
+        String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
+
+        if (userData != null) {
+            @NotNull final String userLanguage = userData.getLanguageUniqueId();
+
+            language = userLanguage != null ? userLanguage : userData.getUser().languageCode();
+        }
+
+        @Nullable final LanguageData languageData = this.getLanguageData(language);
+
+        if (languageData != null)
+            return languageData.localize(key);
+        else throw new LanguageNotRegisteredException(languageData);
+    }
+
+    @Override
+    public @NotNull String localize(@NotNull final String key) throws LanguageNotRegisteredException {
+        @Nullable final LanguageData languageData = this.getLanguageData(ConfigStore.getLanguageConfig().getDefaultLanguageId());
+
+        if (languageData != null)
+            return languageData.localize(key);
+        else throw new LanguageNotRegisteredException(languageData);
     }
 
     public @NotNull LanguageData initLangFile(@NotNull final LanguageData languageData) {

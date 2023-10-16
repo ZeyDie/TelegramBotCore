@@ -67,6 +67,11 @@ public class UserCacheImpl implements IUserCache {
     }
 
     @Override
+    public boolean contains(@NotNull final UserData userData) {
+        return this.contains(userData.getUser());
+    }
+
+    @Override
     public boolean contains(@NotNull final User user) {
         return this.contains(user.id());
     }
@@ -77,6 +82,11 @@ public class UserCacheImpl implements IUserCache {
     }
 
     @Override
+    public void put(@NotNull final UserData userData) {
+        if (!this.contains(userData)) this.userDataCache.put(userData.getUser().id(), userData);
+    }
+
+    @Override
     public void put(@NotNull final User user) {
         if (!this.contains(user))
             this.userDataCache.put(user.id(), new UserData(user));
@@ -84,9 +94,10 @@ public class UserCacheImpl implements IUserCache {
 
     @Override
     public @NotNull UserData getUserData(@NotNull final User user) {
-        @Nullable final UserData userData = this.getUserData(user.id());
+        if (!this.contains(user))
+            this.put(user);
 
-        return userData == null ? new UserData(user) : userData;
+        return this.getUserData(user.id());
     }
 
     @Override

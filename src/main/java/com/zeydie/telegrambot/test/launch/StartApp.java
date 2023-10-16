@@ -1,6 +1,8 @@
 package com.zeydie.telegrambot.test.launch;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendSticker;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
 import com.zeydie.telegrambot.configs.ConfigStore;
@@ -32,7 +34,7 @@ public final class StartApp {
                             )
                     );
 
-            messageKeyboard.sendKeyboard(chatId, "Change language");
+            messageKeyboard.sendKeyboard(chatId, "messages.select_language");
         }
     }
 }

@@ -3,12 +3,21 @@ package com.zeydie.telegrambot.api.modules.keyboard.abstracted;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.keyboard.IKeyboard;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public abstract class AbstractKeyboardImpl implements IKeyboard {
+    @Override
+    public void sendKeyboard(
+            @NotNull final UserData userData,
+            @NotNull final String text
+    ) {
+        this.sendKeyboard(userData.getUser(), text);
+    }
+
     @Override
     public void sendKeyboard(
             @NotNull final User user,

@@ -28,6 +28,7 @@ import com.zeydie.telegrambot.telegram.handlers.events.callbacks.impl.CallbackQu
 import com.zeydie.telegrambot.telegram.handlers.events.messages.impl.MessageEventHandlerImpl;
 import com.zeydie.telegrambot.telegram.handlers.events.updates.impl.UpdateEventHandlerImpl;
 import com.zeydie.telegrambot.utils.ReflectionUtil;
+import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -168,7 +169,7 @@ public final class TelegramBotApp {
     private static @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
 
     public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NotNull final BaseRequest<T, R> baseRequest) {
-        return telegramBot.execute(baseRequest);
+        return telegramBot.execute(transforms(baseRequest));
     }
 
     public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Cancellable execute(
@@ -176,6 +177,22 @@ public final class TelegramBotApp {
             @NotNull final Callback<T, R> callback
     ) {
         return telegramBot.execute(request, callback);
+    }
+
+    @SneakyThrows
+    public static @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NotNull final BaseRequest<T, R> baseRequest) {
+        @Nullable final String text = (String) RequestUtil.getText(baseRequest);
+        @Nullable final Object chatId = RequestUtil.getChatId(baseRequest);
+
+        if (text != null) {
+            RequestUtil.setValue(
+                    baseRequest,
+                    RequestUtil.PARAMETER_TEXT,
+                    chatId != null ? language.localize(chatId, text) : language.localize(text)
+            );
+        }
+
+        return baseRequest;
     }
 
     @Data

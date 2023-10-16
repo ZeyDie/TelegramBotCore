@@ -1,6 +1,7 @@
 package com.zeydie.telegrambot.test;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.request.SendMessage;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
@@ -16,11 +17,13 @@ public final class TestCallbacks {
     @PrioritySubscribe(priority = EventPriority.HIGHEST)
     @CallbackQueryEventSubscribe(callbackDatas = {"en", "ru"}, comment = "Select a language")
     public void selectLanguage(@NotNull final CallbackQueryEvent callbackQueryEvent) {
-        final CallbackQuery callbackQuery = callbackQueryEvent.getCallbackQuery();
+        @NotNull final CallbackQuery callbackQuery = callbackQueryEvent.getCallbackQuery();
 
         TelegramBotApp.getUserCache()
                 .getUserData(callbackQuery.from())
                 .setLanguageUniqueId(callbackQuery.data());
         TelegramBotApp.getUserCache().save();
+
+        TelegramBotApp.execute(new SendMessage(callbackQuery.from(), "messages.welcome"));
     }
 }

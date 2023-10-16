@@ -23,8 +23,6 @@ public final class TestMessages {
     @MessageEventSubscribe
     public void low(@NotNull final MessageEvent messageEvent) {
         log.debug("low {}", messageEvent);
-
-        messageEvent.setCancelled(true);
     }
 
     @PrioritySubscribe(priority = EventPriority.DEFAULT)

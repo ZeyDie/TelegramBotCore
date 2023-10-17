@@ -2,14 +2,13 @@ package com.zeydie.telegrambot.test.launch;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SendSticker;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.modules.keyboard.impl.MessageKeyboardImpl;
 import org.jetbrains.annotations.Nullable;
-
-// TODO AnswerCallBackQuery
 
 public final class StartApp {
     public static void main(@Nullable final String[] args) throws LanguageRegisteredException {

@@ -63,7 +63,7 @@ dependencies {
 jar {
     from {
         configurations.runtimeClasspath.collect {
-            exclude('**/kotlin/**')
+            //exclude('**/kotlin/**')
             it.isDirectory() ? it : zipTree(it)
         }
     }

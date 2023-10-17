@@ -6,7 +6,9 @@ import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
+import com.zeydie.telegrambot.api.telegram.events.callback.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
+import com.zeydie.telegrambot.telegram.events.callback.CallbackQueryEvent;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +18,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 public abstract class AbstractEventHandler {
@@ -87,7 +90,27 @@ public abstract class AbstractEventHandler {
             @NotNull final Method method,
             @NotNull final Object... objects
     ) {
-        final boolean canInvoke = !this.isCancelable(method) || !this.hasCancelledEvent(objects);
+        boolean isCallback = method.isAnnotationPresent(CallbackQueryEventSubscribe.class);
+        @NotNull final AtomicBoolean isCallbackData = new AtomicBoolean(false);
+
+        if (isCallback) {
+            @Nullable final CallbackQueryEventSubscribe callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
+
+            Arrays.stream(objects)
+                    .forEach(object -> {
+                                if (object instanceof CallbackQueryEvent) {
+                                    @NotNull final CallbackQueryEvent callbackQueryEvent = (CallbackQueryEvent) object;
+
+                                    for (@NotNull final String callbackData : callbackQueryEventSubscribe.callbackDatas())
+                                        if (callbackData.equals(callbackQueryEvent.getCallbackQuery().data()))
+                                            isCallbackData.set(true);
+                                }
+                            }
+                    );
+        } else isCallback = false;
+
+        final boolean canInvoke = (!isCallback || (isCallbackData.get())) &&
+                (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
 
         if (canInvoke)
             try {

@@ -10,6 +10,7 @@ import java.util.Map;
 public final class RequestUtil {
     public static final @NotNull String PARAMETER_CHAT_ID = "chat_id";
     public static final @NotNull String PARAMETER_TEXT = "text";
+    public static final @NotNull String PARAMETER_KEYBOARD = "reply_markup";
 
     public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Object getChatId(@NotNull final BaseRequest<T, R> baseRequest) {
         return baseRequest.getParameters().get(PARAMETER_CHAT_ID);
@@ -17,6 +18,10 @@ public final class RequestUtil {
 
     public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Object getText(@NotNull final BaseRequest<T, R> baseRequest) {
         return baseRequest.getParameters().get(PARAMETER_TEXT);
+    }
+
+    public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Object getKeyboard(@NotNull final BaseRequest<T, R> baseRequest) {
+        return baseRequest.getParameters().get(PARAMETER_KEYBOARD);
     }
 
     public static <T extends BaseRequest<T, R>, R extends BaseResponse> void setValue(

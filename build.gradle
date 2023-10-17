@@ -2,13 +2,17 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = "17.PREVIEW"
+targetCompatibility = "17.PREVIEW"
 
 compileJava.options.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile).each {
+    it.options.compilerArgs.add('--enable-preview')
 }
 
 group 'com.zeydie'
@@ -69,4 +73,5 @@ jar {
 
 test {
     useJUnitPlatform()
+    jvmArgs(['--enable-preview'])
 }

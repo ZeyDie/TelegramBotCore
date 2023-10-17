@@ -24,6 +24,6 @@ public final class TestCallbacks {
                 .setLanguageUniqueId(callbackQuery.data());
         TelegramBotApp.getUserCache().save();
 
-        TelegramBotApp.execute(new SendMessage(callbackQuery.from(), "messages.welcome"));
+        TelegramBotApp.execute(new SendMessage(callbackQuery.from().id(), "messages.welcome"));
     }
 }

@@ -2,7 +2,6 @@ package com.zeydie.telegrambot.test.launch;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.request.SendSticker;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
 import com.zeydie.telegrambot.configs.ConfigStore;
@@ -10,9 +9,7 @@ import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.modules.keyboard.impl.MessageKeyboardImpl;
 import org.jetbrains.annotations.Nullable;
 
-// AnswerCallBackQuery - всплывающее окно
-// InlineKeyboardButton - кнопка по горизонтале
-// ReplyKeyoardMarkup - нопки вместо стандартной клавиатуры
+// TODO AnswerCallBackQuery
 
 public final class StartApp {
     public static void main(@Nullable final String[] args) throws LanguageRegisteredException {
@@ -35,6 +32,6 @@ public final class StartApp {
                     );
 
             messageKeyboard.sendKeyboard(chatId, "messages.select_language");
-        }
+        } else TelegramBotApp.execute(new SendMessage(chatId, "messages.welcome"));
     }
 }

@@ -1,6 +1,5 @@
 package com.zeydie.telegrambot.modules.cache.messages.impl;
 
-import com.pengrad.telegrambot.model.Message;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;

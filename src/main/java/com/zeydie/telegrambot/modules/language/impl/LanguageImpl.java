@@ -108,13 +108,18 @@ public class LanguageImpl implements ILanguage {
     }
 
     @Override
-    public @NotNull String localize(
+    public @NotNull String localizeObject(
             @Nullable final Object object,
             @NotNull final String key
     ) throws LanguageNotRegisteredException {
         switch (object) {
-            User -> this.localize(object, key);
-            Long -> this.localize(object, key);
+            case User user -> {
+                return this.localize(user, key);
+            }
+            case Long chatId -> {
+                return this.localize(chatId, key);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + object);
         }
     }
 

@@ -29,7 +29,7 @@ public interface ILanguage {
     LanguageData getLanguageData(@NotNull final String uniqueId);
 
     @NotNull
-    String localize(
+    String localizeObject(
             @Nullable final Object object,
             @NotNull final String key
     ) throws LanguageNotRegisteredException;

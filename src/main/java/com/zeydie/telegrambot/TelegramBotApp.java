@@ -188,7 +188,7 @@ public final class TelegramBotApp {
             RequestUtil.setValue(
                     baseRequest,
                     RequestUtil.PARAMETER_TEXT,
-                    chatId != null ? language.localize(chatId, text) : language.localize(text)
+                    chatId != null ? language.localizeObject(chatId, text) : language.localize(text)
             );
         }
 

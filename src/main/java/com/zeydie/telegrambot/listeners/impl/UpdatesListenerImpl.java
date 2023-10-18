@@ -17,7 +17,7 @@ public class UpdatesListenerImpl implements UpdatesListener {
         if (status == CONFIRMED_UPDATES_ALL) {
             updates.forEach(update -> {
                         log.debug(update.toString());
-                        TelegramBotApp.getUpdateHandler().handle(update);
+                        TelegramBotApp.getUpdateEventHandler().handle(update);
                     }
             );
         }

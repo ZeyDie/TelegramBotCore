@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.telegram.events.callback;
+package com.zeydie.telegrambot.api.telegram.events;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

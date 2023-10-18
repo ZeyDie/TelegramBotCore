@@ -1,5 +1,6 @@
-package com.zeydie.telegrambot.api.telegram.events.update;
+package com.zeydie.telegrambot.api.telegram.events;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.*;
@@ -7,6 +8,8 @@ import java.lang.annotation.*;
 @Inherited
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UpdateEventSubscribe {
+public @interface CommandEventSubscribe {
+    @NotNull String[] commands();
+
     @Nullable String comment() default "";
 }

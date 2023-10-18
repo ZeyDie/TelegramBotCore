@@ -13,9 +13,10 @@ import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
-import com.zeydie.telegrambot.api.telegram.handlers.events.callbacks.ICallbackQueryEventHandler;
-import com.zeydie.telegrambot.api.telegram.handlers.events.messages.IMessageEventHandler;
-import com.zeydie.telegrambot.api.telegram.handlers.events.updates.IUpdateEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.ICallbackQueryEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.ICommandEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.IMessageEventHandler;
+import com.zeydie.telegrambot.api.telegram.handlers.events.IUpdateEventHandler;
 import com.zeydie.telegrambot.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
@@ -29,9 +30,10 @@ import com.zeydie.telegrambot.modules.cache.messages.impl.CachingMessagesCacheIm
 import com.zeydie.telegrambot.modules.cache.messages.impl.DirectlyMessagesCacheImpl;
 import com.zeydie.telegrambot.modules.cache.users.impl.UserCacheImpl;
 import com.zeydie.telegrambot.modules.language.impl.LanguageImpl;
-import com.zeydie.telegrambot.telegram.handlers.events.callbacks.impl.CallbackQueryEventHandlerImpl;
-import com.zeydie.telegrambot.telegram.handlers.events.messages.impl.MessageEventHandlerImpl;
-import com.zeydie.telegrambot.telegram.handlers.events.updates.impl.UpdateEventHandlerImpl;
+import com.zeydie.telegrambot.telegram.handlers.events.impl.CallbackQueryEventHandlerImpl;
+import com.zeydie.telegrambot.telegram.handlers.events.impl.CommandEventHandlerImpl;
+import com.zeydie.telegrambot.telegram.handlers.events.impl.MessageEventHandlerImpl;
+import com.zeydie.telegrambot.telegram.handlers.events.impl.UpdateEventHandlerImpl;
 import com.zeydie.telegrambot.utils.ReflectionUtil;
 import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.Data;
@@ -73,13 +75,16 @@ public final class TelegramBotApp {
 
     @Setter
     @Getter
-    private static @NotNull IUpdateEventHandler updateHandler = new UpdateEventHandlerImpl();
+    private static @NotNull IUpdateEventHandler updateEventHandler = new UpdateEventHandlerImpl();
     @Setter
     @Getter
-    private static @NotNull ICallbackQueryEventHandler callbackQueryHandler = new CallbackQueryEventHandlerImpl();
+    private static @NotNull ICallbackQueryEventHandler callbackQueryEventHandler = new CallbackQueryEventHandlerImpl();
     @Setter
     @Getter
-    private static @NotNull IMessageEventHandler messageHandler = new MessageEventHandlerImpl();
+    private static @NotNull IMessageEventHandler messageEventHandler = new MessageEventHandlerImpl();
+    @Setter
+    @Getter
+    private static @NotNull ICommandEventHandler commandEventHandler = new CommandEventHandlerImpl();
 
     @Getter
     private static TelegramBot telegramBot;
@@ -153,9 +158,10 @@ public final class TelegramBotApp {
         log.info("Starting initialize...");
 
         languageEventHandler.load();
-        updateHandler.load();
-        callbackQueryHandler.load();
-        messageHandler.load();
+        updateEventHandler.load();
+        callbackQueryEventHandler.load();
+        messageEventHandler.load();
+        commandEventHandler.load();
 
         language.load();
         messagesCache.load();
@@ -218,7 +224,8 @@ public final class TelegramBotApp {
                                                                 language.localizeObject(chatId, textButton)
                                                         );
                                                     }
-                                                } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
+                                                } catch (final NoSuchFieldException |
+                                                               LanguageNotRegisteredException exception) {
                                                     exception.printStackTrace();
                                                 }
                                             }
@@ -246,7 +253,8 @@ public final class TelegramBotApp {
                                                                     language.localizeObject(chatId, textButton)
                                                             );
                                                         }
-                                                    } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
+                                                    } catch (final NoSuchFieldException |
+                                                                   LanguageNotRegisteredException exception) {
                                                         exception.printStackTrace();
                                                     }
                                                 }

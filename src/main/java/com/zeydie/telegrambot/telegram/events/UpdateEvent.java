@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.telegram.events.update;
+package com.zeydie.telegrambot.telegram.events;
 
 import com.pengrad.telegrambot.model.Update;
 import com.zeydie.telegrambot.api.events.AbstractEvent;

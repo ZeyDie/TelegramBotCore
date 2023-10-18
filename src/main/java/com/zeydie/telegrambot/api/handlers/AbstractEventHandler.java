@@ -6,9 +6,11 @@ import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
-import com.zeydie.telegrambot.api.telegram.events.callback.CallbackQueryEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
-import com.zeydie.telegrambot.telegram.events.callback.CallbackQueryEvent;
+import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
+import com.zeydie.telegrambot.telegram.events.CommandEvent;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
@@ -90,29 +92,13 @@ public abstract class AbstractEventHandler {
             @NotNull final Method method,
             @NotNull final Object... objects
     ) {
-        boolean isCallback = method.isAnnotationPresent(CallbackQueryEventSubscribe.class);
-        @NotNull final AtomicBoolean isCallbackData = new AtomicBoolean(false);
+        final boolean canInvoke = (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
 
-        if (isCallback) {
-            @Nullable final CallbackQueryEventSubscribe callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
+        if (canInvoke) {
+            if (method.isAnnotationPresent(CallbackQueryEventSubscribe.class) && !this.hasCallbackData(method, objects))
+                return;
+            if (method.isAnnotationPresent(CommandEventSubscribe.class) && !this.isCommand(method, objects)) return;
 
-            Arrays.stream(objects)
-                    .forEach(object -> {
-                                if (object instanceof CallbackQueryEvent) {
-                                    @NotNull final CallbackQueryEvent callbackQueryEvent = (CallbackQueryEvent) object;
-
-                                    for (@NotNull final String callbackData : callbackQueryEventSubscribe.callbackDatas())
-                                        if (callbackData.equals(callbackQueryEvent.getCallbackQuery().data()))
-                                            isCallbackData.set(true);
-                                }
-                            }
-                    );
-        } else isCallback = false;
-
-        final boolean canInvoke = (!isCallback || (isCallbackData.get())) &&
-                (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
-
-        if (canInvoke)
             try {
                 method.invoke(annotatedClass.newInstance(), objects);
             } catch (
@@ -122,6 +108,7 @@ public abstract class AbstractEventHandler {
             ) {
                 exception.printStackTrace();
             }
+        }
     }
 
     public boolean isCancelable(@NotNull final Method method) {
@@ -138,5 +125,61 @@ public abstract class AbstractEventHandler {
 
     public boolean isCancelled(@NotNull final Object object) {
         return object instanceof AbstractEvent abstractEvent && abstractEvent.isCancelled();
+    }
+
+    public boolean hasCallbackData(
+            @NotNull final Method method,
+            @NotNull final Object... objects
+    ) {
+        @Nullable final CallbackQueryEventSubscribe callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
+        @NotNull final AtomicBoolean hasCallbackData = new AtomicBoolean(false);
+
+        if (callbackQueryEventSubscribe != null)
+            Arrays.stream(objects)
+                    .forEach(object -> {
+                                if (object instanceof CallbackQueryEvent) {
+                                    @NotNull final CallbackQueryEvent callbackQueryEvent = (CallbackQueryEvent) object;
+                                    @NotNull final String data = callbackQueryEvent.getCallbackQuery().data();
+
+                                    hasCallbackData.set(
+                                            Arrays.stream(callbackQueryEventSubscribe.callbackDatas())
+                                                    .anyMatch(callbackData -> {
+                                                        log.debug("Callback {}=?={}", data, callbackData);
+                                                        return callbackData.equals(data);
+                                                    })
+                                    );
+                                }
+                            }
+                    );
+
+        return hasCallbackData.get();
+    }
+
+    public boolean isCommand(
+            @NotNull final Method method,
+            @NotNull final Object... objects
+    ) {
+        @Nullable final CommandEventSubscribe commandEventSubscribe = method.getAnnotation(CommandEventSubscribe.class);
+        @NotNull final AtomicBoolean hasCommand = new AtomicBoolean(false);
+
+        if (commandEventSubscribe != null)
+            Arrays.stream(objects)
+                    .forEach(object -> {
+                                if (object instanceof CommandEvent) {
+                                    @NotNull final CommandEvent commandEvent = (CommandEvent) object;
+                                    @NotNull final String text = commandEvent.getMessage().text();
+
+                                    hasCommand.set(
+                                            Arrays.stream(commandEventSubscribe.commands())
+                                                    .anyMatch(command -> {
+                                                        log.debug("Command {}=?={}", command, text);
+                                                        return text.startsWith(command);
+                                                    })
+                                    );
+                                }
+                            }
+                    );
+
+        return hasCommand.get();
     }
 }

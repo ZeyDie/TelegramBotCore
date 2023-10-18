@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.telegram.handlers.events.updates.impl;
+package com.zeydie.telegrambot.telegram.handlers.events.impl;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.Message;
@@ -6,17 +6,15 @@ import com.pengrad.telegrambot.model.Update;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
-import com.zeydie.telegrambot.api.telegram.events.update.UpdateEventSubscribe;
-import com.zeydie.telegrambot.api.telegram.handlers.events.updates.IUpdateEventHandler;
-import com.zeydie.telegrambot.telegram.events.update.UpdateEvent;
-import lombok.extern.log4j.Log4j2;
+import com.zeydie.telegrambot.api.telegram.events.UpdateEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.handlers.events.IUpdateEventHandler;
+import com.zeydie.telegrambot.telegram.events.UpdateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 
-@Log4j2
 public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpdateEventHandler {
     @Override
     public @NotNull Class<? extends Annotation> getEventAnnotation() {
@@ -43,7 +41,7 @@ public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpd
             @NotNull final CallbackQuery callbackQuery = update.callbackQuery();
 
             if (callbackQuery != null)
-                TelegramBotApp.getCallbackQueryHandler().handle(callbackQuery);
+                TelegramBotApp.getCallbackQueryEventHandler().handle(callbackQuery);
 
             @Nullable final Message message = update.message();
 

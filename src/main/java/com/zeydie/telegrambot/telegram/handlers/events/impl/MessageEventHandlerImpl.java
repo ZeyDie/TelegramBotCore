@@ -1,11 +1,12 @@
-package com.zeydie.telegrambot.telegram.handlers.events.messages.impl;
+package com.zeydie.telegrambot.telegram.handlers.events.impl;
 
 import com.pengrad.telegrambot.model.Message;
+import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
-import com.zeydie.telegrambot.api.telegram.events.message.MessageEventSubscribe;
-import com.zeydie.telegrambot.api.telegram.handlers.events.messages.IMessageEventHandler;
-import com.zeydie.telegrambot.telegram.events.message.MessageEvent;
+import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.handlers.events.IMessageEventHandler;
+import com.zeydie.telegrambot.telegram.events.MessageEvent;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +38,12 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
     @Override
     public void handle(@NotNull final Message message) {
+        @Nullable final String text = message.text();
+
+        if (text != null)
+            if (text.startsWith("/"))
+                TelegramBotApp.getCommandEventHandler().handle(message);
+
         super.invoke(new MessageEvent(message));
     }
 }

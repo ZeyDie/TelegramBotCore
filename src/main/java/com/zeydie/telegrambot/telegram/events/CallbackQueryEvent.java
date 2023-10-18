@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.telegram.events.callback;
+package com.zeydie.telegrambot.telegram.events;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
 import com.zeydie.telegrambot.api.events.AbstractEvent;

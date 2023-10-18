@@ -1,13 +1,11 @@
 package com.zeydie.telegrambot.utils;
 
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 
-@Log4j2
 public final class ReflectionUtil {
     @SneakyThrows
     public static @NotNull Object instance(@NotNull final Class<?> clazz) {

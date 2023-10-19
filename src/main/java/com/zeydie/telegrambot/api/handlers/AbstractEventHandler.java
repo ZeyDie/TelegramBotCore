@@ -144,9 +144,10 @@ public abstract class AbstractEventHandler {
                                     hasCallbackData.set(
                                             Arrays.stream(callbackQueryEventSubscribe.callbackDatas())
                                                     .anyMatch(callbackData -> {
-                                                        log.debug("Callback {}=?={}", data, callbackData);
-                                                        return callbackData.equals(data);
-                                                    })
+                                                                log.debug("Callback {}=?={}", data, callbackData);
+                                                                return callbackData.equals(data);
+                                                            }
+                                                    )
                                     );
                                 }
                             }
@@ -172,9 +173,10 @@ public abstract class AbstractEventHandler {
                                     hasCommand.set(
                                             Arrays.stream(commandEventSubscribe.commands())
                                                     .anyMatch(command -> {
-                                                        log.debug("Command {}=?={}", command, text);
-                                                        return text.startsWith(command);
-                                                    })
+                                                                log.debug("Command {}=?={}", command, text);
+                                                                return text.startsWith(command);
+                                                            }
+                                                    )
                                     );
                                 }
                             }

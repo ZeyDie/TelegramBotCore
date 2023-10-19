@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collections;
 
 @Log4j2
@@ -38,11 +39,13 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
     @Override
     public void handle(@NotNull final Message message) {
-        @Nullable final String text = message.text();
-
-        if (text != null)
-            if (text.startsWith("/"))
-                TelegramBotApp.getCommandEventHandler().handle(message);
+        Arrays.stream(message.entities())
+                .forEach(messageEntity -> {
+                            switch (messageEntity.type()) {
+                                case bot_command -> TelegramBotApp.getCommandEventHandler().handle(message);
+                            }
+                        }
+                );
 
         super.invoke(new MessageEvent(message));
     }

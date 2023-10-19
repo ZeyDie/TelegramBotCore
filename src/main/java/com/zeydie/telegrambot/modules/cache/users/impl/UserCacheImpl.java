@@ -61,7 +61,7 @@ public class UserCacheImpl implements IUserCache {
 
         this.userDataCache.asMap().forEach((id, userData) -> {
                     log.info("Saving user data cache for {}", id);
-                    new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileWithType(id, DATA_TYPE))).writeJsonFile(userData);
+                    new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileNameWithType(id, DATA_TYPE))).writeJsonFile(userData);
                 }
         );
     }

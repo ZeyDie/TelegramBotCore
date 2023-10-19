@@ -2,6 +2,8 @@ package com.zeydie.telegrambot.api.handlers;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.pengrad.telegrambot.model.Message;
+import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
@@ -168,13 +170,21 @@ public abstract class AbstractEventHandler {
                     .forEach(object -> {
                                 if (object instanceof CommandEvent) {
                                     @NotNull final CommandEvent commandEvent = (CommandEvent) object;
-                                    @NotNull final String text = commandEvent.getMessage().text();
+                                    @NotNull final Message message = commandEvent.getMessage();
+                                    @NotNull final String text = message.text();
+                                    final long chatId = message.from().id();
+                                    @NotNull final String[] permissions = commandEventSubscribe.permissions();
 
                                     hasCommand.set(
                                             Arrays.stream(commandEventSubscribe.commands())
                                                     .anyMatch(command -> {
-                                                                log.debug("Command {}=?={}", command, text);
-                                                                return text.startsWith(command);
+                                                                log.debug("Command {}=?={} {}", command, text, permissions);
+
+                                                                return !text.startsWith(command) ? false :
+                                                                        TelegramBotApp.getPermissions().hasPermission(chatId, "*") ? true :
+                                                                                (permissions == null || permissions.length <= 0) ? true :
+                                                                                        Arrays.stream(permissions)
+                                                                                                .anyMatch(permission -> TelegramBotApp.getPermissions().hasPermission(chatId, permission));
                                                             }
                                                     )
                                     );

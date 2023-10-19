@@ -12,7 +12,7 @@ public record AbstractFileConfig(@NotNull Path path, @NotNull Object parent, @No
     public @NotNull <T> T init() {
         return (T) new SGsonFile(
                 this.path.resolve(
-                        FileUtil.createFileWithType(
+                        FileUtil.createFileNameWithType(
                                 this.name,
                                 CONFIG_TYPE
                         )

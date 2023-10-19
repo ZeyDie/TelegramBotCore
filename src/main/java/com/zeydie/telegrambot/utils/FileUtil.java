@@ -6,7 +6,15 @@ import java.io.File;
 import java.nio.file.Path;
 
 public final class FileUtil {
-    public static @NotNull String createFileWithType(
+    public static @NotNull File createFileWithNameAndType(
+            @NotNull final Path path,
+            @NotNull final Object name,
+            @NotNull final Object type
+    ) {
+        return path.resolve(createFileNameWithType(name, type)).toFile();
+    }
+
+    public static @NotNull String createFileNameWithType(
             @NotNull final Object name,
             @NotNull final Object type
     ) {

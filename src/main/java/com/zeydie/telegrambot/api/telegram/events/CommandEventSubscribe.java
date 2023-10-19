@@ -11,5 +11,7 @@ import java.lang.annotation.*;
 public @interface CommandEventSubscribe {
     @NotNull String[] commands();
 
+    @NotNull String[] permissions() default {};
+
     @Nullable String comment() default "";
 }

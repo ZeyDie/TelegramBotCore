@@ -172,7 +172,7 @@ public class LanguageImpl implements ILanguage {
 
     public @NotNull LanguageData initLangFile(@NotNull final LanguageData languageData) {
         return new SGsonFile(
-                LANGUAGE_FOLDER_PATH.resolve(FileUtil.createFileWithType(languageData.uniqueId(), LANGUAGE_TYPE))
+                LANGUAGE_FOLDER_PATH.resolve(FileUtil.createFileNameWithType(languageData.uniqueId(), LANGUAGE_TYPE))
         ).fromJsonToObject(languageData);
     }
 }

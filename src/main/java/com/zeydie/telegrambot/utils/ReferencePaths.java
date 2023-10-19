@@ -15,12 +15,15 @@ public final class ReferencePaths {
 
     public static final @NotNull Path LANGUAGE_FOLDER_PATH = Paths.get(Category.LANGUAGE.toString());
 
+    public static final @NotNull Path PERMISSIONS_FOLDER_PATH = Paths.get(Category.PERMISSIONS.toString());
+
     public static @NotNull String CONFIG_TYPE = "cfg";
     public static @NotNull String LANGUAGE_TYPE = "lang";
     public static @NotNull String DATA_TYPE = "data";
+    public static @NotNull String PERMISSION_TYPE = "pex";
 
     public enum Category {
-        CONFIGS, CACHE, LANGUAGE;
+        CONFIGS, CACHE, LANGUAGE, PERMISSIONS;
 
         @Override
         public @NotNull String toString() {

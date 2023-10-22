@@ -112,7 +112,7 @@ public class LanguageImpl implements ILanguage {
             @Nullable final Object object,
             @NotNull final String key
     ) throws LanguageNotRegisteredException {
-        switch (object) {
+        switch (Objects.requireNonNull(object)) {
             case User user -> {
                 return this.localize(user, key);
             }
@@ -146,7 +146,7 @@ public class LanguageImpl implements ILanguage {
     ) throws LanguageNotRegisteredException {
         @Nullable final UserData userData = TelegramBotApp.getUserCache().getUserData(id);
 
-        String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
+        @NotNull String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 
         if (userData != null) {
             @NotNull final String userLanguage = userData.getLanguageUniqueId();
@@ -158,16 +158,17 @@ public class LanguageImpl implements ILanguage {
 
         if (languageData != null)
             return languageData.localize(key);
-        else throw new LanguageNotRegisteredException(languageData);
+        else throw new LanguageNotRegisteredException(language, language);
     }
 
     @Override
     public @NotNull String localize(@NotNull final String key) throws LanguageNotRegisteredException {
-        @Nullable final LanguageData languageData = this.getLanguageData(ConfigStore.getLanguageConfig().getDefaultLanguageId());
+        @NotNull final String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
+        @Nullable final LanguageData languageData = this.getLanguageData(language);
 
         if (languageData != null)
             return languageData.localize(key);
-        else throw new LanguageNotRegisteredException(languageData);
+        else throw new LanguageNotRegisteredException(language, language);
     }
 
     public @NotNull LanguageData initLangFile(@NotNull final LanguageData languageData) {

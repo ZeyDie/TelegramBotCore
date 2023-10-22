@@ -46,6 +46,9 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
     private final @NotNull Cache<Long, ListMessagesData> chatMessageCache = CacheBuilder.newBuilder()
             .expireAfterWrite(100, TimeUnit.MILLISECONDS)
             .removalListener((RemovalListener<Long, ListMessagesData>) notification -> {
+                        if (notification.getKey() == null) return;
+                        if (notification.getValue() == null) return;
+
                         final long chatId = notification.getKey();
                         @NotNull final ListMessagesData listMessagesData = notification.getValue();
                         @Nullable final List<MessageData> messageDatas = listMessagesData.messages();

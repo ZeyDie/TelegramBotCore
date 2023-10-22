@@ -139,8 +139,7 @@ public abstract class AbstractEventHandler {
         if (callbackQueryEventSubscribe != null)
             Arrays.stream(objects)
                     .forEach(object -> {
-                                if (object instanceof CallbackQueryEvent) {
-                                    @NotNull final CallbackQueryEvent callbackQueryEvent = (CallbackQueryEvent) object;
+                                if (object instanceof final CallbackQueryEvent callbackQueryEvent) {
                                     @NotNull final String data = callbackQueryEvent.getCallbackQuery().data();
 
                                     hasCallbackData.set(
@@ -168,8 +167,7 @@ public abstract class AbstractEventHandler {
         if (commandEventSubscribe != null)
             Arrays.stream(objects)
                     .forEach(object -> {
-                                if (object instanceof CommandEvent) {
-                                    @NotNull final CommandEvent commandEvent = (CommandEvent) object;
+                                if (object instanceof final CommandEvent commandEvent) {
                                     @NotNull final Message message = commandEvent.getMessage();
                                     @NotNull final String text = message.text();
                                     final long chatId = message.from().id();
@@ -180,11 +178,11 @@ public abstract class AbstractEventHandler {
                                                     .anyMatch(command -> {
                                                                 log.debug("Command {}=?={} {}", command, text, permissions);
 
-                                                                return !text.startsWith(command) ? false :
-                                                                        TelegramBotApp.getPermissions().hasPermission(chatId, "*") ? true :
-                                                                                (permissions == null || permissions.length <= 0) ? true :
-                                                                                        Arrays.stream(permissions)
-                                                                                                .anyMatch(permission -> TelegramBotApp.getPermissions().hasPermission(chatId, permission));
+                                                                return text.startsWith(command) && (
+                                                                        TelegramBotApp.getPermissions().hasPermission(chatId, "*") ||
+                                                                                permissions.length == 0 ||
+                                                                                Arrays.stream(permissions).anyMatch(permission -> TelegramBotApp.getPermissions().hasPermission(chatId, permission))
+                                                                );
                                                             }
                                                     )
                                     );

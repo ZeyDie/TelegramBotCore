@@ -25,6 +25,9 @@ public class UserCacheImpl implements IUserCache {
     private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
             .expireAfterWrite(4, TimeUnit.HOURS)
             .removalListener((RemovalListener<Long, UserData>) notification -> {
+                        if (notification.getKey() == null) return;
+                        if (notification.getValue() == null) return;
+
                         final long userId = notification.getKey();
                         @NotNull final UserData userData = notification.getValue();
 
@@ -97,7 +100,7 @@ public class UserCacheImpl implements IUserCache {
         if (!this.contains(user))
             this.put(user);
 
-        return this.getUserData(user.id());
+        return Objects.requireNonNull(this.getUserData(user.id()));
     }
 
     @Override

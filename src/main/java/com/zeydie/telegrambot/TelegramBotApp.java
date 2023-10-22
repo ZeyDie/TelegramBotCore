@@ -151,9 +151,7 @@ public final class TelegramBotApp {
 
         telegramBot = new TelegramBot(config.getToken());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            stop();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(TelegramBotApp::stop));
 
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
@@ -230,14 +228,12 @@ public final class TelegramBotApp {
 
         if (keyboard != null) {
             switch (keyboard) {
-                case InlineKeyboardMarkup inlineKeyboardMarkup -> {
-                    Arrays.stream(inlineKeyboardMarkup.inlineKeyboard()).toList()
-                            .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
-                                    .forEach(inlineKeyboardButton -> {
-                                                try {
-                                                    @Nullable final Field textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
-
-                                                    if (textInlineKeyboardField != null) {
+                case InlineKeyboardMarkup inlineKeyboardMarkup ->
+                        Arrays.stream(inlineKeyboardMarkup.inlineKeyboard()).toList()
+                                .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
+                                        .forEach(inlineKeyboardButton -> {
+                                                    try {
+                                                        @NotNull final Field textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
                                                         @NotNull final String textButton = inlineKeyboardButton.text();
 
                                                         ReflectionUtil.setValueField(
@@ -245,36 +241,6 @@ public final class TelegramBotApp {
                                                                 inlineKeyboardButton,
                                                                 language.localizeObject(chatId, textButton)
                                                         );
-                                                    }
-                                                } catch (final NoSuchFieldException |
-                                                               LanguageNotRegisteredException exception) {
-                                                    exception.printStackTrace();
-                                                }
-                                            }
-                                    )
-                            );
-                }
-                case ReplyKeyboardMarkup replyKeyboardMarkup -> {
-                    @Nullable final Field field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
-
-                    if (field != null) {
-                        @NotNull final List<List<KeyboardButton>> replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
-
-                        replyKeyboardButtonsList
-                                .forEach(replyKeyboardButtons -> replyKeyboardButtons
-                                        .forEach(keyboardButton -> {
-                                                    try {
-                                                        @Nullable final Field textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
-
-                                                        if (textKeyboardField != null) {
-                                                            @NotNull final String textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
-
-                                                            ReflectionUtil.setValueField(
-                                                                    textKeyboardField,
-                                                                    keyboardButton,
-                                                                    language.localizeObject(chatId, textButton)
-                                                            );
-                                                        }
                                                     } catch (final NoSuchFieldException |
                                                                    LanguageNotRegisteredException exception) {
                                                         exception.printStackTrace();
@@ -282,7 +248,31 @@ public final class TelegramBotApp {
                                                 }
                                         )
                                 );
-                    }
+                case ReplyKeyboardMarkup replyKeyboardMarkup -> {
+                    @NotNull final Field field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
+                    @Nullable final List<List<KeyboardButton>> replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
+
+                    if (replyKeyboardButtonsList != null)
+                        replyKeyboardButtonsList
+                                .forEach(replyKeyboardButtons -> replyKeyboardButtons
+                                        .forEach(keyboardButton -> {
+                                                    try {
+                                                        @NotNull final Field textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
+                                                        @Nullable final String textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
+
+                                                        if (textButton != null)
+                                                            ReflectionUtil.setValueField(
+                                                                    textKeyboardField,
+                                                                    keyboardButton,
+                                                                    language.localizeObject(chatId, textButton)
+                                                            );
+                                                    } catch (final NoSuchFieldException |
+                                                                   LanguageNotRegisteredException exception) {
+                                                        exception.printStackTrace();
+                                                    }
+                                                }
+                                        )
+                                );
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + keyboard);
             }

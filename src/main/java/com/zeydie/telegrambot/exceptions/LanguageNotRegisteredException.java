@@ -4,7 +4,7 @@ import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-public class LanguageNotRegisteredException extends Exception{
+public final class LanguageNotRegisteredException extends Exception {
     @Getter
     private final @NotNull String message;
 

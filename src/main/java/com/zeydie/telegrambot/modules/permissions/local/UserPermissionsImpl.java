@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +25,9 @@ public class UserPermissionsImpl implements IPermissions {
     private final @NotNull Cache<Long, PermissionData> usersPermissionsCache = CacheBuilder.newBuilder()
             .expireAfterWrite(4, TimeUnit.HOURS)
             .removalListener((RemovalListener<Long, PermissionData>) notification -> {
+                        if (notification.getKey() == null) return;
+                        if (notification.getValue() == null) return;
+
                         final long userId = notification.getKey();
                         @NotNull final PermissionData permissionData = notification.getValue();
 
@@ -154,9 +156,6 @@ public class UserPermissionsImpl implements IPermissions {
 
     @Override
     public void removePermissions(final long chatId) {
-        @NotNull final Map<Long, PermissionData> usersPermissionsMap = this.usersPermissionsCache.asMap();
-
-        if (usersPermissionsMap.containsKey(chatId))
-            usersPermissionsMap.remove(chatId);
+        this.usersPermissionsCache.asMap().remove(chatId);
     }
 }

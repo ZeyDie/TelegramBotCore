@@ -88,6 +88,8 @@ public class UserPermissionsImpl implements IPermissions {
             final long chatId,
             @NotNull final String permission
     ) {
+        if (this.hasPermission(chatId, permission)) return;
+
         @Nullable PermissionData permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null) {

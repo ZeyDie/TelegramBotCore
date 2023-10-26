@@ -1,6 +1,6 @@
 package com.zeydie.telegrambot.api.modules.permissions;
 
-import com.zeydie.telegrambot.api.modules.IData;
+import com.zeydie.telegrambot.api.modules.interfaces.IData;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import org.jetbrains.annotations.NotNull;

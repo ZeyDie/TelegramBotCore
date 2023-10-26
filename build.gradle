@@ -16,7 +16,7 @@ tasks.withType(JavaCompile).each {
 }
 
 group 'com.zeydie'
-version '1.0-6.9.1'
+version '0.1.6B'
 
 repositories {
     mavenCentral()
@@ -62,10 +62,7 @@ dependencies {
 
 jar {
     from {
-        configurations.runtimeClasspath.collect {
-            //exclude('**/kotlin/**')
-            it.isDirectory() ? it : zipTree(it)
-        }
+        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) }
     }
 
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)

@@ -1,6 +1,7 @@
 package com.zeydie.telegrambot.telegram.handlers.events.impl;
 
 import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.MessageEntity;
 import com.zeydie.telegrambot.TelegramBotApp;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
@@ -39,13 +40,16 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
     @Override
     public void handle(@NotNull final Message message) {
-        Arrays.stream(message.entities())
-                .forEach(messageEntity -> {
-                            switch (messageEntity.type()) {
-                                case bot_command -> TelegramBotApp.getCommandEventHandler().handle(message);
+        @Nullable final MessageEntity[] messageEntities = message.entities();
+
+        if (messageEntities != null)
+            Arrays.stream(messageEntities)
+                    .forEach(messageEntity -> {
+                                switch (messageEntity.type()) {
+                                    case bot_command -> TelegramBotApp.getCommandEventHandler().handle(message);
+                                }
                             }
-                        }
-                );
+                    );
 
         super.invoke(new MessageEvent(message));
     }

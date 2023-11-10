@@ -1,8 +1,8 @@
 package com.zeydie.telegrambot.api.modules.cache.users;
 
 import com.pengrad.telegrambot.model.User;
-import com.zeydie.telegrambot.api.modules.interfaces.IData;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
+import com.zeydie.telegrambot.api.modules.interfaces.IData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

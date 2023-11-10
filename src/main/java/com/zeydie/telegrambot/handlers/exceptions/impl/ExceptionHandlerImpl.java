@@ -3,7 +3,7 @@ package com.zeydie.telegrambot.handlers.exceptions.impl;
 import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramException;
 import com.pengrad.telegrambot.response.BaseResponse;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +16,7 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
 
         if (baseResponse == null) {
             log.error("Network probably!!!");
-            TelegramBotApp.stop();
+            TelegramBotCore.stop();
             return;
         }
 
@@ -28,7 +28,7 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
         if (code == 404) {
             log.error("Bad token");
 
-            TelegramBotApp.stop();
+            TelegramBotCore.stop();
         }
     }
 }

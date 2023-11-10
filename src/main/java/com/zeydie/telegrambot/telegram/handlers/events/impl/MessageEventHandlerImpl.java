@@ -2,7 +2,7 @@ package com.zeydie.telegrambot.telegram.handlers.events.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.MessageEntity;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
@@ -46,7 +46,7 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
             Arrays.stream(messageEntities)
                     .forEach(messageEntity -> {
                                 switch (messageEntity.type()) {
-                                    case bot_command -> TelegramBotApp.getCommandEventHandler().handle(message);
+                                    case bot_command -> TelegramBotCore.getInstance().getCommandEventHandler().handle(message);
                                 }
                             }
                     );

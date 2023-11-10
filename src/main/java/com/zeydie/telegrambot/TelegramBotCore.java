@@ -23,7 +23,6 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
 import com.zeydie.telegrambot.configs.data.CachingConfig;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
-import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.handlers.events.language.impl.LanguageEventHandlerImpl;
 import com.zeydie.telegrambot.handlers.exceptions.impl.ExceptionHandlerImpl;
 import com.zeydie.telegrambot.listeners.impl.UpdatesListenerImpl;
@@ -54,47 +53,58 @@ import java.util.Arrays;
 import java.util.List;
 
 @Log4j2
-public final class TelegramBotApp {
+public class TelegramBotCore {
     @Getter
-    private static final @NotNull Status status = new Status();
+    private static TelegramBotCore instance;
 
     @Getter
-    private static String name;
+    private final @NotNull Status status = new Status();
 
-    @Setter
     @Getter
-    private static ILanguage language;
-    @Setter
-    @Getter
-    private static IMessagesCache messagesCache;
-    @Setter
-    @Getter
-    private static IUserCache userCache;
-    @Setter
-    @Getter
-    private static IPermissions permissions;
+    private String name;
 
     @Setter
     @Getter
-    public static @NotNull ILanguageEventHandler languageEventHandler = new LanguageEventHandlerImpl();
+    private ILanguage language;
+    @Setter
+    @Getter
+    private IMessagesCache messagesCache;
+    @Setter
+    @Getter
+    private IUserCache userCache;
+    @Setter
+    @Getter
+    private IPermissions permissions;
 
     @Setter
     @Getter
-    private static @NotNull IUpdateEventHandler updateEventHandler = new UpdateEventHandlerImpl();
+    public @NotNull ILanguageEventHandler languageEventHandler = new LanguageEventHandlerImpl();
+
     @Setter
     @Getter
-    private static @NotNull ICallbackQueryEventHandler callbackQueryEventHandler = new CallbackQueryEventHandlerImpl();
+    private @NotNull IUpdateEventHandler updateEventHandler = new UpdateEventHandlerImpl();
     @Setter
     @Getter
-    private static @NotNull IMessageEventHandler messageEventHandler = new MessageEventHandlerImpl();
+    private @NotNull ICallbackQueryEventHandler callbackQueryEventHandler = new CallbackQueryEventHandlerImpl();
     @Setter
     @Getter
-    private static @NotNull ICommandEventHandler commandEventHandler = new CommandEventHandlerImpl();
+    private @NotNull IMessageEventHandler messageEventHandler = new MessageEventHandlerImpl();
+    @Setter
+    @Getter
+    private @NotNull ICommandEventHandler commandEventHandler = new CommandEventHandlerImpl();
 
     @Getter
-    private static TelegramBot telegramBot;
+    private TelegramBot telegramBot;
 
-    public static void start() {
+    public void launch(@Nullable final String[] args) {
+        instance = this;
+
+        this.start();
+        this.setup();
+        this.init();
+    }
+
+    public void start() {
         log.debug("Scanning configs...");
 
         ClassIndex.getAnnotated(ConfigSubscribesRegister.class)
@@ -127,7 +137,7 @@ public final class TelegramBotApp {
     }
 
     @SneakyThrows
-    public static void setup() {
+    public void setup() {
         setup(
                 ConfigStore.getBotConfig(),
                 ConfigStore.getCachingConfig()
@@ -135,57 +145,58 @@ public final class TelegramBotApp {
     }
 
     @SneakyThrows
-    public static void setup(
+    public void setup(
             @NotNull final BotConfig config,
             @NotNull final CachingConfig cachingConfig
     ) {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
 
-        name = config.getName();
+        this.name = config.getName();
 
-        language = new LanguageImpl();
-        messagesCache = cachingConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
-        userCache = new UserCacheImpl();
-        permissions = new UserPermissionsImpl();
+        this.language = new LanguageImpl();
+        this.messagesCache = cachingConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
+        this.userCache = new UserCacheImpl();
+        this.permissions = new UserPermissionsImpl();
 
-        telegramBot = new TelegramBot(config.getToken());
+        this.telegramBot = new TelegramBot(config.getToken());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(TelegramBotApp::stop));
+        Runtime.getRuntime().addShutdownHook(new Thread(TelegramBotCore::stop));
 
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
-    public static void init() throws LanguageRegisteredException {
+    @SneakyThrows
+    public void init() {
         final long startTime = System.currentTimeMillis();
         log.info("Starting initialize...");
 
-        languageEventHandler.load();
-        updateEventHandler.load();
-        callbackQueryEventHandler.load();
-        messageEventHandler.load();
-        commandEventHandler.load();
+        this.languageEventHandler.load();
+        this.updateEventHandler.load();
+        this.callbackQueryEventHandler.load();
+        this.messageEventHandler.load();
+        this.commandEventHandler.load();
 
-        language.load();
-        messagesCache.load();
-        userCache.load();
-        permissions.load();
+        this.language.load();
+        this.messagesCache.load();
+        this.userCache.load();
+        this.permissions.load();
 
-        status.setUpdatingMessages(true);
+        this.status.setUpdatingMessages(true);
 
-        telegramBot.setUpdatesListener(updatesListener, exceptionHandler);
+        this.telegramBot.setUpdatesListener(this.updatesListener, this.exceptionHandler);
 
         log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     public static void stop() {
-        status.setUpdatingMessages(false);
+        TelegramBotCore.getInstance().getStatus().setUpdatingMessages(false);
 
-        messagesCache.save();
-        userCache.save();
-        permissions.save();
+        TelegramBotCore.getInstance().getMessagesCache().save();
+        TelegramBotCore.getInstance().getUserCache().save();
+        TelegramBotCore.getInstance().getPermissions().save();
 
-        telegramBot.shutdown();
+        TelegramBotCore.getInstance().getTelegramBot().shutdown();
 
         shutdown();
     }
@@ -196,24 +207,24 @@ public final class TelegramBotApp {
 
     @Setter
     @Getter
-    private static @NotNull UpdatesListener updatesListener = new UpdatesListenerImpl();
+    private @NotNull UpdatesListener updatesListener = new UpdatesListenerImpl();
     @Setter
     @Getter
-    private static @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
+    private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
 
-    public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NotNull final BaseRequest<T, R> baseRequest) {
-        return telegramBot.execute(transforms(baseRequest));
+    public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NotNull final BaseRequest<T, R> baseRequest) {
+        return this.telegramBot.execute(transforms(baseRequest));
     }
 
-    public static @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Cancellable execute(
+    public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Cancellable execute(
             @NotNull final T request,
             @NotNull final Callback<T, R> callback
     ) {
-        return telegramBot.execute(request, callback);
+        return this.telegramBot.execute(request, callback);
     }
 
     @SneakyThrows
-    public static @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NotNull final BaseRequest<T, R> baseRequest) {
+    public @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NotNull final BaseRequest<T, R> baseRequest) {
         @Nullable final String text = (String) RequestUtil.getText(baseRequest);
         @Nullable final Object chatId = RequestUtil.getChatId(baseRequest);
 
@@ -221,7 +232,7 @@ public final class TelegramBotApp {
             RequestUtil.setValue(
                     baseRequest,
                     RequestUtil.PARAMETER_TEXT,
-                    chatId != null ? language.localizeObject(chatId, text) : language.localize(text)
+                    chatId != null ? this.language.localizeObject(chatId, text) : this.language.localize(text)
             );
 
         @Nullable final Keyboard keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
@@ -239,7 +250,7 @@ public final class TelegramBotApp {
                                                         ReflectionUtil.setValueField(
                                                                 textInlineKeyboardField,
                                                                 inlineKeyboardButton,
-                                                                language.localizeObject(chatId, textButton)
+                                                                this.language.localizeObject(chatId, textButton)
                                                         );
                                                     } catch (final NoSuchFieldException |
                                                                    LanguageNotRegisteredException exception) {
@@ -264,7 +275,7 @@ public final class TelegramBotApp {
                                                             ReflectionUtil.setValueField(
                                                                     textKeyboardField,
                                                                     keyboardButton,
-                                                                    language.localizeObject(chatId, textButton)
+                                                                    this.language.localizeObject(chatId, textButton)
                                                             );
                                                     } catch (final NoSuchFieldException |
                                                                    LanguageNotRegisteredException exception) {

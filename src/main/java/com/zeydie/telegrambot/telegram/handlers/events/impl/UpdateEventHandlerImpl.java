@@ -3,7 +3,7 @@ package com.zeydie.telegrambot.telegram.handlers.events.impl;
 import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.api.telegram.events.UpdateEventSubscribe;
@@ -41,12 +41,12 @@ public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpd
             @NotNull final CallbackQuery callbackQuery = update.callbackQuery();
 
             if (callbackQuery != null)
-                TelegramBotApp.getCallbackQueryEventHandler().handle(callbackQuery);
+                TelegramBotCore.getInstance().getCallbackQueryEventHandler().handle(callbackQuery);
 
             @Nullable final Message message = update.message();
 
             if (message != null)
-                TelegramBotApp.getMessagesCache().put(new MessageData(message));
+                TelegramBotCore.getInstance().getMessagesCache().put(new MessageData(message));
         }
     }
 }

@@ -3,11 +3,12 @@ package com.zeydie.telegrambot.api.handlers;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.pengrad.telegrambot.model.Message;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
+import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
@@ -178,10 +179,12 @@ public abstract class AbstractEventHandler {
                                                     .anyMatch(command -> {
                                                                 log.debug("Command {}=?={} {}", command, text, permissions);
 
+                                                                @NotNull final IPermissions permissionsImpl = TelegramBotCore.getInstance().getPermissions();
+
                                                                 return text.startsWith(command) && (
-                                                                        TelegramBotApp.getPermissions().hasPermission(chatId, "*") ||
+                                                                        permissionsImpl.hasPermission(chatId, "*") ||
                                                                                 permissions.length == 0 ||
-                                                                                Arrays.stream(permissions).anyMatch(permission -> TelegramBotApp.getPermissions().hasPermission(chatId, permission))
+                                                                                Arrays.stream(permissions).anyMatch(permission -> permissionsImpl.hasPermission(chatId, permission))
                                                                 );
                                                             }
                                                     )

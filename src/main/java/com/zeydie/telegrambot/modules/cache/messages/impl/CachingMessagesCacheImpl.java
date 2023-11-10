@@ -6,7 +6,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
 import com.zeydie.sgson.SGsonFile;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.ListMessagesData;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
@@ -55,7 +55,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
                         log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messageDatas).toArray()));
 
-                        messageDatas.forEach(messageData -> TelegramBotApp.getMessageEventHandler().handle(messageData.message()));
+                        messageDatas.forEach(messageData -> TelegramBotCore.getInstance().getMessageEventHandler().handle(messageData.message()));
                     }
             ).build();
 

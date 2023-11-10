@@ -2,7 +2,7 @@ package com.zeydie.telegrambot.api.modules.keyboard.abstracted;
 
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.keyboard.IKeyboard;
 import org.jetbrains.annotations.NotNull;
@@ -29,6 +29,6 @@ public abstract class AbstractKeyboardImpl implements IKeyboard {
             final long chatId,
             @NotNull final String text
     ) {
-        TelegramBotApp.execute(new SendMessage(chatId, text).replyMarkup(this.getKeyboard()));
+        TelegramBotCore.getInstance().execute(new SendMessage(chatId, text).replyMarkup(this.getKeyboard()));
     }
 }

@@ -16,7 +16,7 @@ tasks.withType(JavaCompile).each {
 }
 
 group 'com.zeydie'
-version '0.1.6B'
+version '0.1.8B'
 
 repositories {
     mavenCentral()

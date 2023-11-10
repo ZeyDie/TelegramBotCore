@@ -2,7 +2,7 @@ package com.zeydie.telegrambot.modules.language.impl;
 
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
-import com.zeydie.telegrambot.TelegramBotApp;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.events.language.LanguageRegisterEvent;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
@@ -53,7 +53,7 @@ public class LanguageImpl implements ILanguage {
 
         @NotNull final LanguageRegisterEvent languageRegisterEvent = new LanguageRegisterEvent();
 
-        TelegramBotApp.getLanguageEventHandler().handle(languageRegisterEvent);
+        TelegramBotCore.getInstance().getLanguageEventHandler().handle(languageRegisterEvent);
 
         languageRegisterEvent.getLanguageRegister()
                 .getLanguageDataList()
@@ -144,7 +144,7 @@ public class LanguageImpl implements ILanguage {
             final long id,
             @NotNull final String key
     ) throws LanguageNotRegisteredException {
-        @Nullable final UserData userData = TelegramBotApp.getUserCache().getUserData(id);
+        @Nullable final UserData userData = TelegramBotCore.getInstance().getUserCache().getUserData(id);
 
         @NotNull String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 

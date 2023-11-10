@@ -161,7 +161,7 @@ public class TelegramBotCore {
 
         this.telegramBot = new TelegramBot(config.getToken());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(TelegramBotCore::stop));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
 
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
@@ -189,14 +189,14 @@ public class TelegramBotCore {
         log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
-    public static void stop() {
-        TelegramBotCore.getInstance().getStatus().setUpdatingMessages(false);
+    public void stop() {
+        this.status.setUpdatingMessages(false);
 
-        TelegramBotCore.getInstance().getMessagesCache().save();
-        TelegramBotCore.getInstance().getUserCache().save();
-        TelegramBotCore.getInstance().getPermissions().save();
+        this.messagesCache.save();
+        this.userCache.save();
+        this.permissions.save();
 
-        TelegramBotCore.getInstance().getTelegramBot().shutdown();
+        this.telegramBot.shutdown();
 
         shutdown();
     }

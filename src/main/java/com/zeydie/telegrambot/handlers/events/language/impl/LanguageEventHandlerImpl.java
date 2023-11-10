@@ -4,6 +4,7 @@ import com.zeydie.telegrambot.api.events.language.LanguageRegisterEvent;
 import com.zeydie.telegrambot.api.events.language.LanguageRegisterEventSubscribe;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public class LanguageEventHandlerImpl extends AbstractEventHandler implements IL
     }
 
     @Override
-    public void handle(@NotNull final LanguageRegisterEvent languageRegisterEvent) {
+    public void handle(@NonNull final LanguageRegisterEvent languageRegisterEvent) {
         super.invoke(languageRegisterEvent);
     }
 }

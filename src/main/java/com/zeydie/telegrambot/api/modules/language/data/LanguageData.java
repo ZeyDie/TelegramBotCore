@@ -1,6 +1,8 @@
 package com.zeydie.telegrambot.api.modules.language.data;
 
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,9 +18,9 @@ public record LanguageData(String label, String uniqueId, @Nullable Map<String, 
         }
     }
 
-    public @NotNull String localize(@NotNull final String key) {
+    public @NotNull String localize(@NonNull final String key) {
         assert this.localization != null;
-        @NotNull final String localized = this.localization.getOrDefault(key, key);
+        @NonNull final val localized = this.localization.getOrDefault(key, key);
 
         log.debug("[{}] localize {}={}", this.label, key, localized);
 

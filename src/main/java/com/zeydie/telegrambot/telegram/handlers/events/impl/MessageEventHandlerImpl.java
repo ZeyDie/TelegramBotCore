@@ -8,7 +8,9 @@ import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.handlers.events.IMessageEventHandler;
 import com.zeydie.telegrambot.telegram.events.MessageEvent;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,13 +36,13 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
     }
 
     @Override
-    public void handle(@NotNull final MessageData messageData) {
+    public void handle(@NonNull final MessageData messageData) {
         this.handle(messageData.message());
     }
 
     @Override
-    public void handle(@NotNull final Message message) {
-        @Nullable final MessageEntity[] messageEntities = message.entities();
+    public void handle(@NonNull final Message message) {
+        @Nullable final val messageEntities = message.entities();
 
         if (messageEntities != null)
             Arrays.stream(messageEntities)

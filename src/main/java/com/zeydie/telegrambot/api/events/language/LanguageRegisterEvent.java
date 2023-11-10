@@ -6,6 +6,7 @@ import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class LanguageRegisterEvent extends AbstractEvent {
         this(new LanguageRegister());
     }
 
-    public LanguageRegisterEvent(@NotNull final LanguageRegister languageRegister) {
+    public LanguageRegisterEvent(@NonNull final LanguageRegister languageRegister) {
         this.languageRegister = languageRegister;
     }
 
@@ -28,7 +29,7 @@ public class LanguageRegisterEvent extends AbstractEvent {
         @Getter
         private final @NotNull List<LanguageData> languageDataList = new ArrayList<>();
 
-        public void register(@NotNull final LanguageData languageData) throws LanguageRegisteredException {
+        public void register(@NonNull final LanguageData languageData) throws LanguageRegisteredException {
             if (this.languageDataList.contains(languageData))
                 throw new LanguageRegisteredException(languageData);
 

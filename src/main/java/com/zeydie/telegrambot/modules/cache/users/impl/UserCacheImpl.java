@@ -8,8 +8,10 @@ import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.utils.FileUtil;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +30,8 @@ public class UserCacheImpl implements IUserCache {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
 
-                        final long userId = notification.getKey();
-                        @NotNull final UserData userData = notification.getValue();
+                        @NonNull final val userId = notification.getKey();
+                        @NonNull final val userData = notification.getValue();
 
                         log.debug("Cleanup {} {}", userId, userData);
                     }
@@ -45,8 +47,8 @@ public class UserCacheImpl implements IUserCache {
                             try {
                                 log.info("Restoring {}", file.getName());
 
-                                final long userId = Long.parseLong(FileUtil.getFileName(file));
-                                @NotNull final UserData userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                                final val userId = Long.parseLong(FileUtil.getFileName(file));
+                                @NonNull final val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
                                 this.userDataCache.put(userId, userData);
 
@@ -70,12 +72,12 @@ public class UserCacheImpl implements IUserCache {
     }
 
     @Override
-    public boolean contains(@NotNull final UserData userData) {
+    public boolean contains(@NonNull final UserData userData) {
         return this.contains(userData.getUser());
     }
 
     @Override
-    public boolean contains(@NotNull final User user) {
+    public boolean contains(@NonNull final User user) {
         return this.contains(user.id());
     }
 
@@ -85,18 +87,18 @@ public class UserCacheImpl implements IUserCache {
     }
 
     @Override
-    public void put(@NotNull final UserData userData) {
+    public void put(@NonNull final UserData userData) {
         if (!this.contains(userData)) this.userDataCache.put(userData.getUser().id(), userData);
     }
 
     @Override
-    public void put(@NotNull final User user) {
+    public void put(@NonNull final User user) {
         if (!this.contains(user))
             this.userDataCache.put(user.id(), new UserData(user));
     }
 
     @Override
-    public @NotNull UserData getUserData(@NotNull final User user) {
+    public @NotNull UserData getUserData(@NonNull final User user) {
         if (!this.contains(user))
             this.put(user);
 

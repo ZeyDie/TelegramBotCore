@@ -12,8 +12,10 @@ import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.utils.FileUtil;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +53,7 @@ public class LanguageImpl implements ILanguage {
                         }
                 );
 
-        @NotNull final LanguageRegisterEvent languageRegisterEvent = new LanguageRegisterEvent();
+        @NonNull final val languageRegisterEvent = new LanguageRegisterEvent();
 
         TelegramBotCore.getInstance().getLanguageEventHandler().handle(languageRegisterEvent);
 
@@ -69,9 +71,9 @@ public class LanguageImpl implements ILanguage {
     }
 
     @Override
-    public boolean register(@NotNull final LanguageData languageData) throws LanguageRegisteredException {
-        @NotNull final String label = languageData.label();
-        @NotNull final String uniqueId = languageData.uniqueId();
+    public boolean register(@NonNull final LanguageData languageData) throws LanguageRegisteredException {
+        @NonNull final val label = languageData.label();
+        @NonNull final val uniqueId = languageData.uniqueId();
 
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);
@@ -84,23 +86,23 @@ public class LanguageImpl implements ILanguage {
     }
 
     @Override
-    public boolean isRegistered(@NotNull final LanguageData languageData) {
+    public boolean isRegistered(@NonNull final LanguageData languageData) {
         return this.isRegistered(languageData.uniqueId());
     }
 
     @Override
-    public boolean isRegistered(@NotNull final String uniqueId) {
+    public boolean isRegistered(@NonNull final String uniqueId) {
         return this.registeredLanguages.stream()
                 .anyMatch(languageData -> languageData.uniqueId().equals(uniqueId));
     }
 
     @Override
-    public @Nullable LanguageData getLanguageData(@NotNull final LanguageData languageData) {
+    public @Nullable LanguageData getLanguageData(@NonNull final LanguageData languageData) {
         return this.getLanguageData(languageData.uniqueId());
     }
 
     @Override
-    public @Nullable LanguageData getLanguageData(@NotNull final String uniqueId) {
+    public @Nullable LanguageData getLanguageData(@NonNull final String uniqueId) {
         return this.registeredLanguages.stream()
                 .filter(languageData -> languageData.uniqueId().equals(uniqueId))
                 .findFirst()
@@ -110,7 +112,7 @@ public class LanguageImpl implements ILanguage {
     @Override
     public @NotNull String localizeObject(
             @Nullable final Object object,
-            @NotNull final String key
+            @NonNull final String key
     ) throws LanguageNotRegisteredException {
         switch (Objects.requireNonNull(object)) {
             case User user -> {
@@ -126,7 +128,7 @@ public class LanguageImpl implements ILanguage {
     @Override
     public @NotNull String localize(
             @Nullable final UserData userData,
-            @NotNull final String key
+            @NonNull final String key
     ) throws LanguageNotRegisteredException {
         return userData == null ? this.localize(key) : this.localize(userData.getUser(), key);
     }
@@ -134,7 +136,7 @@ public class LanguageImpl implements ILanguage {
     @Override
     public @NotNull String localize(
             @Nullable final User user,
-            @NotNull final String key
+            @NonNull final String key
     ) throws LanguageNotRegisteredException {
         return user == null ? this.localize(key) : this.localize(user.id(), key);
     }
@@ -142,19 +144,19 @@ public class LanguageImpl implements ILanguage {
     @Override
     public @NotNull String localize(
             final long id,
-            @NotNull final String key
+            @NonNull final String key
     ) throws LanguageNotRegisteredException {
-        @Nullable final UserData userData = TelegramBotCore.getInstance().getUserCache().getUserData(id);
+        @Nullable final val userData = TelegramBotCore.getInstance().getUserCache().getUserData(id);
 
-        @NotNull String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
+        @NonNull var language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 
         if (userData != null) {
-            @NotNull final String userLanguage = userData.getLanguageUniqueId();
+            @NonNull final val userLanguage = userData.getLanguageUniqueId();
 
             language = userLanguage != null ? userLanguage : userData.getUser().languageCode();
         }
 
-        @Nullable final LanguageData languageData = this.getLanguageData(language);
+        @Nullable final val languageData = this.getLanguageData(language);
 
         if (languageData != null)
             return languageData.localize(key);
@@ -162,16 +164,16 @@ public class LanguageImpl implements ILanguage {
     }
 
     @Override
-    public @NotNull String localize(@NotNull final String key) throws LanguageNotRegisteredException {
-        @NotNull final String language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
-        @Nullable final LanguageData languageData = this.getLanguageData(language);
+    public @NotNull String localize(@NonNull final String key) throws LanguageNotRegisteredException {
+        @NonNull final val language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
+        @Nullable final val languageData = this.getLanguageData(language);
 
         if (languageData != null)
             return languageData.localize(key);
         else throw new LanguageNotRegisteredException(language, language);
     }
 
-    public @NotNull LanguageData initLangFile(@NotNull final LanguageData languageData) {
+    public @NotNull LanguageData initLangFile(@NonNull final LanguageData languageData) {
         return new SGsonFile(
                 LANGUAGE_FOLDER_PATH.resolve(FileUtil.createFileNameWithType(languageData.uniqueId(), LANGUAGE_TYPE))
         ).fromJsonToObject(languageData);

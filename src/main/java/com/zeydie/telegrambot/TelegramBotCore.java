@@ -37,10 +37,7 @@ import com.zeydie.telegrambot.telegram.handlers.events.impl.MessageEventHandlerI
 import com.zeydie.telegrambot.telegram.handlers.events.impl.UpdateEventHandlerImpl;
 import com.zeydie.telegrambot.utils.ReflectionUtil;
 import com.zeydie.telegrambot.utils.RequestUtil;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
@@ -112,15 +109,15 @@ public class TelegramBotCore {
                             log.debug("{}", annotatedClass);
 
                             if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
-                                @NotNull final Object annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
+                                @NotNull final val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
 
                                 Arrays.stream(annotatedClassInstance.getClass().getDeclaredFields())
                                         .forEach(field -> {
                                                     if (field.isAnnotationPresent(ConfigSubscribe.class)) {
-                                                        @NotNull final ConfigSubscribe configSubscribe = field.getAnnotation(ConfigSubscribe.class);
+                                                        @NotNull final val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
 
-                                                        @NotNull final Object objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
-                                                        @NotNull final Object config = !configSubscribe.file() ? objectInstance :
+                                                        @NotNull final val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
+                                                        @NotNull final val config = !configSubscribe.file() ? objectInstance :
                                                                 new AbstractFileConfig(
                                                                         Paths.get(configSubscribe.category().toString(), configSubscribe.path()),
                                                                         objectInstance,
@@ -146,8 +143,8 @@ public class TelegramBotCore {
 
     @SneakyThrows
     public void setup(
-            @NotNull final BotConfig config,
-            @NotNull final CachingConfig cachingConfig
+            @NonNull final BotConfig config,
+            @NonNull final CachingConfig cachingConfig
     ) {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
@@ -212,21 +209,21 @@ public class TelegramBotCore {
     @Getter
     private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
 
-    public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NotNull final BaseRequest<T, R> baseRequest) {
+    public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NonNull final BaseRequest<T, R> baseRequest) {
         return this.telegramBot.execute(transforms(baseRequest));
     }
 
     public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> Cancellable execute(
-            @NotNull final T request,
-            @NotNull final Callback<T, R> callback
+            @NonNull final T request,
+            @NonNull final Callback<T, R> callback
     ) {
         return this.telegramBot.execute(request, callback);
     }
 
     @SneakyThrows
-    public @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NotNull final BaseRequest<T, R> baseRequest) {
-        @Nullable final String text = (String) RequestUtil.getText(baseRequest);
-        @Nullable final Object chatId = RequestUtil.getChatId(baseRequest);
+    public @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NonNull final BaseRequest<T, R> baseRequest) {
+        @Nullable final val text = (String) RequestUtil.getText(baseRequest);
+        @Nullable final val chatId = RequestUtil.getChatId(baseRequest);
 
         if (text != null)
             RequestUtil.setValue(
@@ -235,7 +232,7 @@ public class TelegramBotCore {
                     chatId != null ? this.language.localizeObject(chatId, text) : this.language.localize(text)
             );
 
-        @Nullable final Keyboard keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
+        @Nullable final val keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
 
         if (keyboard != null) {
             switch (keyboard) {
@@ -244,8 +241,8 @@ public class TelegramBotCore {
                                 .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
                                         .forEach(inlineKeyboardButton -> {
                                                     try {
-                                                        @NotNull final Field textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
-                                                        @NotNull final String textButton = inlineKeyboardButton.text();
+                                                        @NotNull final val textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
+                                                        @NotNull final val textButton = inlineKeyboardButton.text();
 
                                                         ReflectionUtil.setValueField(
                                                                 textInlineKeyboardField,
@@ -260,16 +257,16 @@ public class TelegramBotCore {
                                         )
                                 );
                 case ReplyKeyboardMarkup replyKeyboardMarkup -> {
-                    @NotNull final Field field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
-                    @Nullable final List<List<KeyboardButton>> replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
+                    @NotNull final val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
+                    @Nullable final val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
 
                     if (replyKeyboardButtonsList != null)
                         replyKeyboardButtonsList
                                 .forEach(replyKeyboardButtons -> replyKeyboardButtons
                                         .forEach(keyboardButton -> {
                                                     try {
-                                                        @NotNull final Field textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
-                                                        @Nullable final String textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
+                                                        @NotNull final val textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
+                                                        @Nullable final val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
 
                                                         if (textButton != null)
                                                             ReflectionUtil.setValueField(

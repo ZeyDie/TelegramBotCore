@@ -8,7 +8,9 @@ import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import com.zeydie.telegrambot.utils.FileUtil;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,13 +30,13 @@ public class UserPermissionsImpl implements IPermissions {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
 
-                        final long userId = notification.getKey();
-                        @NotNull final PermissionData permissionData = notification.getValue();
+                        @NonNull final val userId = notification.getKey();
+                        @NonNull final val permissionData = notification.getValue();
 
                         log.debug("Cleanup {} {}", userId, permissionData);
 
                         if (permissionData.permissions().isEmpty()) {
-                            @NotNull final File file = FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, userId, PERMISSION_TYPE);
+                            @NonNull final val file = FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, userId, PERMISSION_TYPE);
 
                             if (file.exists())
                                 file.delete();
@@ -51,8 +53,8 @@ public class UserPermissionsImpl implements IPermissions {
                             try {
                                 log.info("Restoring {}", file.getName());
 
-                                final long userId = Long.parseLong(FileUtil.getFileName(file));
-                                @NotNull final PermissionData permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
+                                final val userId = Long.parseLong(FileUtil.getFileName(file));
+                                @NonNull final val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
 
                                 this.usersPermissionsCache.put(userId, permissionData);
 
@@ -77,8 +79,8 @@ public class UserPermissionsImpl implements IPermissions {
 
     @Override
     public void addPermission(
-            @NotNull final UserData userData,
-            @NotNull final String permission
+            @NonNull final UserData userData,
+            @NonNull final String permission
     ) {
         this.addPermission(userData.getUser().id(), permission);
     }
@@ -86,11 +88,11 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public void addPermission(
             final long chatId,
-            @NotNull final String permission
+            @NonNull final String permission
     ) {
         if (this.hasPermission(chatId, permission)) return;
 
-        @Nullable PermissionData permissionData = this.getPermissionData(chatId);
+        @Nullable var permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null) {
             permissionData = new PermissionData(null);
@@ -103,8 +105,8 @@ public class UserPermissionsImpl implements IPermissions {
 
     @Override
     public boolean hasPermission(
-            @NotNull final UserData userData,
-            @NotNull final String permission
+            @NonNull final UserData userData,
+            @NonNull final String permission
     ) {
         return this.hasPermission(userData.getUser().id(), permission);
     }
@@ -112,9 +114,9 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public boolean hasPermission(
             final long chatId,
-            @NotNull final String permission
+            @NonNull final String permission
     ) {
-        @Nullable final PermissionData permissionData = this.getPermissionData(chatId);
+        @Nullable final val permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null)
             return false;
@@ -123,7 +125,7 @@ public class UserPermissionsImpl implements IPermissions {
     }
 
     @Override
-    public @Nullable PermissionData getPermissionData(@NotNull final UserData userData) {
+    public @Nullable PermissionData getPermissionData(@NonNull final UserData userData) {
         return this.getPermissionData(userData.getUser().id());
     }
 
@@ -134,8 +136,8 @@ public class UserPermissionsImpl implements IPermissions {
 
     @Override
     public void removePermission(
-            @NotNull final UserData userData,
-            @NotNull final String permission
+            @NonNull final UserData userData,
+            @NonNull final String permission
     ) {
         this.removePermission(userData.getUser().id(), permission);
     }
@@ -143,16 +145,16 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public void removePermission(
             final long chatId,
-            @NotNull final String permission
+            @NonNull final String permission
     ) {
-        @Nullable final PermissionData permissionData = this.getPermissionData(chatId);
+        @Nullable final val permissionData = this.getPermissionData(chatId);
 
         if (permissionData != null)
             permissionData.permissions().remove(permission);
     }
 
     @Override
-    public void removePermissions(@NotNull final UserData userData) {
+    public void removePermissions(@NonNull final UserData userData) {
         this.removePermissions(userData.getUser().id());
     }
 

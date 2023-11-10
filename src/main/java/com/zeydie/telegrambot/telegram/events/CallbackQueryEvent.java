@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.CallbackQuery;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 @Data
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class CallbackQueryEvent extends AbstractEvent {
     private final @NotNull CallbackQuery callbackQuery;
 
-    public CallbackQueryEvent(@NotNull final CallbackQuery callbackQuery) {
+    public CallbackQueryEvent(@NonNull final CallbackQuery callbackQuery) {
         this.callbackQuery = callbackQuery;
     }
 }

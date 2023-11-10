@@ -11,12 +11,12 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+group 'com.zeydie'
+version '0.1.9R'
+
 tasks.withType(JavaCompile).each {
     it.options.compilerArgs.add('--enable-preview')
 }
-
-group 'com.zeydie'
-version '0.1.8B'
 
 repositories {
     mavenCentral()
@@ -70,5 +70,4 @@ jar {
 
 test {
     useJUnitPlatform()
-    jvmArgs(['--enable-preview'])
 }

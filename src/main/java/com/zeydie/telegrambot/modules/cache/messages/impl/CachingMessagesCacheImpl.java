@@ -12,8 +12,10 @@ import com.zeydie.telegrambot.api.modules.cache.messages.data.ListMessagesData;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.utils.FileUtil;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,9 +51,9 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
 
-                        final long chatId = notification.getKey();
-                        @NotNull final ListMessagesData listMessagesData = notification.getValue();
-                        @Nullable final List<MessageData> messageDatas = listMessagesData.messages();
+                        @NonNull final val chatId = notification.getKey();
+                        @NonNull final val listMessagesData = notification.getValue();
+                        @Nullable final val messageDatas = listMessagesData.messages();
 
                         log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messageDatas).toArray()));
 
@@ -67,8 +69,8 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
         Arrays.stream(Objects.requireNonNull(CACHE_MESSAGES_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
                             try {
-                                final long chatId = Long.parseLong(FileUtil.getFileName(file));
-                                @NotNull final ListMessagesData listMessagesData = new SGsonFile(file).fromJsonToObject(new ListMessagesData(null));
+                                final val chatId = Long.parseLong(FileUtil.getFileName(file));
+                                @NonNull final ListMessagesData listMessagesData = new SGsonFile(file).fromJsonToObject(new ListMessagesData(null));
                                 @Nullable final List<MessageData> messages = listMessagesData.messages();
 
                                 log.info(String.format("Chat: %d restored %d messages", chatId, messages.size()));
@@ -94,10 +96,10 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
     }
 
     @Override
-    public void put(@NotNull final MessageData messageData) {
-        final long id = messageData.message().chat().id();
+    public void put(@NonNull final MessageData messageData) {
+        final val id = messageData.message().chat().id();
 
-        @Nullable ListMessagesData listMessagesData = this.chatMessageCache.getIfPresent(id);
+        @Nullable var listMessagesData = this.chatMessageCache.getIfPresent(id);
 
         if (listMessagesData == null) {
             listMessagesData = new ListMessagesData(null);

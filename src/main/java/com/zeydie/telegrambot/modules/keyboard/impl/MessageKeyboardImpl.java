@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.zeydie.telegrambot.api.modules.keyboard.IMessageKeyboard;
 import com.zeydie.telegrambot.api.modules.keyboard.abstracted.AbstractKeyboardImpl;
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class MessageKeyboardImpl extends AbstractKeyboardImpl implements IMessag
     private final @NotNull InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(this.rowKeyboardButtonList.toArray(new InlineKeyboardButton[]{}));
 
     @Override
-    public @NotNull IMessageKeyboard addButton(@NotNull final InlineKeyboardButton keyboardButton) {
+    public @NotNull IMessageKeyboard addButton(@NonNull final InlineKeyboardButton keyboardButton) {
         this.rowKeyboardButtonList.add(keyboardButton);
 
         return this;
@@ -32,7 +33,7 @@ public class MessageKeyboardImpl extends AbstractKeyboardImpl implements IMessag
     }
 
     @Override
-    public void sendKeyboard(final long chatId, @NotNull final String text) {
+    public void sendKeyboard(final long chatId, @NonNull final String text) {
         if (!this.rowKeyboardButtonList.isEmpty())
             this.completeRow();
 

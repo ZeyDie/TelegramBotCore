@@ -3,6 +3,7 @@ package com.zeydie.telegrambot.api.modules.keyboard;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 public interface IKeyboard {
@@ -10,17 +11,17 @@ public interface IKeyboard {
     Keyboard getKeyboard();
 
     void sendKeyboard(
-            @NotNull final UserData user,
-            @NotNull final String text
+            @NonNull final UserData user,
+            @NonNull final String text
     );
 
     void sendKeyboard(
-            @NotNull final User user,
-            @NotNull final String text
+            @NonNull final User user,
+            @NonNull final String text
     );
 
     void sendKeyboard(
             final long chatId,
-            @NotNull final String text
+            @NonNull final String text
     );
 }

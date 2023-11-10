@@ -2,33 +2,33 @@ package com.zeydie.telegrambot.handlers.exceptions.impl;
 
 import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramException;
-import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.TelegramBotCore;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
+import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
 @Log4j2
 public class ExceptionHandlerImpl implements ExceptionHandler {
     @Override
-    public void onException(@NotNull final TelegramException telegramException) {
-        @Nullable final BaseResponse baseResponse = telegramException.response();
+    public void onException(@NonNull final TelegramException telegramException) {
+        @Nullable final val baseResponse = telegramException.response();
 
         if (baseResponse == null) {
             log.error("Network probably!!!");
-            TelegramBotCore.stop();
+            TelegramBotCore.getInstance().stop();
             return;
         }
 
-        final int code = baseResponse.errorCode();
-        @NotNull final String description = baseResponse.description();
+        final val code = baseResponse.errorCode();
+        @NonNull final val description = baseResponse.description();
 
         log.error("{}: {}", code, description);
 
         if (code == 404) {
             log.error("Bad token");
 
-            TelegramBotCore.stop();
+            TelegramBotCore.getInstance().stop();
         }
     }
 }

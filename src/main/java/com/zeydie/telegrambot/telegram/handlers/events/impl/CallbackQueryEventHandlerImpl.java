@@ -5,6 +5,7 @@ import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.handlers.events.ICallbackQueryEventHandler;
 import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ public class CallbackQueryEventHandlerImpl extends AbstractEventHandler implemen
     }
 
     @Override
-    public void handle(@NotNull final CallbackQuery callbackQuery) {
+    public void handle(@NonNull final CallbackQuery callbackQuery) {
         super.invoke(new CallbackQueryEvent(callbackQuery));
     }
 }

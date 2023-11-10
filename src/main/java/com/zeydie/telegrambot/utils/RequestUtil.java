@@ -2,6 +2,8 @@ package com.zeydie.telegrambot.utils;
 
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
+import lombok.NonNull;
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,11 +27,11 @@ public final class RequestUtil {
     }
 
     public static <T extends BaseRequest<T, R>, R extends BaseResponse> void setValue(
-            @NotNull final BaseRequest<T, R> baseRequest,
-            @NotNull final String key,
-            @NotNull final Object value
+            @NonNull final BaseRequest<T, R> baseRequest,
+            @NonNull final String key,
+            @NonNull final Object value
     ) {
-        @NotNull final Map<String, Object> parameters = baseRequest.getParameters();
+        @NonNull final val parameters = baseRequest.getParameters();
 
         if (parameters.containsKey(key))
             parameters.replace(key, value);

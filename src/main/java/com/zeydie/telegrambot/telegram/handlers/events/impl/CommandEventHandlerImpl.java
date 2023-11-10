@@ -5,6 +5,7 @@ import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.handlers.events.ICommandEventHandler;
 import com.zeydie.telegrambot.telegram.events.CommandEvent;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ public class CommandEventHandlerImpl extends AbstractEventHandler implements ICo
     }
 
     @Override
-    public void handle(@NotNull final Message message) {
+    public void handle(@NonNull final Message message) {
         super.invoke(new CommandEvent(message));
     }
 }

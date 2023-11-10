@@ -1,11 +1,13 @@
 package com.zeydie.telegrambot.api.modules.permissions.data;
 
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public record PermissionData(@NotNull List<String> permissions) {
+public record PermissionData(@Nullable List<String> permissions) {
     public PermissionData {
         if (permissions == null)
             permissions = new ArrayList<>();

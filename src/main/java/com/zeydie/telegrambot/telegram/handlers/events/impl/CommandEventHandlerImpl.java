@@ -24,8 +24,16 @@ public class CommandEventHandlerImpl extends AbstractEventHandler implements ICo
     }
 
     @Override
-    public void load() {
-        super.load();
+    public void preInit() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

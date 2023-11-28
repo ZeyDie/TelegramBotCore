@@ -45,7 +45,11 @@ public class UserPermissionsImpl implements IPermissions {
             ).build();
 
     @Override
-    public void load() {
+    public void preInit() {
+    }
+
+    @Override
+    public void init() {
         PERMISSIONS_FOLDER_PATH.toFile().mkdirs();
 
         Arrays.stream(Objects.requireNonNull(PERMISSIONS_FOLDER_PATH.toFile().listFiles()))
@@ -64,6 +68,10 @@ public class UserPermissionsImpl implements IPermissions {
                             }
                         }
                 );
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

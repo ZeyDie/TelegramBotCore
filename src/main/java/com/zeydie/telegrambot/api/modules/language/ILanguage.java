@@ -2,6 +2,7 @@ package com.zeydie.telegrambot.api.modules.language;
 
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
+import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
@@ -11,9 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface ILanguage {
-    void load() throws LanguageRegisteredException;
-
+public interface ILanguage extends IInitialize {
     boolean register(@NonNull final LanguageData languageData) throws LanguageRegisteredException;
 
     @NotNull

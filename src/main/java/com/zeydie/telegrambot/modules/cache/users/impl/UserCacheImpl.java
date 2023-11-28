@@ -37,9 +37,13 @@ public class UserCacheImpl implements IUserCache {
                     }
             ).build();
 
+    @Override
+    public void preInit() {
+    }
+
     @SneakyThrows
     @Override
-    public void load() {
+    public void init() {
         CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
 
         Arrays.stream(Objects.requireNonNull(CACHE_USERS_FOLDER_PATH.toFile().listFiles()))
@@ -58,6 +62,10 @@ public class UserCacheImpl implements IUserCache {
                             }
                         }
                 );
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

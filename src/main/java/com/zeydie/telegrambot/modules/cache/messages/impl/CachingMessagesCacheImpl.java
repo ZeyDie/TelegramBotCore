@@ -61,9 +61,13 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                     }
             ).build();
 
+    @Override
+    public void preInit() {
+    }
+
     @SneakyThrows
     @Override
-    public void load() {
+    public void init() {
         CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
 
         Arrays.stream(Objects.requireNonNull(CACHE_MESSAGES_FOLDER_PATH.toFile().listFiles()))
@@ -81,6 +85,10 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                             }
                         }
                 );
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

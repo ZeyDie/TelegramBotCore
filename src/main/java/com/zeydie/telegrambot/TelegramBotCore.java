@@ -12,6 +12,7 @@ import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
+import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.telegram.handlers.events.ICallbackQueryEventHandler;
@@ -44,18 +45,21 @@ import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
-public class TelegramBotCore {
+public final class TelegramBotCore implements ISubcore {
     @Getter
-    private static TelegramBotCore instance;
+    private static TelegramBotCore instance = new TelegramBotCore();
 
     @Getter
     private final @NotNull Status status = new Status();
+
+    private final @NotNull Map<String, ISubcore> subcores = new HashMap<>();
 
     @Getter
     private String name;
@@ -93,15 +97,21 @@ public class TelegramBotCore {
     @Getter
     private TelegramBot telegramBot;
 
-    public void launch(@Nullable final String[] args) {
-        instance = this;
+    public void registerSubcore(@NonNull final ISubcore subcore) {
+        @NonNull val key = subcore.getName();
 
-        this.start();
-        this.setup();
-        this.init();
+        if (!this.subcores.containsKey(key))
+            this.subcores.put(key, subcore);
+        //TODO else throw of allready registered
     }
 
-    public void start() {
+    @Override
+    public @NotNull String getName() {
+        return this.getClass().getName();
+    }
+
+    @Override
+    public void launch(@Nullable final String[] args) {
         log.debug("Scanning configs...");
 
         ClassIndex.getAnnotated(ConfigSubscribesRegister.class)
@@ -131,10 +141,17 @@ public class TelegramBotCore {
                             }
                         }
                 );
+
+        this.subcores.values().forEach(subcore -> subcore.launch(args));
+
+        this.preInit();
+        this.init();
+        this.postInit();
     }
 
+    @Override
     @SneakyThrows
-    public void setup() {
+    public void preInit() {
         setup(
                 ConfigStore.getBotConfig(),
                 ConfigStore.getCachingConfig()
@@ -151,43 +168,78 @@ public class TelegramBotCore {
 
         this.name = config.getName();
 
+        this.languageEventHandler.preInit();
+        this.updateEventHandler.preInit();
+        this.callbackQueryEventHandler.preInit();
+        this.messageEventHandler.preInit();
+        this.commandEventHandler.preInit();
+
         this.language = new LanguageImpl();
         this.messagesCache = cachingConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         this.userCache = new UserCacheImpl();
         this.permissions = new UserPermissionsImpl();
 
+        this.language.preInit();
+        this.messagesCache.preInit();
+        this.userCache.preInit();
+        this.permissions.preInit();
+
         this.telegramBot = new TelegramBot(config.getToken());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
 
+        this.subcores.values().forEach(subcore -> subcore.preInit());
+
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
+    @Override
     @SneakyThrows
     public void init() {
         final long startTime = System.currentTimeMillis();
         log.info("Starting initialize...");
 
-        this.languageEventHandler.load();
-        this.updateEventHandler.load();
-        this.callbackQueryEventHandler.load();
-        this.messageEventHandler.load();
-        this.commandEventHandler.load();
+        this.languageEventHandler.init();
+        this.updateEventHandler.init();
+        this.callbackQueryEventHandler.init();
+        this.messageEventHandler.init();
+        this.commandEventHandler.init();
 
-        this.language.load();
-        this.messagesCache.load();
-        this.userCache.load();
-        this.permissions.load();
+        this.language.init();
+        this.messagesCache.init();
+        this.userCache.init();
+        this.permissions.init();
 
         this.status.setUpdatingMessages(true);
 
         this.telegramBot.setUpdatesListener(this.updatesListener, this.exceptionHandler);
 
+        this.subcores.values().forEach(subcore -> subcore.init());
+
         log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
+    @Override
+    public void postInit() {
+        this.languageEventHandler.postInit();
+        this.updateEventHandler.postInit();
+        this.callbackQueryEventHandler.postInit();
+        this.messageEventHandler.postInit();
+        this.commandEventHandler.postInit();
+
+        this.language.postInit();
+        this.messagesCache.postInit();
+        this.userCache.postInit();
+        this.permissions.postInit();
+
+        this.subcores.values().forEach(subcore -> subcore.postInit());
+    }
+
+    @Override
     public void stop() {
         this.status.setUpdatingMessages(false);
+
+        this.subcores.values().forEach(subcore -> subcore.stop());
 
         this.messagesCache.save();
         this.userCache.save();

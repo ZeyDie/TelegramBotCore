@@ -32,9 +32,13 @@ public class LanguageImpl implements ILanguage {
     @Getter
     private final @NotNull List<LanguageData> registeredLanguages = new ArrayList<>();
 
+    @Override
+    public void preInit() {
+    }
+
     @SneakyThrows
     @Override
-    public void load() {
+    public void init() {
         LANGUAGE_FOLDER_PATH.toFile().mkdirs();
 
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
@@ -68,6 +72,10 @@ public class LanguageImpl implements ILanguage {
                             }
                         }
                 );
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

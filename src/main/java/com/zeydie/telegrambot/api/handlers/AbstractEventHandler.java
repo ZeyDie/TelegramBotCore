@@ -7,6 +7,7 @@ import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
+import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
@@ -26,7 +27,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
-public abstract class AbstractEventHandler {
+public abstract class AbstractEventHandler implements IInitialize {
     public abstract @NotNull Class<? extends Annotation> getEventAnnotation();
 
     public abstract @Nullable Class<?>[] getParameters();
@@ -37,7 +38,8 @@ public abstract class AbstractEventHandler {
     private final @NotNull Cache<Method, Class<?>> lowClassMethods = CacheBuilder.newBuilder().build();
     private final @NotNull Cache<Method, Class<?>> lowestClassMethods = CacheBuilder.newBuilder().build();
 
-    protected void load() {
+    @Override
+    public void init() {
         @NonNull final val eventAnnotation = this.getEventAnnotation();
         @Nullable final val eventParameters = this.getParameters();
 

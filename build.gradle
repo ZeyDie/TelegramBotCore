@@ -11,12 +11,21 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += "--enable-preview"
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs += "--enable-preview"
+}
+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs += "--enable-preview"
+}
+
+
 group 'com.zeydie'
 version '0.1.9R'
-
-tasks.withType(JavaCompile).each {
-    it.options.compilerArgs.add('--enable-preview')
-}
 
 repositories {
     mavenCentral()
@@ -61,13 +70,26 @@ dependencies {
 }
 
 jar {
-    from {
-        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) }
+    def librariesFolder = "libraries"
+
+    configurations.runtimeClasspath.collect {
+        def path = it.getAbsolutePath();
+
+        copy  {
+            from path
+            into "$buildDir/libs/$librariesFolder"
+        }
     }
 
-    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    manifest {
+        attributes(
+                "Class-Path": configurations.runtimeClasspath.collect { "$librariesFolder/" + it.getName() }.join(' '),
+                "Main-Class": "com.zeydie.bot.ads.BotApplication"
+        )
+    }
 }
 
 test {
     useJUnitPlatform()
+    jvmArgs(['--enable-preview'])
 }

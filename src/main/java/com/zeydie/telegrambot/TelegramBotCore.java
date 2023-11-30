@@ -314,55 +314,58 @@ public final class TelegramBotCore implements ISubcore {
         @Nullable val keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
 
         if (keyboard != null) {
-            switch (keyboard) {
-                case InlineKeyboardMarkup inlineKeyboardMarkup ->
-                        Arrays.stream(inlineKeyboardMarkup.inlineKeyboard()).toList()
-                                .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
-                                        .forEach(inlineKeyboardButton -> {
-                                                    try {
-                                                        @NotNull val textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
-                                                        @NotNull val textButton = inlineKeyboardButton.text();
+            if (keyboard instanceof @NonNull final InlineKeyboardMarkup inlineKeyboardMarkup) {
+                Arrays.stream(inlineKeyboardMarkup.inlineKeyboard()).toList()
+                        .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
+                                .forEach(inlineKeyboardButton -> {
+                                            try {
+                                                @NonNull val clazz = inlineKeyboardButton.getClass();
+                                                @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
 
+                                                @NotNull val textInlineKeyboardField = buttonClass.getDeclaredField("text");
+                                                @NotNull val textButton = inlineKeyboardButton.text();
+
+                                                ReflectionUtil.setValueField(
+                                                        textInlineKeyboardField,
+                                                        inlineKeyboardButton,
+                                                        this.language.localizeObject(chatId, textButton)
+                                                );
+                                            } catch (final NoSuchFieldException |
+                                                           LanguageNotRegisteredException exception) {
+                                                exception.printStackTrace();
+                                            }
+                                        }
+                                )
+                        );
+            } else if (keyboard instanceof @NonNull final ReplyKeyboardMarkup replyKeyboardMarkup) {
+                @NotNull val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
+                @Nullable val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
+
+                if (replyKeyboardButtonsList != null)
+                    replyKeyboardButtonsList
+                            .forEach(replyKeyboardButtons -> replyKeyboardButtons
+                                    .forEach(keyboardButton -> {
+                                                try {
+                                                    @NonNull val clazz = keyboardButton.getClass();
+                                                    @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
+
+                                                    @NotNull val textKeyboardField = buttonClass.getDeclaredField("text");
+                                                    @Nullable val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
+
+                                                    if (textButton != null)
                                                         ReflectionUtil.setValueField(
-                                                                textInlineKeyboardField,
-                                                                inlineKeyboardButton,
+                                                                textKeyboardField,
+                                                                keyboardButton,
                                                                 this.language.localizeObject(chatId, textButton)
                                                         );
-                                                    } catch (final NoSuchFieldException |
-                                                                   LanguageNotRegisteredException exception) {
-                                                        exception.printStackTrace();
-                                                    }
+                                                } catch (final NoSuchFieldException |
+                                                               LanguageNotRegisteredException exception) {
+                                                    exception.printStackTrace();
                                                 }
-                                        )
-                                );
-                case ReplyKeyboardMarkup replyKeyboardMarkup -> {
-                    @NotNull val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
-                    @Nullable val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
-
-                    if (replyKeyboardButtonsList != null)
-                        replyKeyboardButtonsList
-                                .forEach(replyKeyboardButtons -> replyKeyboardButtons
-                                        .forEach(keyboardButton -> {
-                                                    try {
-                                                        @NotNull val textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
-                                                        @Nullable val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
-
-                                                        if (textButton != null)
-                                                            ReflectionUtil.setValueField(
-                                                                    textKeyboardField,
-                                                                    keyboardButton,
-                                                                    this.language.localizeObject(chatId, textButton)
-                                                            );
-                                                    } catch (final NoSuchFieldException |
-                                                                   LanguageNotRegisteredException exception) {
-                                                        exception.printStackTrace();
-                                                    }
-                                                }
-                                        )
-                                );
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + keyboard);
-            }
+                                            }
+                                    )
+                            );
+            } else throw new IllegalStateException("Unexpected value: " + keyboard);
         }
 
         return baseRequest;

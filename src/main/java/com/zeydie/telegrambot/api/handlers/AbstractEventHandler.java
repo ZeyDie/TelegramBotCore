@@ -227,7 +227,8 @@ public abstract class AbstractEventHandler implements IInitialize {
                                                     .anyMatch(messageSubscriber -> {
                                                                 log.debug("Message {}=?={}", messageSubscriber, textEvent);
 
-                                                                if (messageEventSubscribe.startWith() && textEvent.startsWith(messageSubscriber))
+                                                                if (messageSubscriber.isEmpty()) return true;
+                                                                else if (messageEventSubscribe.startWith() && textEvent.startsWith(messageSubscriber))
                                                                     return true;
                                                                 else if (messageEventSubscribe.endWith() && textEvent.endsWith(messageSubscriber))
                                                                     return true;

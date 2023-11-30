@@ -149,7 +149,13 @@ public abstract class AbstractEventHandler implements IInitialize {
                                             Arrays.stream(callbackQueryEventSubscribe.callbackDatas())
                                                     .anyMatch(callbackData -> {
                                                                 log.debug("Callback {}=?={}", data, callbackData);
-                                                                return callbackData.equals(data);
+
+                                                                if (callbackQueryEventSubscribe.startWith())
+                                                                    return data.startsWith(callbackData);
+                                                                else if (callbackQueryEventSubscribe.endWith())
+                                                                    return data.endsWith(callbackData);
+                                                                else
+                                                                    return data.equals(callbackData);
                                                             }
                                                     )
                                     );
@@ -184,8 +190,7 @@ public abstract class AbstractEventHandler implements IInitialize {
                                                                 @NonNull final val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
 
                                                                 return text.startsWith(command) && (
-                                                                        permissionsImpl.hasPermission(chatId, "*") ||
-                                                                                permissions.length == 0 ||
+                                                                        permissions.length == 0 ||
                                                                                 Arrays.stream(permissions).anyMatch(permission -> permissionsImpl.hasPermission(chatId, permission))
                                                                 );
                                                             }

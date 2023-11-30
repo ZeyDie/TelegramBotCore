@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ALL" monitorInterval="30" shutdownHook="disable">
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="%date [%t] %logger{1} %level: %msg%n%throwable" />
+        </Console>
+        <RollingFile name="RollingFileAll" fileName="logs/all.log" filePattern="logs/$${date:yyyy-MM-dd}/all/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="ALL"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>%date [%t] %logger{1} %level: %msg%n%throwable</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="RollingFileInfo" fileName="logs/info.log" filePattern="logs/$${date:yyyy-MM-dd}/info/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>%date [%t] %logger{1} %level: %msg%n%throwable</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="RollingFileDebug" fileName="logs/debug.log" filePattern="logs/$${date:yyyy-MM-dd}/debug/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="DEBUG"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>%date [%t] %logger{1} %level: %msg%n%throwable</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
+	    <RollingFile name="RollingFileWarn" fileName="logs/warn.log" filePattern="logs/$${date:yyyy-MM-dd}/warn/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="WARN"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>%date [%t] %logger{1} %level: %msg%n%throwable</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="RollingFileError" fileName="logs/error.log" filePattern="logs/$${date:yyyy-MM-dd}/error/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="ERROR"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>%date [%t] %logger{1} %level: %msg%n%throwable</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
+		<encoding value="UTF-8"/>
+    </Appenders>
+    <Loggers>
+        <Root level="ALL">
+            <Appender-ref ref="Console"/>
+            <Appender-ref ref="RollingFileAll"/>
+            <Appender-ref ref="RollingFileInfo"/>
+            <Appender-ref ref="RollingFileDebug"/>
+            <Appender-ref ref="RollingFileWarn"/>
+            <Appender-ref ref="RollingFileError"/>
+        </Root>
+    </Loggers>
+</Configuration>

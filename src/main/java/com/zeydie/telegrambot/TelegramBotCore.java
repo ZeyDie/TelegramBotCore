@@ -1,11 +1,14 @@
 package com.zeydie.telegrambot;
 
 import com.pengrad.telegrambot.*;
+import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.GetFile;
+import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
@@ -41,6 +44,7 @@ import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -112,6 +116,8 @@ public final class TelegramBotCore implements ISubcore {
 
     @Override
     public void launch(@Nullable final String[] args) {
+        System.setProperty("log4j.shutdownHookEnabled", Boolean.toString(false));
+
         log.debug("Scanning configs...");
 
         ClassIndex.getAnnotated(ConfigSubscribesRegister.class)
@@ -251,7 +257,10 @@ public final class TelegramBotCore implements ISubcore {
     }
 
     public static void shutdown() {
+        LogManager.shutdown();
+
         System.exit(0);
+        Runtime.getRuntime().exit(0);
     }
 
     @Setter
@@ -260,6 +269,22 @@ public final class TelegramBotCore implements ISubcore {
     @Setter
     @Getter
     private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
+
+    public void sendMessage(
+            final long chatId,
+            @NonNull final String message
+    ) {
+        this.execute(new SendMessage(chatId, message));
+    }
+
+    public @Nullable File getFile(@NonNull final String fileId) {
+        @NonNull val fileRequest = new GetFile(fileId);
+        @Nullable val fileResponse = this.execute(fileRequest);
+
+        if (fileResponse == null || !fileResponse.isOk()) return null;
+
+        return fileResponse.file();
+    }
 
     public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NonNull final BaseRequest<T, R> baseRequest) {
         return this.telegramBot.execute(transforms(baseRequest));

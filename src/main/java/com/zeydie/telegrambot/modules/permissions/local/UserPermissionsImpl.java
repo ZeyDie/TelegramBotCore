@@ -14,7 +14,6 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -129,7 +128,9 @@ public class UserPermissionsImpl implements IPermissions {
         if (permissionData == null)
             return false;
 
-        return permissionData.permissions().contains(permission);
+        @NonNull val permissions = permissionData.permissions();
+
+        return permissions.contains("*") || permissions.contains(permission);
     }
 
     @Override

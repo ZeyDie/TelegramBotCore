@@ -11,5 +11,9 @@ import java.lang.annotation.*;
 public @interface CallbackQueryEventSubscribe {
     @NotNull String[] callbackDatas();
 
+    boolean startWith() default false;
+
+    boolean endWith() default false;
+
     @Nullable String comment() default "";
 }

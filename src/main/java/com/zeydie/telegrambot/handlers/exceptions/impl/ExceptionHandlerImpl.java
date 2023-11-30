@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExceptionHandlerImpl implements ExceptionHandler {
     @Override
     public void onException(@NonNull final TelegramException telegramException) {
-        @Nullable final val baseResponse = telegramException.response();
+        @Nullable val baseResponse = telegramException.response();
 
         if (baseResponse == null) {
             log.error("Network probably!!!");
@@ -20,8 +20,8 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
             return;
         }
 
-        final val code = baseResponse.errorCode();
-        @NonNull final val description = baseResponse.description();
+        val code = baseResponse.errorCode();
+        @NonNull val description = baseResponse.description();
 
         log.error("{}: {}", code, description);
 

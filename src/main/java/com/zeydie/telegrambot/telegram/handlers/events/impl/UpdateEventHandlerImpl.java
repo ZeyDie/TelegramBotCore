@@ -43,17 +43,17 @@ public class UpdateEventHandlerImpl extends AbstractEventHandler implements IUpd
 
     @Override
     public void handle(@NonNull final Update update) {
-        @NonNull final val updateEvent = new UpdateEvent(update);
+        @NonNull val updateEvent = new UpdateEvent(update);
 
         super.invoke(updateEvent);
 
         if (!updateEvent.isCancelled()) {
-            @NonNull final val callbackQuery = update.callbackQuery();
+            @NonNull val callbackQuery = update.callbackQuery();
 
             if (callbackQuery != null)
                 TelegramBotCore.getInstance().getCallbackQueryEventHandler().handle(callbackQuery);
 
-            @Nullable final val message = update.message();
+            @Nullable val message = update.message();
 
             if (message != null)
                 TelegramBotCore.getInstance().getMessagesCache().put(new MessageData(message));

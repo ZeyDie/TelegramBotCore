@@ -29,13 +29,13 @@ public class UserPermissionsImpl implements IPermissions {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
 
-                        @NonNull final val userId = notification.getKey();
-                        @NonNull final val permissionData = notification.getValue();
+                        @NonNull val userId = notification.getKey();
+                        @NonNull val permissionData = notification.getValue();
 
                         log.debug("Cleanup {} {}", userId, permissionData);
 
                         if (permissionData.permissions().isEmpty()) {
-                            @NonNull final val file = FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, userId, PERMISSION_TYPE);
+                            @NonNull val file = FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, userId, PERMISSION_TYPE);
 
                             if (file.exists())
                                 file.delete();
@@ -56,8 +56,8 @@ public class UserPermissionsImpl implements IPermissions {
                             try {
                                 log.info("Restoring {}", file.getName());
 
-                                final val userId = Long.parseLong(FileUtil.getFileName(file));
-                                @NonNull final val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
+                                val userId = Long.parseLong(FileUtil.getFileName(file));
+                                @NonNull val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
 
                                 this.usersPermissionsCache.put(userId, permissionData);
 
@@ -123,7 +123,7 @@ public class UserPermissionsImpl implements IPermissions {
             final long chatId,
             @NonNull final String permission
     ) {
-        @Nullable final val permissionData = this.getPermissionData(chatId);
+        @Nullable val permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null)
             return false;
@@ -156,7 +156,7 @@ public class UserPermissionsImpl implements IPermissions {
             final long chatId,
             @NonNull final String permission
     ) {
-        @Nullable final val permissionData = this.getPermissionData(chatId);
+        @Nullable val permissionData = this.getPermissionData(chatId);
 
         if (permissionData != null)
             permissionData.permissions().remove(permission);

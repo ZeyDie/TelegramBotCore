@@ -27,6 +27,7 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
 import com.zeydie.telegrambot.configs.data.CachingConfig;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
+import com.zeydie.telegrambot.exceptions.SubcoreRegisteredException;
 import com.zeydie.telegrambot.handlers.events.language.impl.LanguageEventHandlerImpl;
 import com.zeydie.telegrambot.handlers.exceptions.impl.ExceptionHandlerImpl;
 import com.zeydie.telegrambot.listeners.impl.UpdatesListenerImpl;
@@ -101,12 +102,13 @@ public final class TelegramBotCore implements ISubcore {
     @Getter
     private TelegramBot telegramBot;
 
-    public void registerSubcore(@NonNull final ISubcore subcore) {
+    public void registerSubcore(@NonNull final ISubcore subcore) throws SubcoreRegisteredException {
         @NonNull val key = subcore.getName();
 
-        if (!this.subcores.containsKey(key))
-            this.subcores.put(key, subcore);
-        //TODO else throw of allready registered
+        if (this.subcores.containsKey(key))
+            throw new SubcoreRegisteredException(subcore);
+
+        this.subcores.put(key, subcore);
     }
 
     @Override
@@ -125,15 +127,15 @@ public final class TelegramBotCore implements ISubcore {
                             log.debug("{}", annotatedClass);
 
                             if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
-                                @NotNull final val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
+                                @NotNull val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
 
                                 Arrays.stream(annotatedClassInstance.getClass().getDeclaredFields())
                                         .forEach(field -> {
                                                     if (field.isAnnotationPresent(ConfigSubscribe.class)) {
-                                                        @NotNull final val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
+                                                        @NotNull val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
 
-                                                        @NotNull final val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
-                                                        @NotNull final val config = !configSubscribe.file() ? objectInstance :
+                                                        @NotNull val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
+                                                        @NotNull val config = !configSubscribe.file() ? objectInstance :
                                                                 new AbstractFileConfig(
                                                                         Paths.get(configSubscribe.category().toString(), configSubscribe.path()),
                                                                         objectInstance,
@@ -299,8 +301,8 @@ public final class TelegramBotCore implements ISubcore {
 
     @SneakyThrows
     public @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NonNull final BaseRequest<T, R> baseRequest) {
-        @Nullable final val text = (String) RequestUtil.getText(baseRequest);
-        @Nullable final val chatId = RequestUtil.getChatId(baseRequest);
+        @Nullable val text = (String) RequestUtil.getText(baseRequest);
+        @Nullable val chatId = RequestUtil.getChatId(baseRequest);
 
         if (text != null)
             RequestUtil.setValue(
@@ -309,7 +311,7 @@ public final class TelegramBotCore implements ISubcore {
                     chatId != null ? this.language.localizeObject(chatId, text) : this.language.localize(text)
             );
 
-        @Nullable final val keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
+        @Nullable val keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
 
         if (keyboard != null) {
             switch (keyboard) {
@@ -318,8 +320,8 @@ public final class TelegramBotCore implements ISubcore {
                                 .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
                                         .forEach(inlineKeyboardButton -> {
                                                     try {
-                                                        @NotNull final val textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
-                                                        @NotNull final val textButton = inlineKeyboardButton.text();
+                                                        @NotNull val textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
+                                                        @NotNull val textButton = inlineKeyboardButton.text();
 
                                                         ReflectionUtil.setValueField(
                                                                 textInlineKeyboardField,
@@ -334,16 +336,16 @@ public final class TelegramBotCore implements ISubcore {
                                         )
                                 );
                 case ReplyKeyboardMarkup replyKeyboardMarkup -> {
-                    @NotNull final val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
-                    @Nullable final val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
+                    @NotNull val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
+                    @Nullable val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
 
                     if (replyKeyboardButtonsList != null)
                         replyKeyboardButtonsList
                                 .forEach(replyKeyboardButtons -> replyKeyboardButtons
                                         .forEach(keyboardButton -> {
                                                     try {
-                                                        @NotNull final val textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
-                                                        @Nullable final val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
+                                                        @NotNull val textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
+                                                        @Nullable val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
 
                                                         if (textButton != null)
                                                             ReflectionUtil.setValueField(

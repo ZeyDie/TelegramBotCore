@@ -40,8 +40,8 @@ public abstract class AbstractEventHandler implements IInitialize {
 
     @Override
     public void init() {
-        @NonNull final val eventAnnotation = this.getEventAnnotation();
-        @Nullable final val eventParameters = this.getParameters();
+        @NonNull val eventAnnotation = this.getEventAnnotation();
+        @Nullable val eventParameters = this.getParameters();
 
         log.debug("Scanning events {}...", eventAnnotation);
 
@@ -55,10 +55,10 @@ public abstract class AbstractEventHandler implements IInitialize {
                                                     if (method.isAnnotationPresent(eventAnnotation)) {
                                                         log.debug("{}", method);
 
-                                                        @NonNull final val parameterTypes = method.getParameterTypes();
+                                                        @NonNull val parameterTypes = method.getParameterTypes();
 
                                                         if (Arrays.equals(parameterTypes, eventParameters)) {
-                                                            @NonNull final val eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
+                                                            @NonNull val eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
                                                                     method.getAnnotation(PrioritySubscribe.class).priority() :
                                                                     EventPriority.DEFAULT;
 
@@ -97,7 +97,7 @@ public abstract class AbstractEventHandler implements IInitialize {
             @NonNull final Method method,
             @NonNull final Object... objects
     ) {
-        final val canInvoke = (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
+        val canInvoke = (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
 
         if (canInvoke) {
             if (method.isAnnotationPresent(CallbackQueryEventSubscribe.class) && !this.hasCallbackData(method, objects))
@@ -136,14 +136,14 @@ public abstract class AbstractEventHandler implements IInitialize {
             @NonNull final Method method,
             @NonNull final Object... objects
     ) {
-        @Nullable final val callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
-        @NonNull final val hasCallbackData = new AtomicBoolean(false);
+        @Nullable val callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
+        @NonNull val hasCallbackData = new AtomicBoolean(false);
 
         if (callbackQueryEventSubscribe != null)
             Arrays.stream(objects)
                     .forEach(object -> {
                                 if (object instanceof final CallbackQueryEvent callbackQueryEvent) {
-                                    @NonNull final val data = callbackQueryEvent.getCallbackQuery().data();
+                                    @NonNull val data = callbackQueryEvent.getCallbackQuery().data();
 
                                     hasCallbackData.set(
                                             Arrays.stream(callbackQueryEventSubscribe.callbackDatas())
@@ -170,24 +170,24 @@ public abstract class AbstractEventHandler implements IInitialize {
             @NonNull final Method method,
             @NonNull final Object... objects
     ) {
-        @Nullable final val commandEventSubscribe = method.getAnnotation(CommandEventSubscribe.class);
-        @NonNull final val hasCommand = new AtomicBoolean(false);
+        @Nullable val commandEventSubscribe = method.getAnnotation(CommandEventSubscribe.class);
+        @NonNull val hasCommand = new AtomicBoolean(false);
 
         if (commandEventSubscribe != null)
             Arrays.stream(objects)
                     .forEach(object -> {
                                 if (object instanceof final CommandEvent commandEvent) {
-                                    @NonNull final val message = commandEvent.getMessage();
-                                    @NonNull final val text = message.text();
-                                    @NonNull final val chatId = message.from().id();
-                                    @NonNull final val permissions = commandEventSubscribe.permissions();
+                                    @NonNull val message = commandEvent.getMessage();
+                                    @NonNull val text = message.text();
+                                    @NonNull val chatId = message.from().id();
+                                    @NonNull val permissions = commandEventSubscribe.permissions();
 
                                     hasCommand.set(
                                             Arrays.stream(commandEventSubscribe.commands())
                                                     .anyMatch(command -> {
                                                                 log.debug("Command {}=?={} {}", command, text, permissions);
 
-                                                                @NonNull final val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
+                                                                @NonNull val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
 
                                                                 return text.startsWith(command) && (
                                                                         permissions.length == 0 ||

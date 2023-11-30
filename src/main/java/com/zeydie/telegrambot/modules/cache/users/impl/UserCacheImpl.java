@@ -30,8 +30,8 @@ public class UserCacheImpl implements IUserCache {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
 
-                        @NonNull final val userId = notification.getKey();
-                        @NonNull final val userData = notification.getValue();
+                        @NonNull val userId = notification.getKey();
+                        @NonNull val userData = notification.getValue();
 
                         log.debug("Cleanup {} {}", userId, userData);
                     }
@@ -51,8 +51,8 @@ public class UserCacheImpl implements IUserCache {
                             try {
                                 log.info("Restoring {}", file.getName());
 
-                                final val userId = Long.parseLong(FileUtil.getFileName(file));
-                                @NonNull final val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                                val userId = Long.parseLong(FileUtil.getFileName(file));
+                                @NonNull val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
                                 this.userDataCache.put(userId, userData);
 

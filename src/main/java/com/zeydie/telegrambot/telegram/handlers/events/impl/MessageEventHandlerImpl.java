@@ -50,7 +50,7 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
     @Override
     public void handle(@NonNull final Message message) {
-        @Nullable final val messageEntities = message.entities();
+        @Nullable val messageEntities = message.entities();
 
         if (messageEntities != null)
             Arrays.stream(messageEntities)

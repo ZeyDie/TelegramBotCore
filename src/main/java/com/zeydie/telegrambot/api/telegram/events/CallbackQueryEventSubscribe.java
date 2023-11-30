@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CallbackQueryEventSubscribe {
-    @NotNull String[] callbackDatas();
+    @NotNull String[] callbacks();
 
     boolean startWith() default false;
 

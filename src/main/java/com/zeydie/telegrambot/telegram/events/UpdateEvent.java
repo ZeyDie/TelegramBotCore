@@ -11,8 +11,12 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = false)
 public class UpdateEvent extends AbstractEvent {
     private final @NotNull Update update;
+    private final boolean user;
+    private final Object sender;
 
     public UpdateEvent(@NonNull final Update update) {
         this.update = update;
+        this.user = update.channelPost() == null;
+        this.sender = this.user ? update.message().from() : update.channelPost().senderChat();
     }
 }

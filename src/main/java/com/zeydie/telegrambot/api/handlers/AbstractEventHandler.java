@@ -10,9 +10,11 @@ import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
 import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
 import com.zeydie.telegrambot.telegram.events.CommandEvent;
+import com.zeydie.telegrambot.telegram.events.MessageEvent;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -103,6 +105,8 @@ public abstract class AbstractEventHandler implements IInitialize {
             if (method.isAnnotationPresent(CallbackQueryEventSubscribe.class) && !this.hasCallbackData(method, objects))
                 return;
             if (method.isAnnotationPresent(CommandEventSubscribe.class) && !this.isCommand(method, objects)) return;
+            if (method.isAnnotationPresent(MessageEventSubscribe.class) && !this.isMessageSelective(method, objects))
+                return;
 
             try {
                 method.invoke(annotatedClass.newInstance(), objects);
@@ -146,7 +150,7 @@ public abstract class AbstractEventHandler implements IInitialize {
                                     @NonNull val data = callbackQueryEvent.getCallbackQuery().data();
 
                                     hasCallbackData.set(
-                                            Arrays.stream(callbackQueryEventSubscribe.callbackDatas())
+                                            Arrays.stream(callbackQueryEventSubscribe.callbacks())
                                                     .anyMatch(callbackData -> {
                                                                 log.debug("Callback {}=?={}", data, callbackData);
 
@@ -201,5 +205,41 @@ public abstract class AbstractEventHandler implements IInitialize {
                     );
 
         return hasCommand.get();
+    }
+
+    private boolean isMessageSelective(
+            @NonNull final Method method,
+            @NonNull final Object... objects
+    ) {
+        @Nullable val messageEventSubscribe = method.getAnnotation(MessageEventSubscribe.class);
+        @NonNull val messages = messageEventSubscribe.messages();
+
+        @NonNull val selectiveMessage = new AtomicBoolean(true);
+
+        if (messageEventSubscribe != null && messages.length > 0)
+            Arrays.stream(objects)
+                    .forEach(object -> {
+                                if (object instanceof final MessageEvent event) {
+                                    @NonNull val textEvent = event.getMessage().text();
+
+                                    selectiveMessage.set(
+                                            Arrays.stream(messages)
+                                                    .anyMatch(messageSubscriber -> {
+                                                                log.debug("Message {}=?={}", messageSubscriber, textEvent);
+
+                                                                if (messageEventSubscribe.startWith() && textEvent.startsWith(messageSubscriber))
+                                                                    return true;
+                                                                else if (messageEventSubscribe.endWith() && textEvent.endsWith(messageSubscriber))
+                                                                    return true;
+                                                                else
+                                                                    return textEvent.equals(messageSubscriber);
+                                                            }
+                                                    )
+                                    );
+                                }
+                            }
+                    );
+
+        return selectiveMessage.get();
     }
 }

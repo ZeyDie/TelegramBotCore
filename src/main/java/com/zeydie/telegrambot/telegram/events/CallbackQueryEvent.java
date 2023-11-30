@@ -1,6 +1,7 @@
 package com.zeydie.telegrambot.telegram.events;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
+import com.pengrad.telegrambot.model.User;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,8 +12,10 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = false)
 public class CallbackQueryEvent extends AbstractEvent {
     private final @NotNull CallbackQuery callbackQuery;
+    private final User sender;
 
     public CallbackQueryEvent(@NonNull final CallbackQuery callbackQuery) {
         this.callbackQuery = callbackQuery;
+        this.sender = callbackQuery.from();
     }
 }

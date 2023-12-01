@@ -124,7 +124,7 @@ public abstract class AbstractEventHandler implements IInitialize {
         return method.isAnnotationPresent(CancelableSubscribe.class);
     }
 
-    public boolean hasCancelledEvent(@NonNull final Object... objects) {
+    public boolean hasCancelledEvent(final Object @NotNull ... objects) {
         for (final Object object : objects)
             if (this.isCancelled(object))
                 return true;

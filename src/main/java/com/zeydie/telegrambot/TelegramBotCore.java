@@ -156,7 +156,11 @@ public class TelegramBotCore {
         this.userCache = new UserCacheImpl();
         this.permissions = new UserPermissionsImpl();
 
-        this.telegramBot = new TelegramBot(config.getToken());
+        @NonNull val token = config.getToken();
+
+        log.info("Starting bot with token {}", token);
+
+        this.telegramBot = new TelegramBot(token);
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
 
@@ -194,12 +198,6 @@ public class TelegramBotCore {
         this.permissions.save();
 
         this.telegramBot.shutdown();
-
-        shutdown();
-    }
-
-    public static void shutdown() {
-        System.exit(0);
     }
 
     @Setter

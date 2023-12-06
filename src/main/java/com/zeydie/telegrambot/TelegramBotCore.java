@@ -2,10 +2,7 @@ package com.zeydie.telegrambot;
 
 import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.model.File;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -367,6 +364,9 @@ public final class TelegramBotCore implements ISubcore {
                             );
             } else throw new IllegalStateException("Unexpected value: " + keyboard);
         }
+
+        if (baseRequest instanceof @NonNull SendMessage sendMessage)
+            sendMessage.parseMode(ParseMode.Markdown);
 
         return baseRequest;
     }

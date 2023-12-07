@@ -251,17 +251,7 @@ public final class TelegramBotCore implements ISubcore {
         this.permissions.save();
 
         this.telegramBot.shutdown();
-
-        shutdown();
     }
-
-    public static void shutdown() {
-        LogManager.shutdown();
-
-        System.exit(0);
-        Runtime.getRuntime().exit(0);
-    }
-
     @Setter
     @Getter
     private @NotNull UpdatesListener updatesListener = new UpdatesListenerImpl();

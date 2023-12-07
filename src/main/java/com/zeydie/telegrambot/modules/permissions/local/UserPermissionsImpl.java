@@ -24,7 +24,6 @@ import static com.zeydie.telegrambot.utils.ReferencePaths.PERMISSION_TYPE;
 @Log4j2
 public class UserPermissionsImpl implements IPermissions {
     private final @NotNull Cache<Long, PermissionData> usersPermissionsCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(4, TimeUnit.HOURS)
             .removalListener((RemovalListener<Long, PermissionData>) notification -> {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;

@@ -20,10 +20,7 @@ public record LanguageData(String label, String uniqueId, @Nullable Map<String, 
 
     public @NotNull String localize(@NonNull final String key) {
         assert this.localization != null;
-        @NonNull val localized = this.localization.getOrDefault(key, key);
 
-        log.debug("[{}] localize {}={}", this.label, key, localized);
-
-        return localized;
+        return this.localization.getOrDefault(key, key);
     }
 }

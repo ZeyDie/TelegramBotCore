@@ -63,9 +63,6 @@ public final class TelegramBotCore implements ISubcore {
 
     private final @NotNull Map<String, ISubcore> subcores = new HashMap<>();
 
-    @Getter
-    private String name;
-
     @Setter
     @Getter
     private ILanguage language;
@@ -170,8 +167,6 @@ public final class TelegramBotCore implements ISubcore {
     ) {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
-
-        this.name = config.getName();
 
         this.languageEventHandler.preInit();
         this.updateEventHandler.preInit();

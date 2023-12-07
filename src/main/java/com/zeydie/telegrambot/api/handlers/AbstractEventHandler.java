@@ -152,8 +152,6 @@ public abstract class AbstractEventHandler implements IInitialize {
                                     hasCallbackData.set(
                                             Arrays.stream(callbackQueryEventSubscribe.callbacks())
                                                     .anyMatch(callbackData -> {
-                                                                log.debug("Callback {}=?={}", data, callbackData);
-
                                                                 if (callbackQueryEventSubscribe.startWith())
                                                                     return data.startsWith(callbackData);
                                                                 else if (callbackQueryEventSubscribe.endWith())
@@ -189,8 +187,6 @@ public abstract class AbstractEventHandler implements IInitialize {
                                     hasCommand.set(
                                             Arrays.stream(commandEventSubscribe.commands())
                                                     .anyMatch(command -> {
-                                                                log.debug("Command {}=?={} {}", command, text, permissions);
-
                                                                 @NonNull val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
 
                                                                 return text.startsWith(command) && (
@@ -225,8 +221,6 @@ public abstract class AbstractEventHandler implements IInitialize {
                                     selectiveMessage.set(
                                             Arrays.stream(messages)
                                                     .anyMatch(messageSubscriber -> {
-                                                                log.debug("Message {}=?={}", messageSubscriber, textEvent);
-
                                                                 if (messageSubscriber.isEmpty()) return true;
                                                                 else if (messageEventSubscribe.startWith() && textEvent.startsWith(messageSubscriber))
                                                                     return true;

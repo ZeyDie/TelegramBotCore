@@ -8,7 +8,15 @@ import org.jetbrains.annotations.NotNull;
 
 public class DirectlyMessagesCacheImpl implements IMessagesCache {
     @Override
-    public void load() {
+    public void preInit() {
+    }
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

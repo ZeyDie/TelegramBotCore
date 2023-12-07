@@ -1,10 +1,9 @@
 package com.zeydie.telegrambot.api.telegram.handlers.events;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
-import com.zeydie.telegrambot.api.modules.interfaces.ILoading;
+import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 
-public interface ICallbackQueryEventHandler extends ILoading {
+public interface ICallbackQueryEventHandler extends IInitialize {
     void handle(@NonNull final CallbackQuery callbackQuery);
 }

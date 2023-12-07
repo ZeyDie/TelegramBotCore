@@ -11,12 +11,21 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-group 'com.zeydie'
-version '0.1.9R'
-
-tasks.withType(JavaCompile).each {
-    it.options.compilerArgs.add('--enable-preview')
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += "--enable-preview"
 }
+
+tasks.withType(Test).configureEach {
+    jvmArgs += "--enable-preview"
+}
+
+tasks.withType(JavaExec).configureEach {
+    jvmArgs += "--enable-preview"
+}
+
+
+group 'com.zeydie'
+version '0.2.3R'
 
 repositories {
     mavenCentral()
@@ -49,6 +58,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
 
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
@@ -61,13 +73,25 @@ dependencies {
 }
 
 jar {
-    from {
-        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it) }
+    def librariesFolder = "libraries"
+
+    configurations.runtimeClasspath.collect {
+        def path = it.getAbsolutePath();
+
+        copy  {
+            from path
+            into "$buildDir/libs/$librariesFolder"
+        }
     }
 
-    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    manifest {
+        attributes(
+                "Class-Path": configurations.runtimeClasspath.collect { "$librariesFolder/" + it.getName() }.join(' ')
+        )
+    }
 }
 
 test {
     useJUnitPlatform()
+    jvmArgs(['--enable-preview'])
 }

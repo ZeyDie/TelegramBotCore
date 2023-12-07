@@ -51,9 +51,9 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
 
-                        @NonNull final val chatId = notification.getKey();
-                        @NonNull final val listMessagesData = notification.getValue();
-                        @Nullable final val messageDatas = listMessagesData.messages();
+                        @NonNull val chatId = notification.getKey();
+                        @NonNull val listMessagesData = notification.getValue();
+                        @Nullable val messageDatas = listMessagesData.messages();
 
                         log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messageDatas).toArray()));
 
@@ -61,15 +61,19 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                     }
             ).build();
 
+    @Override
+    public void preInit() {
+    }
+
     @SneakyThrows
     @Override
-    public void load() {
+    public void init() {
         CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
 
         Arrays.stream(Objects.requireNonNull(CACHE_MESSAGES_FOLDER_PATH.toFile().listFiles()))
                 .forEach(file -> {
                             try {
-                                final val chatId = Long.parseLong(FileUtil.getFileName(file));
+                                val chatId = Long.parseLong(FileUtil.getFileName(file));
                                 @NonNull final ListMessagesData listMessagesData = new SGsonFile(file).fromJsonToObject(new ListMessagesData(null));
                                 @Nullable final List<MessageData> messages = listMessagesData.messages();
 
@@ -81,6 +85,10 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                             }
                         }
                 );
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override
@@ -97,7 +105,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
     @Override
     public void put(@NonNull final MessageData messageData) {
-        final val id = messageData.message().chat().id();
+        val id = messageData.message().chat().id();
 
         @Nullable var listMessagesData = this.chatMessageCache.getIfPresent(id);
 

@@ -32,9 +32,13 @@ public class LanguageImpl implements ILanguage {
     @Getter
     private final @NotNull List<LanguageData> registeredLanguages = new ArrayList<>();
 
+    @Override
+    public void preInit() {
+    }
+
     @SneakyThrows
     @Override
-    public void load() {
+    public void init() {
         LANGUAGE_FOLDER_PATH.toFile().mkdirs();
 
         Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
@@ -53,7 +57,7 @@ public class LanguageImpl implements ILanguage {
                         }
                 );
 
-        @NonNull final val languageRegisterEvent = new LanguageRegisterEvent();
+        @NonNull val languageRegisterEvent = new LanguageRegisterEvent();
 
         TelegramBotCore.getInstance().getLanguageEventHandler().handle(languageRegisterEvent);
 
@@ -71,9 +75,13 @@ public class LanguageImpl implements ILanguage {
     }
 
     @Override
+    public void postInit() {
+    }
+
+    @Override
     public boolean register(@NonNull final LanguageData languageData) throws LanguageRegisteredException {
-        @NonNull final val label = languageData.label();
-        @NonNull final val uniqueId = languageData.uniqueId();
+        @NonNull val label = languageData.label();
+        @NonNull val uniqueId = languageData.uniqueId();
 
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);
@@ -146,17 +154,17 @@ public class LanguageImpl implements ILanguage {
             final long id,
             @NonNull final String key
     ) throws LanguageNotRegisteredException {
-        @Nullable final val userData = TelegramBotCore.getInstance().getUserCache().getUserData(id);
+        @Nullable val userData = TelegramBotCore.getInstance().getUserCache().getUserData(id);
 
         @NonNull var language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 
         if (userData != null) {
-            @NonNull final val userLanguage = userData.getLanguageUniqueId();
+            @NonNull val userLanguage = userData.getLanguageUniqueId();
 
             language = userLanguage != null ? userLanguage : userData.getUser().languageCode();
         }
 
-        @Nullable final val languageData = this.getLanguageData(language);
+        @Nullable val languageData = this.getLanguageData(language);
 
         if (languageData != null)
             return languageData.localize(key);
@@ -165,8 +173,8 @@ public class LanguageImpl implements ILanguage {
 
     @Override
     public @NotNull String localize(@NonNull final String key) throws LanguageNotRegisteredException {
-        @NonNull final val language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
-        @Nullable final val languageData = this.getLanguageData(language);
+        @NonNull val language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
+        @Nullable val languageData = this.getLanguageData(language);
 
         if (languageData != null)
             return languageData.localize(key);

@@ -23,8 +23,16 @@ public class LanguageEventHandlerImpl extends AbstractEventHandler implements IL
     }
 
     @Override
-    public void load() {
-        super.load();
+    public void preInit() {
+    }
+
+    @Override
+    public void init() {
+        super.init();
+    }
+
+    @Override
+    public void postInit() {
     }
 
     @Override

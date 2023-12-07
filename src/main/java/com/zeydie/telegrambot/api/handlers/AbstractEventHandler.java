@@ -7,11 +7,14 @@ import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
+import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
 import com.zeydie.telegrambot.telegram.events.CommandEvent;
+import com.zeydie.telegrambot.telegram.events.MessageEvent;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -26,7 +29,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
-public abstract class AbstractEventHandler {
+public abstract class AbstractEventHandler implements IInitialize {
     public abstract @NotNull Class<? extends Annotation> getEventAnnotation();
 
     public abstract @Nullable Class<?>[] getParameters();
@@ -37,9 +40,10 @@ public abstract class AbstractEventHandler {
     private final @NotNull Cache<Method, Class<?>> lowClassMethods = CacheBuilder.newBuilder().build();
     private final @NotNull Cache<Method, Class<?>> lowestClassMethods = CacheBuilder.newBuilder().build();
 
-    protected void load() {
-        @NonNull final val eventAnnotation = this.getEventAnnotation();
-        @Nullable final val eventParameters = this.getParameters();
+    @Override
+    public void init() {
+        @NonNull val eventAnnotation = this.getEventAnnotation();
+        @Nullable val eventParameters = this.getParameters();
 
         log.debug("Scanning events {}...", eventAnnotation);
 
@@ -53,10 +57,10 @@ public abstract class AbstractEventHandler {
                                                     if (method.isAnnotationPresent(eventAnnotation)) {
                                                         log.debug("{}", method);
 
-                                                        @NonNull final val parameterTypes = method.getParameterTypes();
+                                                        @NonNull val parameterTypes = method.getParameterTypes();
 
                                                         if (Arrays.equals(parameterTypes, eventParameters)) {
-                                                            @NonNull final val eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
+                                                            @NonNull val eventPriority = method.isAnnotationPresent(PrioritySubscribe.class) ?
                                                                     method.getAnnotation(PrioritySubscribe.class).priority() :
                                                                     EventPriority.DEFAULT;
 
@@ -95,12 +99,14 @@ public abstract class AbstractEventHandler {
             @NonNull final Method method,
             @NonNull final Object... objects
     ) {
-        final val canInvoke = (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
+        val canInvoke = (!this.isCancelable(method) || !this.hasCancelledEvent(objects));
 
         if (canInvoke) {
             if (method.isAnnotationPresent(CallbackQueryEventSubscribe.class) && !this.hasCallbackData(method, objects))
                 return;
             if (method.isAnnotationPresent(CommandEventSubscribe.class) && !this.isCommand(method, objects)) return;
+            if (method.isAnnotationPresent(MessageEventSubscribe.class) && !this.isMessageSelective(method, objects))
+                return;
 
             try {
                 method.invoke(annotatedClass.newInstance(), objects);
@@ -118,7 +124,7 @@ public abstract class AbstractEventHandler {
         return method.isAnnotationPresent(CancelableSubscribe.class);
     }
 
-    public boolean hasCancelledEvent(@NonNull final Object... objects) {
+    public boolean hasCancelledEvent(final Object @NotNull ... objects) {
         for (final Object object : objects)
             if (this.isCancelled(object))
                 return true;
@@ -134,20 +140,24 @@ public abstract class AbstractEventHandler {
             @NonNull final Method method,
             @NonNull final Object... objects
     ) {
-        @Nullable final val callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
-        @NonNull final val hasCallbackData = new AtomicBoolean(false);
+        @Nullable val callbackQueryEventSubscribe = method.getAnnotation(CallbackQueryEventSubscribe.class);
+        @NonNull val hasCallbackData = new AtomicBoolean(false);
 
         if (callbackQueryEventSubscribe != null)
             Arrays.stream(objects)
                     .forEach(object -> {
                                 if (object instanceof final CallbackQueryEvent callbackQueryEvent) {
-                                    @NonNull final val data = callbackQueryEvent.getCallbackQuery().data();
+                                    @NonNull val data = callbackQueryEvent.getCallbackQuery().data();
 
                                     hasCallbackData.set(
-                                            Arrays.stream(callbackQueryEventSubscribe.callbackDatas())
+                                            Arrays.stream(callbackQueryEventSubscribe.callbacks())
                                                     .anyMatch(callbackData -> {
-                                                                log.debug("Callback {}=?={}", data, callbackData);
-                                                                return callbackData.equals(data);
+                                                                if (callbackQueryEventSubscribe.startWith())
+                                                                    return data.startsWith(callbackData);
+                                                                else if (callbackQueryEventSubscribe.endWith())
+                                                                    return data.endsWith(callbackData);
+                                                                else
+                                                                    return data.equals(callbackData);
                                                             }
                                                     )
                                     );
@@ -162,28 +172,25 @@ public abstract class AbstractEventHandler {
             @NonNull final Method method,
             @NonNull final Object... objects
     ) {
-        @Nullable final val commandEventSubscribe = method.getAnnotation(CommandEventSubscribe.class);
-        @NonNull final val hasCommand = new AtomicBoolean(false);
+        @Nullable val commandEventSubscribe = method.getAnnotation(CommandEventSubscribe.class);
+        @NonNull val hasCommand = new AtomicBoolean(false);
 
         if (commandEventSubscribe != null)
             Arrays.stream(objects)
                     .forEach(object -> {
                                 if (object instanceof final CommandEvent commandEvent) {
-                                    @NonNull final val message = commandEvent.getMessage();
-                                    @NonNull final val text = message.text();
-                                    @NonNull final val chatId = message.from().id();
-                                    @NonNull final val permissions = commandEventSubscribe.permissions();
+                                    @NonNull val message = commandEvent.getMessage();
+                                    @NonNull val text = message.text();
+                                    @NonNull val chatId = message.from().id();
+                                    @NonNull val permissions = commandEventSubscribe.permissions();
 
                                     hasCommand.set(
                                             Arrays.stream(commandEventSubscribe.commands())
                                                     .anyMatch(command -> {
-                                                                log.debug("Command {}=?={} {}", command, text, permissions);
-
-                                                                @NonNull final val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
+                                                                @NonNull val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
 
                                                                 return text.startsWith(command) && (
-                                                                        permissionsImpl.hasPermission(chatId, "*") ||
-                                                                                permissions.length == 0 ||
+                                                                        permissions.length == 0 ||
                                                                                 Arrays.stream(permissions).anyMatch(permission -> permissionsImpl.hasPermission(chatId, permission))
                                                                 );
                                                             }
@@ -194,5 +201,40 @@ public abstract class AbstractEventHandler {
                     );
 
         return hasCommand.get();
+    }
+
+    private boolean isMessageSelective(
+            @NonNull final Method method,
+            @NonNull final Object... objects
+    ) {
+        @Nullable val messageEventSubscribe = method.getAnnotation(MessageEventSubscribe.class);
+        @NonNull val messages = messageEventSubscribe.messages();
+
+        @NonNull val selectiveMessage = new AtomicBoolean(true);
+
+        if (messageEventSubscribe != null && messages.length > 0)
+            Arrays.stream(objects)
+                    .forEach(object -> {
+                                if (object instanceof final MessageEvent event) {
+                                    @NonNull val textEvent = event.getMessage().text();
+
+                                    selectiveMessage.set(
+                                            Arrays.stream(messages)
+                                                    .anyMatch(messageSubscriber -> {
+                                                                if (messageSubscriber.isEmpty()) return true;
+                                                                else if (messageEventSubscribe.startWith() && textEvent.startsWith(messageSubscriber))
+                                                                    return true;
+                                                                else if (messageEventSubscribe.endWith() && textEvent.endsWith(messageSubscriber))
+                                                                    return true;
+                                                                else
+                                                                    return textEvent.equals(messageSubscriber);
+                                                            }
+                                                    )
+                                    );
+                                }
+                            }
+                    );
+
+        return selectiveMessage.get();
     }
 }

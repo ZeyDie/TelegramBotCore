@@ -1,17 +1,18 @@
 package com.zeydie.telegrambot;
 
 import com.pengrad.telegrambot.*;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.File;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.GetFile;
+import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
+import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.telegram.handlers.events.ICallbackQueryEventHandler;
@@ -23,6 +24,7 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
 import com.zeydie.telegrambot.configs.data.CachingConfig;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
+import com.zeydie.telegrambot.exceptions.SubcoreRegisteredException;
 import com.zeydie.telegrambot.handlers.events.language.impl.LanguageEventHandlerImpl;
 import com.zeydie.telegrambot.handlers.exceptions.impl.ExceptionHandlerImpl;
 import com.zeydie.telegrambot.listeners.impl.UpdatesListenerImpl;
@@ -40,25 +42,26 @@ import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Log4j2
-public class TelegramBotCore {
+public final class TelegramBotCore implements ISubcore {
     @Getter
-    private static TelegramBotCore instance;
+    private static TelegramBotCore instance = new TelegramBotCore();
 
     @Getter
     private final @NotNull Status status = new Status();
 
-    @Getter
-    private String name;
+    private final @NotNull Map<String, ISubcore> subcores = new HashMap<>();
 
     @Setter
     @Getter
@@ -93,15 +96,24 @@ public class TelegramBotCore {
     @Getter
     private TelegramBot telegramBot;
 
-    public void launch(@Nullable final String[] args) {
-        instance = this;
+    public void registerSubcore(@NonNull final ISubcore subcore) throws SubcoreRegisteredException {
+        @NonNull val key = subcore.getName();
 
-        this.start();
-        this.setup();
-        this.init();
+        if (this.subcores.containsKey(key))
+            throw new SubcoreRegisteredException(subcore);
+
+        this.subcores.put(key, subcore);
     }
 
-    public void start() {
+    @Override
+    public @NotNull String getName() {
+        return this.getClass().getName();
+    }
+
+    @Override
+    public void launch(@Nullable final String[] args) {
+        System.setProperty("log4j.shutdownHookEnabled", Boolean.toString(false));
+
         log.debug("Scanning configs...");
 
         ClassIndex.getAnnotated(ConfigSubscribesRegister.class)
@@ -109,15 +121,15 @@ public class TelegramBotCore {
                             log.debug("{}", annotatedClass);
 
                             if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
-                                @NotNull final val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
+                                @NotNull val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
 
                                 Arrays.stream(annotatedClassInstance.getClass().getDeclaredFields())
                                         .forEach(field -> {
                                                     if (field.isAnnotationPresent(ConfigSubscribe.class)) {
-                                                        @NotNull final val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
+                                                        @NotNull val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
 
-                                                        @NotNull final val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
-                                                        @NotNull final val config = !configSubscribe.file() ? objectInstance :
+                                                        @NotNull val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
+                                                        @NotNull val config = !configSubscribe.file() ? objectInstance :
                                                                 new AbstractFileConfig(
                                                                         Paths.get(configSubscribe.category().toString(), configSubscribe.path()),
                                                                         objectInstance,
@@ -131,10 +143,17 @@ public class TelegramBotCore {
                             }
                         }
                 );
+
+        this.subcores.values().forEach(subcore -> subcore.launch(args));
+
+        this.preInit();
+        this.init();
+        this.postInit();
     }
 
+    @Override
     @SneakyThrows
-    public void setup() {
+    public void preInit() {
         setup(
                 ConfigStore.getBotConfig(),
                 ConfigStore.getCachingConfig()
@@ -149,49 +168,78 @@ public class TelegramBotCore {
         final long startTime = System.currentTimeMillis();
         log.info("Starting setup...");
 
-        this.name = config.getName();
+        this.languageEventHandler.preInit();
+        this.updateEventHandler.preInit();
+        this.callbackQueryEventHandler.preInit();
+        this.messageEventHandler.preInit();
+        this.commandEventHandler.preInit();
 
         this.language = new LanguageImpl();
         this.messagesCache = cachingConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         this.userCache = new UserCacheImpl();
         this.permissions = new UserPermissionsImpl();
 
-        @NonNull val token = config.getToken();
+        this.language.preInit();
+        this.messagesCache.preInit();
+        this.userCache.preInit();
+        this.permissions.preInit();
 
-        log.info("Starting bot with token {}", token);
-
-        this.telegramBot = new TelegramBot(token);
+        this.telegramBot = new TelegramBot(config.getToken());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+
+        this.subcores.values().forEach(subcore -> subcore.preInit());
 
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
+    @Override
     @SneakyThrows
     public void init() {
         final long startTime = System.currentTimeMillis();
         log.info("Starting initialize...");
 
-        this.languageEventHandler.load();
-        this.updateEventHandler.load();
-        this.callbackQueryEventHandler.load();
-        this.messageEventHandler.load();
-        this.commandEventHandler.load();
+        this.languageEventHandler.init();
+        this.updateEventHandler.init();
+        this.callbackQueryEventHandler.init();
+        this.messageEventHandler.init();
+        this.commandEventHandler.init();
 
-        this.language.load();
-        this.messagesCache.load();
-        this.userCache.load();
-        this.permissions.load();
+        this.language.init();
+        this.messagesCache.init();
+        this.userCache.init();
+        this.permissions.init();
 
         this.status.setUpdatingMessages(true);
 
         this.telegramBot.setUpdatesListener(this.updatesListener, this.exceptionHandler);
 
+        this.subcores.values().forEach(subcore -> subcore.init());
+
         log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
+    @Override
+    public void postInit() {
+        this.languageEventHandler.postInit();
+        this.updateEventHandler.postInit();
+        this.callbackQueryEventHandler.postInit();
+        this.messageEventHandler.postInit();
+        this.commandEventHandler.postInit();
+
+        this.language.postInit();
+        this.messagesCache.postInit();
+        this.userCache.postInit();
+        this.permissions.postInit();
+
+        this.subcores.values().forEach(subcore -> subcore.postInit());
+    }
+
+    @Override
     public void stop() {
         this.status.setUpdatingMessages(false);
+
+        this.subcores.values().forEach(subcore -> subcore.stop());
 
         this.messagesCache.save();
         this.userCache.save();
@@ -199,13 +247,28 @@ public class TelegramBotCore {
 
         this.telegramBot.shutdown();
     }
-
     @Setter
     @Getter
     private @NotNull UpdatesListener updatesListener = new UpdatesListenerImpl();
     @Setter
     @Getter
     private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
+
+    public void sendMessage(
+            final long chatId,
+            @NonNull final String message
+    ) {
+        this.execute(new SendMessage(chatId, message));
+    }
+
+    public @Nullable File getFile(@NonNull final String fileId) {
+        @NonNull val fileRequest = new GetFile(fileId);
+        @Nullable val fileResponse = this.execute(fileRequest);
+
+        if (fileResponse == null || !fileResponse.isOk()) return null;
+
+        return fileResponse.file();
+    }
 
     public @Nullable <T extends BaseRequest<T, R>, R extends BaseResponse> R execute(@NonNull final BaseRequest<T, R> baseRequest) {
         return this.telegramBot.execute(transforms(baseRequest));
@@ -220,8 +283,8 @@ public class TelegramBotCore {
 
     @SneakyThrows
     public @NotNull <T extends BaseRequest<T, R>, R extends BaseResponse> BaseRequest<T, R> transforms(@NonNull final BaseRequest<T, R> baseRequest) {
-        @Nullable final val text = (String) RequestUtil.getText(baseRequest);
-        @Nullable final val chatId = RequestUtil.getChatId(baseRequest);
+        @Nullable val text = (String) RequestUtil.getText(baseRequest);
+        @Nullable val chatId = RequestUtil.getChatId(baseRequest);
 
         if (text != null)
             RequestUtil.setValue(
@@ -230,59 +293,65 @@ public class TelegramBotCore {
                     chatId != null ? this.language.localizeObject(chatId, text) : this.language.localize(text)
             );
 
-        @Nullable final val keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
+        @Nullable val keyboard = (Keyboard) RequestUtil.getKeyboard(baseRequest);
 
         if (keyboard != null) {
-            switch (keyboard) {
-                case InlineKeyboardMarkup inlineKeyboardMarkup ->
-                        Arrays.stream(inlineKeyboardMarkup.inlineKeyboard()).toList()
-                                .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
-                                        .forEach(inlineKeyboardButton -> {
-                                                    try {
-                                                        @NotNull final val textInlineKeyboardField = inlineKeyboardButton.getClass().getDeclaredField("text");
-                                                        @NotNull final val textButton = inlineKeyboardButton.text();
+            if (keyboard instanceof @NonNull final InlineKeyboardMarkup inlineKeyboardMarkup) {
+                Arrays.stream(inlineKeyboardMarkup.inlineKeyboard()).toList()
+                        .forEach(inlineKeyboardButtons -> Arrays.stream(inlineKeyboardButtons).toList()
+                                .forEach(inlineKeyboardButton -> {
+                                            try {
+                                                @NonNull val clazz = inlineKeyboardButton.getClass();
+                                                @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
 
+                                                @NotNull val textInlineKeyboardField = buttonClass.getDeclaredField("text");
+                                                @NotNull val textButton = inlineKeyboardButton.text();
+
+                                                ReflectionUtil.setValueField(
+                                                        textInlineKeyboardField,
+                                                        inlineKeyboardButton,
+                                                        this.language.localizeObject(chatId, textButton)
+                                                );
+                                            } catch (final NoSuchFieldException |
+                                                           LanguageNotRegisteredException exception) {
+                                                exception.printStackTrace();
+                                            }
+                                        }
+                                )
+                        );
+            } else if (keyboard instanceof @NonNull final ReplyKeyboardMarkup replyKeyboardMarkup) {
+                @NotNull val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
+                @Nullable val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
+
+                if (replyKeyboardButtonsList != null)
+                    replyKeyboardButtonsList
+                            .forEach(replyKeyboardButtons -> replyKeyboardButtons
+                                    .forEach(keyboardButton -> {
+                                                try {
+                                                    @NonNull val clazz = keyboardButton.getClass();
+                                                    @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
+
+                                                    @NotNull val textKeyboardField = buttonClass.getDeclaredField("text");
+                                                    @Nullable val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
+
+                                                    if (textButton != null)
                                                         ReflectionUtil.setValueField(
-                                                                textInlineKeyboardField,
-                                                                inlineKeyboardButton,
+                                                                textKeyboardField,
+                                                                keyboardButton,
                                                                 this.language.localizeObject(chatId, textButton)
                                                         );
-                                                    } catch (final NoSuchFieldException |
-                                                                   LanguageNotRegisteredException exception) {
-                                                        exception.printStackTrace();
-                                                    }
+                                                } catch (final NoSuchFieldException |
+                                                               LanguageNotRegisteredException exception) {
+                                                    exception.printStackTrace();
                                                 }
-                                        )
-                                );
-                case ReplyKeyboardMarkup replyKeyboardMarkup -> {
-                    @NotNull final val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
-                    @Nullable final val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
-
-                    if (replyKeyboardButtonsList != null)
-                        replyKeyboardButtonsList
-                                .forEach(replyKeyboardButtons -> replyKeyboardButtons
-                                        .forEach(keyboardButton -> {
-                                                    try {
-                                                        @NotNull final val textKeyboardField = keyboardButton.getClass().getDeclaredField("text");
-                                                        @Nullable final val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
-
-                                                        if (textButton != null)
-                                                            ReflectionUtil.setValueField(
-                                                                    textKeyboardField,
-                                                                    keyboardButton,
-                                                                    this.language.localizeObject(chatId, textButton)
-                                                            );
-                                                    } catch (final NoSuchFieldException |
-                                                                   LanguageNotRegisteredException exception) {
-                                                        exception.printStackTrace();
-                                                    }
-                                                }
-                                        )
-                                );
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + keyboard);
-            }
+                                            }
+                                    )
+                            );
+            } else throw new IllegalStateException("Unexpected value: " + keyboard);
         }
+
+        if (baseRequest instanceof @NonNull SendMessage sendMessage)
+            sendMessage.parseMode(ParseMode.Markdown);
 
         return baseRequest;
     }

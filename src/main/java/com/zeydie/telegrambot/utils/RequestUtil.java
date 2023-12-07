@@ -31,7 +31,7 @@ public final class RequestUtil {
             @NonNull final String key,
             @NonNull final Object value
     ) {
-        @NonNull final val parameters = baseRequest.getParameters();
+        @NonNull val parameters = baseRequest.getParameters();
 
         if (parameters.containsKey(key))
             parameters.replace(key, value);

@@ -13,7 +13,7 @@ import java.util.List;
 public class UpdatesListenerImpl implements UpdatesListener {
     @Override
     public int process(@NonNull final List<Update> updates) {
-        final val status = TelegramBotCore.getInstance().getStatus().isUpdatingMessages() ? CONFIRMED_UPDATES_ALL : CONFIRMED_UPDATES_NONE;
+        val status = TelegramBotCore.getInstance().getStatus().isUpdatingMessages() ? CONFIRMED_UPDATES_ALL : CONFIRMED_UPDATES_NONE;
 
         if (status == CONFIRMED_UPDATES_ALL) {
             updates.forEach(update -> {

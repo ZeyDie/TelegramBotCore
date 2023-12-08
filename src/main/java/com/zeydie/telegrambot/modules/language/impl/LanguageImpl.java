@@ -22,10 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.LANGUAGE_FOLDER_PATH;
-import static com.zeydie.telegrambot.utils.ReferencePaths.LANGUAGE_TYPE;
+import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
 @Log4j2
 public class LanguageImpl implements ILanguage {
@@ -34,28 +32,32 @@ public class LanguageImpl implements ILanguage {
 
     @Override
     public void preInit() {
+        LANGUAGE_FOLDER_FILE.mkdirs();
     }
 
     @SneakyThrows
     @Override
     public void init() {
-        LANGUAGE_FOLDER_PATH.toFile().mkdirs();
+        @Nullable val files = LANGUAGE_FOLDER_FILE.listFiles();
 
-        Arrays.stream(Objects.requireNonNull(LANGUAGE_FOLDER_PATH.toFile().listFiles()))
-                .forEach(file -> {
-                            try {
-                                this.register(new SGsonFile(file).fromJsonToObject(
-                                        new LanguageData(
-                                                null,
-                                                null,
-                                                null
-                                        )
-                                ));
-                            } catch (final LanguageRegisteredException exception) {
-                                exception.printStackTrace();
+        if (files != null)
+            Arrays.stream(files)
+                    .forEach(file -> {
+                                try {
+                                    this.register(
+                                            new SGsonFile(file).fromJsonToObject(
+                                                    new LanguageData(
+                                                            null,
+                                                            null,
+                                                            null
+                                                    )
+                                            )
+                                    );
+                                } catch (final LanguageRegisteredException exception) {
+                                    exception.printStackTrace();
+                                }
                             }
-                        }
-                );
+                    );
 
         @NonNull val languageRegisterEvent = new LanguageRegisterEvent();
 
@@ -117,12 +119,15 @@ public class LanguageImpl implements ILanguage {
                 .orElse(null);
     }
 
+    //TODO
     @Override
     public @NotNull String localizeObject(
             @Nullable final Object object,
             @NonNull final String key
     ) throws LanguageNotRegisteredException {
-        switch (Objects.requireNonNull(object)) {
+        if (object == null) return this.localize(key);
+
+        switch (object) {
             case User user -> {
                 return this.localize(user, key);
             }
@@ -183,7 +188,7 @@ public class LanguageImpl implements ILanguage {
 
     public @NotNull LanguageData initLangFile(@NonNull final LanguageData languageData) {
         return new SGsonFile(
-                LANGUAGE_FOLDER_PATH.resolve(FileUtil.createFileNameWithType(languageData.uniqueId(), LANGUAGE_TYPE))
+                FileUtil.createFileWithNameAndType(LANGUAGE_FOLDER_PATH, languageData.uniqueId(), LANGUAGE_TYPE)
         ).fromJsonToObject(languageData);
     }
 }

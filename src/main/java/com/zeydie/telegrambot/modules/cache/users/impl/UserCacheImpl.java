@@ -2,7 +2,6 @@ package com.zeydie.telegrambot.modules.cache.users.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
@@ -16,65 +15,53 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.CACHE_USERS_FOLDER_PATH;
-import static com.zeydie.telegrambot.utils.ReferencePaths.DATA_TYPE;
+import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
 @Log4j2
 public class UserCacheImpl implements IUserCache {
-    private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(4, TimeUnit.HOURS)
-            .removalListener((RemovalListener<Long, UserData>) notification -> {
-                        if (notification.getKey() == null) return;
-                        if (notification.getValue() == null) return;
-
-                        @NonNull val userId = notification.getKey();
-                        @NonNull val userData = notification.getValue();
-
-                        log.debug("Cleanup {} {}", userId, userData);
-                    }
-            ).build();
+    private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder().build();
 
     @Override
     public void preInit() {
+        CACHE_USERS_FOLDER_FILE.mkdirs();
     }
 
     @SneakyThrows
     @Override
     public void init() {
-        CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
+        @Nullable val files = CACHE_USERS_FOLDER_FILE.listFiles();
 
-        Arrays.stream(Objects.requireNonNull(CACHE_USERS_FOLDER_PATH.toFile().listFiles()))
-                .forEach(file -> {
-                            try {
-                                log.info("Restoring {}", file.getName());
+        if (files != null)
+            Arrays.stream(files)
+                    .forEach(file -> {
+                                try {
+                                    log.info("Restoring {}", file.getName());
 
-                                val userId = Long.parseLong(FileUtil.getFileName(file));
-                                @NonNull val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                                    val userId = Long.parseLong(FileUtil.getFileName(file));
+                                    @NonNull val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
-                                this.userDataCache.put(userId, userData);
-
-                                log.info("User {} restored {}", userId, userData);
-                            } catch (final Exception exception) {
-                                exception.printStackTrace();
+                                    log.info("User {} restored {}", userId, userData);
+                                    this.userDataCache.put(userId, userData);
+                                } catch (final Exception exception) {
+                                    exception.printStackTrace();
+                                }
                             }
-                        }
-                );
+                    );
     }
 
     @Override
     public void postInit() {
+        this.userDataCache.cleanUp();
     }
 
     @Override
     public void save() {
-        CACHE_USERS_FOLDER_PATH.toFile().mkdirs();
+        this.postInit();
 
         this.userDataCache.asMap().forEach((id, userData) -> {
                     log.info("Saving user data cache for {}", id);
-                    new SGsonFile(CACHE_USERS_FOLDER_PATH.resolve(FileUtil.createFileNameWithType(id, DATA_TYPE))).writeJsonFile(userData);
+                    new SGsonFile(FileUtil.createFileWithNameAndType(CACHE_USERS_FOLDER_PATH, id, DATA_TYPE)).writeJsonFile(userData);
                 }
         );
     }
@@ -106,11 +93,11 @@ public class UserCacheImpl implements IUserCache {
     }
 
     @Override
-    public @NotNull UserData getUserData(@NonNull final User user) {
+    public @Nullable UserData getUserData(@NonNull final User user) {
         if (!this.contains(user))
             this.put(user);
 
-        return Objects.requireNonNull(this.getUserData(user.id()));
+        return this.getUserData(user.id());
     }
 
     @Override

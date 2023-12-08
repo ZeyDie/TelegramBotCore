@@ -7,8 +7,6 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 public final class RequestUtil {
     public static final @NotNull String PARAMETER_CHAT_ID = "chat_id";
     public static final @NotNull String PARAMETER_TEXT = "text";

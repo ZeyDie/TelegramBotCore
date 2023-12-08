@@ -42,7 +42,6 @@ import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

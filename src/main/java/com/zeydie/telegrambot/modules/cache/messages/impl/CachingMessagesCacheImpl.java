@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static com.zeydie.telegrambot.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_FILE;
 import static com.zeydie.telegrambot.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_PATH;
 
 @Log4j2
@@ -55,7 +55,8 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                         @NonNull val listMessagesData = notification.getValue();
                         @Nullable val messageDatas = listMessagesData.messages();
 
-                        log.debug("{} {}", chatId, Arrays.toString(Objects.requireNonNull(messageDatas).toArray()));
+                        if (messageDatas != null)
+                            log.debug("{} {}", chatId, Arrays.toString(messageDatas.toArray()));
 
                         messageDatas.forEach(messageData -> TelegramBotCore.getInstance().getMessageEventHandler().handle(messageData.message()));
                     }
@@ -63,44 +64,47 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
     @Override
     public void preInit() {
+        CACHE_MESSAGES_FOLDER_FILE.mkdirs();
     }
 
     @SneakyThrows
     @Override
     public void init() {
-        CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
+        @Nullable val files = CACHE_MESSAGES_FOLDER_FILE.listFiles();
 
-        Arrays.stream(Objects.requireNonNull(CACHE_MESSAGES_FOLDER_PATH.toFile().listFiles()))
-                .forEach(file -> {
-                            try {
-                                val chatId = Long.parseLong(FileUtil.getFileName(file));
-                                @NonNull final ListMessagesData listMessagesData = new SGsonFile(file).fromJsonToObject(new ListMessagesData(null));
-                                @Nullable final List<MessageData> messages = listMessagesData.messages();
+        if (files != null)
+            Arrays.stream(files)
+                    .forEach(file -> {
+                                try {
+                                    val chatId = Long.parseLong(FileUtil.getFileName(file));
+                                    @NonNull final ListMessagesData listMessagesData = new SGsonFile(file).fromJsonToObject(new ListMessagesData(null));
+                                    @Nullable final List<MessageData> messages = listMessagesData.messages();
 
-                                log.info(String.format("Chat: %d restored %d messages", chatId, messages.size()));
-
-                                this.chatMessageCache.put(chatId, listMessagesData);
-                            } catch (final Exception exception) {
-                                exception.printStackTrace();
+                                    log.info("Chat: {} restored {} messages", chatId, messages.size());
+                                    this.chatMessageCache.put(chatId, listMessagesData);
+                                } catch (final Exception exception) {
+                                    exception.printStackTrace();
+                                }
                             }
-                        }
-                );
+                    );
     }
 
     @Override
     public void postInit() {
+        this.chatMessageCache.cleanUp();
     }
 
     @Override
     public void save() {
-        CACHE_MESSAGES_FOLDER_PATH.toFile().mkdirs();
+        this.postInit();
 
-        this.chatMessageCache.asMap().forEach((chat, message) -> {
-                    new SGsonFile(CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chat))).writeJsonFile(message);
-
-                    log.info(String.format("Saving message cache for %d", chat));
-                }
-        );
+        this.chatMessageCache.asMap()
+                .forEach(
+                        (chat, message) -> {
+                            log.info("Saving message cache for {}", chat);
+                            new SGsonFile(FileUtil.createFileWithName(CACHE_MESSAGES_FOLDER_PATH, chat)).writeJsonFile(message);
+                        }
+                );
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 
 public class DirectlyMessagesCacheImpl implements IMessagesCache {
     @Override

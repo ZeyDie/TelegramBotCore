@@ -4,7 +4,6 @@ import com.pengrad.telegrambot.model.User;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.interfaces.IData;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IUserCache extends IData {
@@ -18,7 +17,7 @@ public interface IUserCache extends IData {
 
     void put(@NonNull final User user);
 
-    @NotNull
+    @Nullable
     UserData getUserData(@NonNull final User user);
 
     @Nullable

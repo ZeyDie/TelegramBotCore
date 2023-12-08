@@ -1,7 +1,6 @@
 package com.zeydie.telegrambot.telegram.handlers.events.impl;
 
 import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.MessageEntity;
 import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;

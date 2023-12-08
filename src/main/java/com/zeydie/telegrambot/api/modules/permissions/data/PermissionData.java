@@ -1,7 +1,5 @@
 package com.zeydie.telegrambot.api.modules.permissions.data;
 
-import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

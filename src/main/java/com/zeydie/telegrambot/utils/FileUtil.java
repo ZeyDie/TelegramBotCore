@@ -16,11 +16,22 @@ public final class FileUtil {
         return path.resolve(createFileNameWithType(name, type)).toFile();
     }
 
+    public static @NotNull File createFileWithName(
+            @NonNull final Path path,
+            @NonNull final Object name
+    ) {
+        return path.resolve(createFileNameWithoutType(name)).toFile();
+    }
+
     public static @NotNull String createFileNameWithType(
             @NonNull final Object name,
             @NonNull final Object type
     ) {
         return name + "." + type;
+    }
+
+    public static @NotNull String createFileNameWithoutType(@NonNull final Object name) {
+        return name.toString();
     }
 
     public static @NotNull String getFileName(@NonNull final Path path) throws Exception {
@@ -32,7 +43,7 @@ public final class FileUtil {
     }
 
     public static @NotNull String getFileName(@NonNull final String fileName) throws Exception {
-        return getFileNameOrType(fileName, false);
+        return getFileNameOrType(fileName, Type.FILENAME);
     }
 
     public static @NotNull String getFileType(@NonNull final Path path) throws Exception {
@@ -44,12 +55,12 @@ public final class FileUtil {
     }
 
     public static @NotNull String getFileType(@NonNull final String fileName) throws Exception {
-        return getFileNameOrType(fileName, true);
+        return getFileNameOrType(fileName, Type.FILETYPE);
     }
 
     public static @NotNull String getFileNameOrType(
             @NonNull final String fullFileName,
-            final boolean type
+            @NonNull final Type type
     ) throws Exception {
         if (!fullFileName.contains(".")) throw new Exception("Bad file name!");
 
@@ -57,6 +68,19 @@ public final class FileUtil {
         @NonNull val fileName = splitted[0];
         @NonNull val fileType = splitted[1];
 
-        return type ? fileType : fileName;
+        switch (type) {
+            case FILENAME -> {
+                return fileName;
+            }
+            case FILETYPE -> {
+                return fileType;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        }
+    }
+
+    public static enum Type {
+        FILENAME,
+        FILETYPE;
     }
 }

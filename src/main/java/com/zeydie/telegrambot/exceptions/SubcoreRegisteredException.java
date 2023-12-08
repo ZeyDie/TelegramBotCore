@@ -1,7 +1,6 @@
 package com.zeydie.telegrambot.exceptions;
 
 import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
-import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;

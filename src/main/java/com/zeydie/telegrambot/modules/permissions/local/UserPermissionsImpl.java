@@ -2,7 +2,6 @@ package com.zeydie.telegrambot.modules.permissions.local;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
@@ -15,72 +14,61 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.PERMISSIONS_FOLDER_PATH;
-import static com.zeydie.telegrambot.utils.ReferencePaths.PERMISSION_TYPE;
+import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
 @Log4j2
 public class UserPermissionsImpl implements IPermissions {
-    private final @NotNull Cache<Long, PermissionData> usersPermissionsCache = CacheBuilder.newBuilder()
-            .removalListener((RemovalListener<Long, PermissionData>) notification -> {
-                        if (notification.getKey() == null) return;
-                        if (notification.getValue() == null) return;
-
-                        @NonNull val userId = notification.getKey();
-                        @NonNull val permissionData = notification.getValue();
-
-                        log.debug("Cleanup {} {}", userId, permissionData);
-
-                        if (permissionData.permissions().isEmpty()) {
-                            @NonNull val file = FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, userId, PERMISSION_TYPE);
-
-                            if (file.exists())
-                                file.delete();
-                        }
-                    }
-            ).build();
+    private final @NotNull Cache<Long, PermissionData> usersPermissionsCache = CacheBuilder.newBuilder().build();
 
     @Override
     public void preInit() {
+        PERMISSIONS_FOLDER_FILE.mkdirs();
     }
 
     @Override
     public void init() {
-        PERMISSIONS_FOLDER_PATH.toFile().mkdirs();
+        @Nullable val files = PERMISSIONS_FOLDER_FILE.listFiles();
 
-        Arrays.stream(Objects.requireNonNull(PERMISSIONS_FOLDER_PATH.toFile().listFiles()))
-                .forEach(file -> {
-                            try {
-                                log.info("Restoring {}", file.getName());
+        if (files != null)
+            Arrays.stream(files)
+                    .forEach(file -> {
+                                try {
+                                    log.info("Restoring {}", file.getName());
 
-                                val userId = Long.parseLong(FileUtil.getFileName(file));
-                                @NonNull val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
+                                    val userId = Long.parseLong(FileUtil.getFileName(file));
+                                    @NonNull val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
 
-                                this.usersPermissionsCache.put(userId, permissionData);
-
-                                log.info("User {} restored {}", userId, permissionData);
-                            } catch (final Exception exception) {
-                                exception.printStackTrace();
+                                    if (permissionData.permissions().isEmpty()) file.delete();
+                                    else {
+                                        log.info("User {} restored {}", userId, permissionData);
+                                        this.usersPermissionsCache.put(userId, permissionData);
+                                    }
+                                } catch (final Exception exception) {
+                                    exception.printStackTrace();
+                                }
                             }
-                        }
-                );
+                    );
     }
 
     @Override
     public void postInit() {
+        this.usersPermissionsCache.cleanUp();
     }
 
     @Override
     public void save() {
-        PERMISSIONS_FOLDER_PATH.toFile().mkdirs();
+        this.postInit();
 
-        this.usersPermissionsCache.asMap().forEach((id, userData) -> {
-                    log.info("Saving user data permissions for {}", id);
-                    new SGsonFile(PERMISSIONS_FOLDER_PATH.resolve(FileUtil.createFileNameWithType(id, PERMISSION_TYPE))).writeJsonFile(userData);
-                }
-        );
+        this.usersPermissionsCache.asMap()
+                .forEach(
+                        (id, userData) -> {
+                            if (userData.permissions().isEmpty()) return;
+
+                            log.info("Saving user data permissions for {}", id);
+                            new SGsonFile(FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, id, PERMISSION_TYPE)).writeJsonFile(userData);
+                        }
+                );
     }
 
     @Override

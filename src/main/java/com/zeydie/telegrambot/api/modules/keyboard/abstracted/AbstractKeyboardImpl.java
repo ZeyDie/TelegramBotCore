@@ -6,7 +6,6 @@ import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.keyboard.IKeyboard;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractKeyboardImpl implements IKeyboard {
     @Override

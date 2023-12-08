@@ -4,7 +4,6 @@ import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.interfaces.IData;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface IPermissions extends IData {

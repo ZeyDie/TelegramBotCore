@@ -11,6 +11,7 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.utils.FileUtil;
+import com.zeydie.telegrambot.utils.ReferencePaths;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -19,6 +20,7 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,24 +42,33 @@ public class LanguageImpl implements ILanguage {
     public void init() {
         @Nullable val files = LANGUAGE_FOLDER_FILE.listFiles();
 
-        if (files != null)
+        @NonNull val languageDataRegister = new LanguageData(
+                "English",
+                "en",
+                null
+        );
+
+        if (files != null && files.length > 0)
             Arrays.stream(files)
                     .forEach(file -> {
                                 try {
-                                    this.register(
-                                            new SGsonFile(file).fromJsonToObject(
-                                                    new LanguageData(
-                                                            null,
-                                                            null,
-                                                            null
-                                                    )
-                                            )
-                                    );
+                                    this.register(new SGsonFile(file).fromJsonToObject(languageDataRegister));
                                 } catch (final LanguageRegisteredException exception) {
                                     exception.printStackTrace();
                                 }
                             }
                     );
+        else
+            this.register(
+                    new SGsonFile(
+                            LANGUAGE_FOLDER_FILE.toPath().resolve(
+                                    FileUtil.createFileNameWithType(
+                                            "en",
+                                            LANGUAGE_TYPE
+                                    )
+                            )
+                    ).fromJsonToObject(languageDataRegister)
+            );
 
         @NonNull val languageRegisterEvent = new LanguageRegisterEvent();
 
@@ -119,7 +130,6 @@ public class LanguageImpl implements ILanguage {
                 .orElse(null);
     }
 
-    //TODO
     @Override
     public @NotNull String localizeObject(
             @Nullable final Object object,

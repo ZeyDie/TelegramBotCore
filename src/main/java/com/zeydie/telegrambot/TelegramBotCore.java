@@ -2,7 +2,10 @@ package com.zeydie.telegrambot;
 
 import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.model.File;
-import com.pengrad.telegrambot.model.request.*;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.KeyboardButton;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -12,6 +15,7 @@ import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
+import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
@@ -55,7 +59,7 @@ import java.util.Map;
 @Log4j2
 public final class TelegramBotCore implements ISubcore {
     @Getter
-    private static TelegramBotCore instance = new TelegramBotCore();
+    private static final TelegramBotCore instance = new TelegramBotCore();
 
     @Getter
     private final @NotNull Status status = new Status();
@@ -148,6 +152,8 @@ public final class TelegramBotCore implements ISubcore {
         this.preInit();
         this.init();
         this.postInit();
+
+        this.status.setStartup(false);
     }
 
     @Override
@@ -185,9 +191,9 @@ public final class TelegramBotCore implements ISubcore {
 
         this.telegramBot = new TelegramBot(config.getToken());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 
-        this.subcores.values().forEach(subcore -> subcore.preInit());
+        this.subcores.values().forEach(IInitialize::preInit);
 
         log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
@@ -213,7 +219,7 @@ public final class TelegramBotCore implements ISubcore {
 
         this.telegramBot.setUpdatesListener(this.updatesListener, this.exceptionHandler);
 
-        this.subcores.values().forEach(subcore -> subcore.init());
+        this.subcores.values().forEach(IInitialize::init);
 
         log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
@@ -231,21 +237,23 @@ public final class TelegramBotCore implements ISubcore {
         this.userCache.postInit();
         this.permissions.postInit();
 
-        this.subcores.values().forEach(subcore -> subcore.postInit());
+        this.subcores.values().forEach(IInitialize::postInit);
     }
 
     @Override
     public void stop() {
         this.status.setUpdatingMessages(false);
 
-        this.subcores.values().forEach(subcore -> subcore.stop());
+        this.subcores.values().forEach(ISubcore::stop);
 
         this.messagesCache.save();
         this.userCache.save();
         this.permissions.save();
 
+        this.telegramBot.removeGetUpdatesListener();
         this.telegramBot.shutdown();
     }
+
     @Setter
     @Getter
     private @NotNull UpdatesListener updatesListener = new UpdatesListenerImpl();
@@ -349,9 +357,6 @@ public final class TelegramBotCore implements ISubcore {
             } else throw new IllegalStateException("Unexpected value: " + keyboard);
         }
 
-        if (baseRequest instanceof @NonNull SendMessage sendMessage)
-            sendMessage.parseMode(ParseMode.Markdown);
-
         return baseRequest;
     }
 
@@ -359,5 +364,6 @@ public final class TelegramBotCore implements ISubcore {
     public static class Status {
         @NonFinal
         private boolean updatingMessages;
+        private boolean startup = true;
     }
 }

@@ -13,6 +13,7 @@ public record LanguageData(String label, String uniqueId, @Nullable Map<String, 
     public LanguageData {
         if (localization == null) {
             localization = new HashMap<>();
+            localization.put("messages.reloaded", "Bot was reloaded!");
             localization.put("messages.select_language", "Select a language");
         }
     }

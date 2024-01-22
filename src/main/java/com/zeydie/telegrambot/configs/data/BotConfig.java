@@ -12,4 +12,6 @@ public final class BotConfig {
     private @NotNull String name = "name";
     @NonFinal
     private @NotNull String token = "token";
+    @NonFinal
+    private boolean enableReloadCommand = true;
 }

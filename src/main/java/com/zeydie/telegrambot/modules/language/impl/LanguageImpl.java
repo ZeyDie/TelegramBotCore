@@ -11,7 +11,6 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.utils.FileUtil;
-import com.zeydie.telegrambot.utils.ReferencePaths;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -20,7 +19,6 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -99,7 +97,7 @@ public class LanguageImpl implements ILanguage {
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);
 
-        this.registeredLanguages.add(initLangFile(languageData));
+        this.registeredLanguages.add(this.initLangFile(languageData));
 
         log.info("{} ({}) was registered!", label, uniqueId);
 

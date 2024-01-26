@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
-    implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '6.9.1'
+    implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '7.0.1'
     // https://mvnrepository.com/artifact/com.squareup.okio/okio-jvm
     runtimeOnly group: 'com.squareup.okio', name: 'okio-jvm', version: '3.6.0'
 

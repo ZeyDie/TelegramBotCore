@@ -54,9 +54,13 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
         if (messageEntities != null)
             Arrays.stream(messageEntities)
                     .forEach(messageEntity -> {
-                                switch (messageEntity.type()) {
-                                    case bot_command -> TelegramBotCore.getInstance().getCommandEventHandler().handle(message);
-                                }
+                                @Nullable val type = messageEntity.type();
+
+                                if (type != null)
+                                    switch (type) {
+                                        case bot_command ->
+                                                TelegramBotCore.getInstance().getCommandEventHandler().handle(message);
+                                    }
                             }
                     );
 

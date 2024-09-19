@@ -3,9 +3,16 @@ package com.zeydie.telegrambot.utils;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public final class RequestUtil {
     public static final @NotNull String PARAMETER_CHAT_ID = "chat_id";
@@ -33,5 +40,16 @@ public final class RequestUtil {
 
         if (parameters.containsKey(key))
             parameters.replace(key, value);
+    }
+
+    public static @NotNull String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static @NotNull String getDateWithFormat(final long millis) {
+        return new SimpleDateFormat(DEFAULT_DATE_FORMAT).format(new Date(millis));
+    }
+
+    @SneakyThrows
+    public static long getMillisFromDate(@NonNull final String date) {
+        return new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(date).getTime();
     }
 }

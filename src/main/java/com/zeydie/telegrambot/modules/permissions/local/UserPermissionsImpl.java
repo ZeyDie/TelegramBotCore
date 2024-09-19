@@ -6,6 +6,7 @@ import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
+import com.zeydie.telegrambot.api.modules.permissions.data.PermissionsData;
 import com.zeydie.telegrambot.utils.FileUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +20,7 @@ import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
 @Log4j2
 public class UserPermissionsImpl implements IPermissions {
-    private final @NotNull Cache<Long, PermissionData> usersPermissionsCache = CacheBuilder.newBuilder().build();
+    private final @NotNull Cache<Long, PermissionsData> usersPermissionsCache = CacheBuilder.newBuilder().build();
 
     @Override
     public void preInit() {
@@ -37,7 +38,7 @@ public class UserPermissionsImpl implements IPermissions {
                                     log.info("Restoring {}", file.getName());
 
                                     val userId = Long.parseLong(FileUtil.getFileName(file));
-                                    @NonNull val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionData(null));
+                                    @NonNull val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionsData(null));
 
                                     if (permissionData.permissions().isEmpty()) file.delete();
                                     else {
@@ -74,7 +75,7 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public void addPermission(
             @NonNull final UserData userData,
-            @NonNull final String permission
+            @NonNull final PermissionData permission
     ) {
         this.addPermission(userData.getUser().id(), permission);
     }
@@ -82,14 +83,14 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public void addPermission(
             final long chatId,
-            @NonNull final String permission
+            @NonNull final PermissionData permission
     ) {
         if (this.hasPermission(chatId, permission)) return;
 
         @Nullable var permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null) {
-            permissionData = new PermissionData(null);
+            permissionData = new PermissionsData(null);
 
             this.usersPermissionsCache.put(chatId, permissionData);
         }
@@ -100,7 +101,7 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public boolean hasPermission(
             @NonNull final UserData userData,
-            @NonNull final String permission
+            @NonNull final PermissionData permission
     ) {
         return this.hasPermission(userData.getUser().id(), permission);
     }
@@ -108,32 +109,30 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public boolean hasPermission(
             final long chatId,
-            @NonNull final String permission
+            @NonNull final PermissionData permission
     ) {
         @Nullable val permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null)
             return false;
 
-        @NonNull val permissions = permissionData.permissions();
-
-        return permissions.contains("*") || permissions.contains(permission);
+        return permissionData.contains("*") || permissionData.contains(permission);
     }
 
     @Override
-    public @Nullable PermissionData getPermissionData(@NonNull final UserData userData) {
+    public @Nullable PermissionsData getPermissionData(@NonNull final UserData userData) {
         return this.getPermissionData(userData.getUser().id());
     }
 
     @Override
-    public @Nullable PermissionData getPermissionData(final long chatId) {
+    public @Nullable PermissionsData getPermissionData(final long chatId) {
         return this.usersPermissionsCache.getIfPresent(chatId);
     }
 
     @Override
     public void removePermission(
             @NonNull final UserData userData,
-            @NonNull final String permission
+            @NonNull final PermissionData permission
     ) {
         this.removePermission(userData.getUser().id(), permission);
     }
@@ -141,12 +140,12 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public void removePermission(
             final long chatId,
-            @NonNull final String permission
+            @NonNull final PermissionData permission
     ) {
         @Nullable val permissionData = this.getPermissionData(chatId);
 
         if (permissionData != null)
-            permissionData.permissions().remove(permission);
+            permissionData.remove(permission);
     }
 
     @Override

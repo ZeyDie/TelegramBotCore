@@ -6,4 +6,5 @@ import lombok.Data;
 @Data
 public class UserData {
     private final User user;
+    private boolean admin;
 }

@@ -25,7 +25,7 @@ tasks.withType(JavaExec).configureEach {
 
 
 group 'com.zeydie'
-version '7.9-0.3.0R'
+version '7.9-0.3.1R'
 
 repositories {
     mavenCentral()

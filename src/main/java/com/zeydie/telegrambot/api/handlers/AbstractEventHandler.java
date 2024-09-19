@@ -8,6 +8,7 @@ import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
 import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
+import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
@@ -191,7 +192,7 @@ public abstract class AbstractEventHandler implements IInitialize {
 
                                                                 return text.startsWith(command) && (
                                                                         permissions.length == 0 ||
-                                                                                Arrays.stream(permissions).anyMatch(permission -> permissionsImpl.hasPermission(chatId, permission))
+                                                                                Arrays.stream(permissions).anyMatch(permission -> permissionsImpl.hasPermission(chatId, new PermissionData(permission)))
                                                                 );
                                                             }
                                                     )

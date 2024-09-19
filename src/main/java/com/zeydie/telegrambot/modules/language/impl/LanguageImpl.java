@@ -172,7 +172,7 @@ public class LanguageImpl implements ILanguage {
         @NonNull var language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 
         if (userData != null) {
-            @NonNull val userLanguage = userData.getLanguageUniqueId();
+            @NonNull val userLanguage = userData.getUser().languageCode();
 
             language = userLanguage != null ? userLanguage : userData.getUser().languageCode();
         }

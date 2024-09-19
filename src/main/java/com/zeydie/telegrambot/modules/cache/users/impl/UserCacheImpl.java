@@ -36,9 +36,11 @@ public class UserCacheImpl implements IUserCache {
             Arrays.stream(files)
                     .forEach(file -> {
                                 try {
-                                    log.info("Restoring {}", file.getName());
+                                    val fileName = FileUtil.getFileName(file);
 
-                                    val userId = Long.parseLong(FileUtil.getFileName(file));
+                                    log.info("Restoring {}", fileName);
+
+                                    val userId = Long.parseLong(fileName);
                                     @NonNull val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
 
                                     log.info("User {} restored {}", userId, userData);
@@ -59,11 +61,13 @@ public class UserCacheImpl implements IUserCache {
     public void save() {
         this.postInit();
 
-        this.userDataCache.asMap().forEach((id, userData) -> {
-                    log.info("Saving user data cache for {}", id);
-                    new SGsonFile(FileUtil.createFileWithNameAndType(CACHE_USERS_FOLDER_PATH, id, DATA_TYPE)).writeJsonFile(userData);
-                }
-        );
+        this.userDataCache.asMap()
+                .forEach(
+                        (id, userData) -> {
+                            log.info("Saving user data cache for {}", id);
+                            new SGsonFile(FileUtil.createFileWithNameAndType(CACHE_USERS_FOLDER_PATH, id, DATA_TYPE)).writeJsonFile(userData);
+                        }
+                );
     }
 
     @Override
@@ -83,13 +87,18 @@ public class UserCacheImpl implements IUserCache {
 
     @Override
     public void put(@NonNull final UserData userData) {
-        if (!this.contains(userData)) this.userDataCache.put(userData.getUser().id(), userData);
+        if (this.contains(userData))
+            return;
+
+        this.userDataCache.put(userData.getUser().id(), userData);
     }
 
     @Override
     public void put(@NonNull final User user) {
-        if (!this.contains(user))
-            this.userDataCache.put(user.id(), new UserData(user));
+        if (this.contains(user))
+            return;
+
+        this.userDataCache.put(user.id(), new UserData(user));
     }
 
     @Override

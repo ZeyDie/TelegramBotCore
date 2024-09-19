@@ -113,6 +113,10 @@ public final class TelegramBotCore implements ISubcore {
         return this.getClass().getName();
     }
 
+    public void launch() {
+        this.launch(null);
+    }
+
     @Override
     public void launch(@Nullable final String[] args) {
         System.setProperty("log4j.shutdownHookEnabled", Boolean.toString(false));

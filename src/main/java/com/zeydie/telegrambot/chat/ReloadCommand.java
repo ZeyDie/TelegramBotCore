@@ -20,9 +20,11 @@ public final class ReloadCommand {
 
         instance.sendMessage(event.getSender().id(), "messages.reloaded");
 
-        new Thread(() -> {
-            instance.stop();
-            instance.launch(null);
-        }).start();
+        new Thread(
+                () -> {
+                    instance.stop();
+                    instance.launch();
+                }
+        ).start();
     }
 }

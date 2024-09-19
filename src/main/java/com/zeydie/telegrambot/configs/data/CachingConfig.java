@@ -8,5 +8,5 @@ import lombok.experimental.NonFinal;
 @EqualsAndHashCode(callSuper = false)
 public final class CachingConfig {
     @NonFinal
-    private boolean caching = true;
+    private boolean caching = false;
 }

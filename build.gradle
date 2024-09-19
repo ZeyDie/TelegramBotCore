@@ -25,7 +25,7 @@ tasks.withType(JavaExec).configureEach {
 
 
 group 'com.zeydie'
-version '0.2.4R'
+version '7.9-0.3.0R'
 
 repositories {
     mavenCentral()
@@ -37,12 +37,12 @@ repositories {
 
 dependencies {
     // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
-    implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '7.1.0'
+    implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '7.9.+'
     // https://mvnrepository.com/artifact/com.squareup.okio/okio-jvm
     runtimeOnly group: 'com.squareup.okio', name: 'okio-jvm', version: '3.9.0'
 
     // https://github.com/ZeyDie/Simple-GSON
-    implementation group: 'com.zeydie', name: 'SGson', version: '2.9.x-1.1'
+    implementation group: 'com.zeydie', name: 'SGson', version: '2.10.x-1.2'
 
     // https://mvnrepository.com/artifact/org.atteo.classindex/classindex
     implementation group: 'org.atteo.classindex', name: 'classindex', version: '3.13'
@@ -51,19 +51,19 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
     // https://mvnrepository.com/artifact/com.google.guava/guava
-    implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.1.+'
 
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.23.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.23.+'
     // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.+'
 
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
-    implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+    implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.+'
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
 
     // https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core
     testImplementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.37'

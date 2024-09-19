@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 @EqualsAndHashCode(callSuper = false)
 public final class LanguageConfig {
     @NonFinal
-    private boolean multiLanguage = true;
+    private boolean multiLanguage = false;
     @NonFinal
     private @NotNull String defaultLanguageId = "en";
 }

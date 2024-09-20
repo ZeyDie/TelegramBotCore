@@ -12,4 +12,6 @@ public final class LanguageConfig {
     private boolean multiLanguage = false;
     @NonFinal
     private @NotNull String defaultLanguageId = "en";
+    @NonFinal
+    private boolean enableLanguageSelector = true;
 }

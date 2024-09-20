@@ -62,7 +62,7 @@ public final class FileUtil {
             @NonNull final String fullFileName,
             @NonNull final Type type
     ) throws Exception {
-        if (!fullFileName.contains(".")) throw new Exception("Bad file name!");
+        if (!fullFileName.contains(".")) return fullFileName;
 
         @NonNull val splitted = fullFileName.split("\\.");
         @NonNull val fileName = splitted[0];

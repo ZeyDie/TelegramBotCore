@@ -17,7 +17,6 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
 
-@Log4j2
 public class MessageEventHandlerImpl extends AbstractEventHandler implements IMessageEventHandler {
     @Override
     public @NotNull Class<? extends Annotation> getEventAnnotation() {

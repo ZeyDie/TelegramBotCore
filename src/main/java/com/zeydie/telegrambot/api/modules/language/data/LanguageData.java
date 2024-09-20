@@ -8,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
 public record LanguageData(String label, String uniqueId, @Nullable Map<String, String> localization) {
     public LanguageData {
         if (localization == null) {
             localization = new HashMap<>();
             localization.put("messages.reloaded", "Bot was reloaded!");
             localization.put("messages.select_language", "Select a language");
+            localization.put("messages.changed_language", "Language was changed!");
         }
     }
 

@@ -11,7 +11,7 @@ import static com.zeydie.telegrambot.utils.ReferencePaths.CONFIG_TYPE;
 
 public record AbstractFileConfig(@NonNull Path path, @NonNull Object parent, @NonNull String name) {
     public @NotNull <T> T init() {
-        return (T) new SGsonFile(
+        return (T) SGsonFile.create(
                 this.path.resolve(
                         FileUtil.createFileNameWithType(
                                 this.name,

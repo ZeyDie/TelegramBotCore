@@ -11,6 +11,7 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
 import com.zeydie.telegrambot.utils.FileUtil;
+import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
-@Log4j2
 public class LanguageImpl implements ILanguage {
     @Getter
     private final @NotNull List<LanguageData> registeredLanguages = new ArrayList<>();
@@ -50,7 +50,7 @@ public class LanguageImpl implements ILanguage {
             Arrays.stream(files)
                     .forEach(file -> {
                                 try {
-                                    this.register(new SGsonFile(file).fromJsonToObject(languageDataRegister));
+                                    this.register(SGsonFile.create(file).fromJsonToObject(languageDataRegister));
                                 } catch (final LanguageRegisteredException exception) {
                                     exception.printStackTrace();
                                 }
@@ -58,7 +58,7 @@ public class LanguageImpl implements ILanguage {
                     );
         else
             this.register(
-                    new SGsonFile(
+                    SGsonFile.create(
                             LANGUAGE_FOLDER_FILE.toPath().resolve(
                                     FileUtil.createFileNameWithType(
                                             "en",
@@ -99,7 +99,7 @@ public class LanguageImpl implements ILanguage {
 
         this.registeredLanguages.add(this.initLangFile(languageData));
 
-        log.info("{} ({}) was registered!", label, uniqueId);
+        LoggerUtil.info("{} ({}) was registered!", label, uniqueId);
 
         return true;
     }
@@ -172,9 +172,10 @@ public class LanguageImpl implements ILanguage {
         @NonNull var language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 
         if (userData != null) {
-            @NonNull val userLanguage = userData.getUser().languageCode();
+            @Nullable val userLanguage = userData.getLanguageCode();
 
-            language = userLanguage != null ? userLanguage : userData.getUser().languageCode();
+            if (userLanguage != null && this.isRegistered(userLanguage))
+                language = userLanguage;
         }
 
         @Nullable val languageData = this.getLanguageData(language);
@@ -195,7 +196,7 @@ public class LanguageImpl implements ILanguage {
     }
 
     public @NotNull LanguageData initLangFile(@NonNull final LanguageData languageData) {
-        return new SGsonFile(
+        return SGsonFile.create(
                 FileUtil.createFileWithNameAndType(LANGUAGE_FOLDER_PATH, languageData.uniqueId(), LANGUAGE_TYPE)
         ).fromJsonToObject(languageData);
     }

@@ -16,6 +16,7 @@ import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegi
 import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
 import com.zeydie.telegrambot.telegram.events.CommandEvent;
 import com.zeydie.telegrambot.telegram.events.MessageEvent;
+import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -29,7 +30,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Log4j2
 public abstract class AbstractEventHandler implements IInitialize {
     public abstract @NotNull Class<? extends Annotation> getEventAnnotation();
 
@@ -46,17 +46,17 @@ public abstract class AbstractEventHandler implements IInitialize {
         @NonNull val eventAnnotation = this.getEventAnnotation();
         @Nullable val eventParameters = this.getParameters();
 
-        log.debug("Scanning events {}...", eventAnnotation);
+        LoggerUtil.debug(this.getClass(), "Scanning events {}...", eventAnnotation);
 
         ClassIndex.getAnnotated(EventSubscribesRegister.class)
                 .forEach(annotatedClass -> {
-                            log.debug("{}", annotatedClass);
+                            LoggerUtil.debug(this.getClass(), "{}", annotatedClass);
 
                             if (annotatedClass.getAnnotation(EventSubscribesRegister.class).enable())
                                 Arrays.stream(annotatedClass.getMethods())
                                         .forEach(method -> {
                                                     if (method.isAnnotationPresent(eventAnnotation)) {
-                                                        log.debug("{}", method);
+                                                        LoggerUtil.debug(this.getClass(), "{}", method);
 
                                                         @NonNull val parameterTypes = method.getParameterTypes();
 
@@ -77,7 +77,7 @@ public abstract class AbstractEventHandler implements IInitialize {
 
                                                             if (methodClassCache != null) {
                                                                 methodClassCache.put(method, annotatedClass);
-                                                                log.debug("{} == {}", parameterTypes, eventParameters);
+                                                                LoggerUtil.debug(this.getClass(), "{} == {}", parameterTypes, eventParameters);
                                                             }
                                                         }
                                                     }
@@ -126,7 +126,7 @@ public abstract class AbstractEventHandler implements IInitialize {
     }
 
     public boolean hasCancelledEvent(final Object @NotNull ... objects) {
-        for (final Object object : objects)
+        for (val object : objects)
             if (this.isCancelled(object))
                 return true;
 

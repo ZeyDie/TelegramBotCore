@@ -1,7 +1,10 @@
 package com.zeydie.telegrambot;
 
+import com.google.common.util.concurrent.AbstractScheduledService;
+import com.google.common.util.concurrent.Service;
 import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.model.File;
+import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.model.request.Keyboard;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
@@ -15,6 +18,7 @@ import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
+import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
@@ -41,6 +45,7 @@ import com.zeydie.telegrambot.telegram.handlers.events.impl.CallbackQueryEventHa
 import com.zeydie.telegrambot.telegram.handlers.events.impl.CommandEventHandlerImpl;
 import com.zeydie.telegrambot.telegram.handlers.events.impl.MessageEventHandlerImpl;
 import com.zeydie.telegrambot.telegram.handlers.events.impl.UpdateEventHandlerImpl;
+import com.zeydie.telegrambot.utils.LoggerUtil;
 import com.zeydie.telegrambot.utils.ReflectionUtil;
 import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.*;
@@ -55,11 +60,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
-@Log4j2
 public final class TelegramBotCore implements ISubcore {
     @Getter
     private static final TelegramBotCore instance = new TelegramBotCore();
+
+    public static void main(@Nullable final String[] args) {
+        instance.launch(args);
+    }
 
     @Getter
     private final @NotNull Status status = new Status();
@@ -96,6 +106,20 @@ public final class TelegramBotCore implements ISubcore {
     @Getter
     private @NotNull ICommandEventHandler commandEventHandler = new CommandEventHandlerImpl();
 
+    private @NotNull Service saveScheduler = new AbstractScheduledService() {
+        @Override
+        protected void runOneIteration() throws Exception {
+            CompletableFuture.runAsync(messagesCache::save)
+                    .thenRun(userCache::save)
+                    .thenRun(permissions::save);
+        }
+
+        @Override
+        protected @NotNull Scheduler scheduler() {
+            return Scheduler.newFixedRateSchedule(0, 1, TimeUnit.MINUTES);
+        }
+    };
+
     @Getter
     private TelegramBot telegramBot;
 
@@ -119,13 +143,16 @@ public final class TelegramBotCore implements ISubcore {
 
     @Override
     public void launch(@Nullable final String[] args) {
+        val startTime = System.currentTimeMillis();
+        LoggerUtil.info("Launching...");
+
         System.setProperty("log4j.shutdownHookEnabled", Boolean.toString(false));
 
-        log.debug("Scanning configs...");
+        LoggerUtil.debug(this.getClass(), "Scanning configs...");
 
         ClassIndex.getAnnotated(ConfigSubscribesRegister.class)
                 .forEach(annotatedClass -> {
-                            log.debug("{}", annotatedClass);
+                            LoggerUtil.debug(this.getClass(), "{}", annotatedClass);
 
                             if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
                                 @NotNull val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
@@ -158,6 +185,8 @@ public final class TelegramBotCore implements ISubcore {
         this.postInit();
 
         this.status.setStartup(false);
+
+        LoggerUtil.info("Bot was launched in {} sec!", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Override
@@ -174,8 +203,7 @@ public final class TelegramBotCore implements ISubcore {
             @NonNull final BotConfig config,
             @NonNull final CachingConfig cachingConfig
     ) {
-        final long startTime = System.currentTimeMillis();
-        log.info("Starting setup...");
+        val startTime = System.currentTimeMillis();
 
         this.languageEventHandler.preInit();
         this.updateEventHandler.preInit();
@@ -199,14 +227,13 @@ public final class TelegramBotCore implements ISubcore {
 
         this.subcores.values().forEach(IInitialize::preInit);
 
-        log.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
+        LoggerUtil.info("Setup's successful! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Override
     @SneakyThrows
     public void init() {
-        final long startTime = System.currentTimeMillis();
-        log.info("Starting initialize...");
+        val startTime = System.currentTimeMillis();
 
         this.languageEventHandler.init();
         this.updateEventHandler.init();
@@ -225,11 +252,13 @@ public final class TelegramBotCore implements ISubcore {
 
         this.subcores.values().forEach(IInitialize::init);
 
-        log.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
+        LoggerUtil.info("Initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Override
     public void postInit() {
+        val startTime = System.currentTimeMillis();
+
         this.languageEventHandler.postInit();
         this.updateEventHandler.postInit();
         this.callbackQueryEventHandler.postInit();
@@ -242,6 +271,10 @@ public final class TelegramBotCore implements ISubcore {
         this.permissions.postInit();
 
         this.subcores.values().forEach(IInitialize::postInit);
+
+        this.saveScheduler.startAsync();
+
+        LoggerUtil.info("Post initialized! ({} sec.)", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Override
@@ -264,6 +297,20 @@ public final class TelegramBotCore implements ISubcore {
     @Setter
     @Getter
     private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
+
+    public void sendMessage(
+            @NonNull final UserData userData,
+            @NonNull final String message
+    ) {
+        this.sendMessage(userData.getUser(), message);
+    }
+
+    public void sendMessage(
+            @NonNull final User user,
+            @NonNull final String message
+    ) {
+        this.sendMessage(user.id(), message);
+    }
 
     public void sendMessage(
             final long chatId,

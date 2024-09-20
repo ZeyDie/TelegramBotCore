@@ -7,6 +7,7 @@ import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.utils.FileUtil;
+import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +19,6 @@ import java.util.Arrays;
 
 import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
-@Log4j2
 public class UserCacheImpl implements IUserCache {
     private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder().build();
 
@@ -38,12 +38,12 @@ public class UserCacheImpl implements IUserCache {
                                 try {
                                     val fileName = FileUtil.getFileName(file);
 
-                                    log.info("Restoring {}", fileName);
+                                    LoggerUtil.info("Restoring {}", fileName);
 
                                     val userId = Long.parseLong(fileName);
-                                    @NonNull val userData = new SGsonFile(file).fromJsonToObject(new UserData(null));
+                                    @NonNull val userData = SGsonFile.create(file).fromJsonToObject(new UserData(null));
 
-                                    log.info("User {} restored {}", userId, userData);
+                                    LoggerUtil.info("User {} restored {}", userId, userData);
                                     this.userDataCache.put(userId, userData);
                                 } catch (final Exception exception) {
                                     exception.printStackTrace();
@@ -59,15 +59,19 @@ public class UserCacheImpl implements IUserCache {
 
     @Override
     public void save() {
+        val startTime = System.currentTimeMillis();
+
         this.postInit();
 
         this.userDataCache.asMap()
                 .forEach(
                         (id, userData) -> {
-                            log.info("Saving user data cache for {}", id);
-                            new SGsonFile(FileUtil.createFileWithNameAndType(CACHE_USERS_FOLDER_PATH, id, DATA_TYPE)).writeJsonFile(userData);
+                            LoggerUtil.info("Saving user data cache for {}", id);
+                            SGsonFile.createPretty(FileUtil.createFileWithNameAndType(CACHE_USERS_FOLDER_PATH, id, DATA_TYPE)).writeJsonFile(userData);
                         }
                 );
+
+        LoggerUtil.info("Saved data in {} sec.", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Override

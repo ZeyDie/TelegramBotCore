@@ -25,7 +25,7 @@ tasks.withType(JavaExec).configureEach {
 
 
 group 'com.zeydie'
-version '7.9-0.3.1R'
+version '7.9-0.3.2R'
 
 repositories {
     mavenCentral()
@@ -39,10 +39,10 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
     implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '7.9.+'
     // https://mvnrepository.com/artifact/com.squareup.okio/okio-jvm
-    runtimeOnly group: 'com.squareup.okio', name: 'okio-jvm', version: '3.9.1'
+    runtimeOnly group: 'com.squareup.okio', name: 'okio-jvm', version: '3.9.+'
 
     // https://github.com/ZeyDie/Simple-GSON
-    implementation group: 'com.zeydie', name: 'SGson', version: '2.10.x-1.2'
+    implementation group: 'com.zeydie', name: 'SGson', version: '2.11.x-1.+'
 
     // https://mvnrepository.com/artifact/org.atteo.classindex/classindex
     implementation group: 'org.atteo.classindex', name: 'classindex', version: '3.13'
@@ -68,8 +68,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core
     testImplementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.37'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.+'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.+'
 }
 
 jar {

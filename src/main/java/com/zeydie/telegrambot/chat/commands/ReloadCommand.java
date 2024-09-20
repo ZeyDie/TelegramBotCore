@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.chat;
+package com.zeydie.telegrambot.chat.commands;
 
 import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.telegram.events.CommandEventSubscribe;
@@ -9,7 +9,8 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
-@Log4j2
+import java.util.concurrent.CompletableFuture;
+
 @EventSubscribesRegister
 public final class ReloadCommand {
     @CommandEventSubscribe(commands = "/reload", permissions = "telegrambotcore.reload")
@@ -18,13 +19,8 @@ public final class ReloadCommand {
 
         @NonNull val instance = TelegramBotCore.getInstance();
 
-        instance.sendMessage(event.getSender().id(), "messages.reloaded");
+        instance.sendMessage(event.getSender(), "messages.reloaded");
 
-        new Thread(
-                () -> {
-                    instance.stop();
-                    instance.launch();
-                }
-        ).start();
+        CompletableFuture.runAsync(instance::stop).thenRun(instance::launch);
     }
 }

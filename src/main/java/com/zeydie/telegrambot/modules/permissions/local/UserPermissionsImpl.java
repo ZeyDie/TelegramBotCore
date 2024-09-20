@@ -8,6 +8,7 @@ import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionsData;
 import com.zeydie.telegrambot.utils.FileUtil;
+import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
@@ -18,7 +19,6 @@ import java.util.Arrays;
 
 import static com.zeydie.telegrambot.utils.ReferencePaths.*;
 
-@Log4j2
 public class UserPermissionsImpl implements IPermissions {
     private final @NotNull Cache<Long, PermissionsData> usersPermissionsCache = CacheBuilder.newBuilder().build();
 
@@ -35,14 +35,14 @@ public class UserPermissionsImpl implements IPermissions {
             Arrays.stream(files)
                     .forEach(file -> {
                                 try {
-                                    log.info("Restoring {}", file.getName());
+                                    LoggerUtil.info("Restoring {}", file.getName());
 
                                     val userId = Long.parseLong(FileUtil.getFileName(file));
-                                    @NonNull val permissionData = new SGsonFile(file).fromJsonToObject(new PermissionsData(null));
+                                    @NonNull val permissionData = SGsonFile.create(file).fromJsonToObject(new PermissionsData(null));
 
                                     if (permissionData.permissions().isEmpty()) file.delete();
                                     else {
-                                        log.info("User {} restored {}", userId, permissionData);
+                                        LoggerUtil.info("User {} restored {}", userId, permissionData);
                                         this.usersPermissionsCache.put(userId, permissionData);
                                     }
                                 } catch (final Exception exception) {
@@ -66,8 +66,8 @@ public class UserPermissionsImpl implements IPermissions {
                         (id, userData) -> {
                             if (userData.permissions().isEmpty()) return;
 
-                            log.info("Saving user data permissions for {}", id);
-                            new SGsonFile(FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, id, PERMISSION_TYPE)).writeJsonFile(userData);
+                            LoggerUtil.info("Saving user data permissions for {}", id);
+                            SGsonFile.createPretty(FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, id, PERMISSION_TYPE)).writeJsonFile(userData);
                         }
                 );
     }

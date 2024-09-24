@@ -28,7 +28,10 @@ public final class ReferencePaths {
     public static @NotNull String PERMISSION_TYPE = "pex";
 
     public enum Category {
-        CONFIGS, CACHE, LANGUAGE, PERMISSIONS;
+        CONFIGS,
+        CACHE,
+        LANGUAGE,
+        PERMISSIONS;
 
         @Override
         public @NotNull String toString() {

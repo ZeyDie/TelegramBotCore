@@ -17,6 +17,7 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
         if (baseResponse == null) {
             LoggerUtil.error("Network probably!!!");
             TelegramBotCore.getInstance().stop();
+
             return;
         }
 
@@ -27,7 +28,6 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
 
         if (code == 404) {
             LoggerUtil.error("Bad token");
-
             TelegramBotCore.getInstance().stop();
         }
     }

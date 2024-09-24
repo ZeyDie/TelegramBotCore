@@ -65,8 +65,15 @@ dependencies {
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
 
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    testImplementation group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
+    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
+
     // https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core
     testImplementation group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.37'
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.+'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.+'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.+'

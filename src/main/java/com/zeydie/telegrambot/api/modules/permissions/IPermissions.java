@@ -10,12 +10,32 @@ import org.jetbrains.annotations.Nullable;
 public interface IPermissions extends IData {
     void addPermission(
             @NonNull final UserData userData,
+            @NonNull final String permission
+    );
+
+    void addPermission(
+            final long chatId,
+            @NonNull final String permission
+    );
+
+    void addPermission(
+            @NonNull final UserData userData,
             @NonNull final PermissionData permission
     );
 
     void addPermission(
             final long chatId,
             @NonNull final PermissionData permission
+    );
+
+    boolean hasPermission(
+            @NonNull final UserData userData,
+            @NonNull final String permission
+    );
+
+    boolean hasPermission(
+            final long chatId,
+            @NonNull final String permission
     );
 
     boolean hasPermission(
@@ -33,6 +53,16 @@ public interface IPermissions extends IData {
 
     @Nullable
     PermissionsData getPermissionData(final long chatId);
+
+    void removePermission(
+            @NonNull final UserData userData,
+            @NonNull final String permission
+    );
+
+    void removePermission(
+            final long chatId,
+            @NonNull final String permission
+    );
 
     void removePermission(
             @NonNull final UserData userData,

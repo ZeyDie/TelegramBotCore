@@ -40,7 +40,7 @@ import com.zeydie.telegrambot.modules.cache.messages.impl.CachingMessagesCacheIm
 import com.zeydie.telegrambot.modules.cache.messages.impl.DirectlyMessagesCacheImpl;
 import com.zeydie.telegrambot.modules.cache.users.impl.UserCacheImpl;
 import com.zeydie.telegrambot.modules.language.impl.LanguageImpl;
-import com.zeydie.telegrambot.modules.permissions.local.UserPermissionsImpl;
+import com.zeydie.telegrambot.modules.permissions.impl.UserPermissionsImpl;
 import com.zeydie.telegrambot.telegram.handlers.events.impl.CallbackQueryEventHandlerImpl;
 import com.zeydie.telegrambot.telegram.handlers.events.impl.CommandEventHandlerImpl;
 import com.zeydie.telegrambot.telegram.handlers.events.impl.MessageEventHandlerImpl;
@@ -50,7 +50,6 @@ import com.zeydie.telegrambot.utils.ReflectionUtil;
 import com.zeydie.telegrambot.utils.RequestUtil;
 import lombok.*;
 import lombok.experimental.NonFinal;
-import lombok.extern.log4j.Log4j2;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.modules.permissions.local;
+package com.zeydie.telegrambot.modules.permissions.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -10,7 +10,6 @@ import com.zeydie.telegrambot.api.modules.permissions.data.PermissionsData;
 import com.zeydie.telegrambot.utils.FileUtil;
 import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,6 +74,22 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public void addPermission(
             @NonNull final UserData userData,
+            @NonNull final String permission
+    ) {
+        this.addPermission(userData, new PermissionData(permission));
+    }
+
+    @Override
+    public void addPermission(
+            final long chatId,
+            @NonNull final String permission
+    ) {
+        this.addPermission(chatId, new PermissionData(permission));
+    }
+
+    @Override
+    public void addPermission(
+            @NonNull final UserData userData,
             @NonNull final PermissionData permission
     ) {
         this.addPermission(userData.getUser().id(), permission);
@@ -96,6 +111,22 @@ public class UserPermissionsImpl implements IPermissions {
         }
 
         permissionData.permissions().add(permission);
+    }
+
+    @Override
+    public boolean hasPermission(
+            @NonNull final UserData userData,
+            @NonNull final String permission
+    ) {
+        return this.hasPermission(userData, new PermissionData(permission));
+    }
+
+    @Override
+    public boolean hasPermission(
+            final long chatId,
+            @NonNull final String permission
+    ) {
+        return this.hasPermission(chatId, new PermissionData(permission));
     }
 
     @Override
@@ -127,6 +158,22 @@ public class UserPermissionsImpl implements IPermissions {
     @Override
     public @Nullable PermissionsData getPermissionData(final long chatId) {
         return this.usersPermissionsCache.getIfPresent(chatId);
+    }
+
+    @Override
+    public void removePermission(
+            @NonNull final UserData userData,
+            @NonNull final String permission
+    ) {
+        this.removePermission(userData, new PermissionData(permission));
+    }
+
+    @Override
+    public void removePermission(
+            final long chatId,
+            @NonNull final String permission
+    ) {
+        this.removePermission(chatId, new PermissionData(permission));
     }
 
     @Override

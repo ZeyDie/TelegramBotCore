@@ -94,13 +94,14 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                                     @NonNull final ListMessagesData listMessagesData = new ListMessagesData(null);
                                     @NonNull final List<MessageData> messages = listMessagesData.messages();
 
-                                    Files.walk(chatId.toPath())
-                                            .forEachOrdered(
-                                                    message -> {
-                                                        if (!Files.isDirectory(message))
-                                                            messages.add(SGsonFile.create(message).fromJsonToObject(new MessageData(null)));
-                                                    }
-                                            );
+                                    try (val stream = Files.walk(chatId.toPath())) {
+                                        stream.forEachOrdered(
+                                                message -> {
+                                                    if (!Files.isDirectory(message))
+                                                        messages.add(SGsonFile.create(message).fromJsonToObject(new MessageData(null)));
+                                                }
+                                        );
+                                    }
 
                                     LoggerUtil.info("Chat: {} restored {} messages", chatId, messages.size());
                                     this.chatMessageCache.put(Long.parseLong(FileUtil.getFileName(chatId)), listMessagesData);

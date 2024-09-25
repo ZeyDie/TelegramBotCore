@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.zeydie.sgson.SGsonBase;
 import com.zeydie.telegrambot.TelegramBotCore;
-import com.zeydie.telegrambot.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.val;
 

@@ -7,11 +7,11 @@ import com.zeydie.telegrambot.api.events.language.LanguageRegisterEvent;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
+import com.zeydie.telegrambot.api.utils.FileUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
-import com.zeydie.telegrambot.utils.FileUtil;
-import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.*;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.*;
 
 public class LanguageImpl implements ILanguage {
     @Getter

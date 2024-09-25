@@ -1,6 +1,6 @@
 package com.zeydie.telegrambot.api.modules.permissions.data;
 
-import com.zeydie.telegrambot.utils.RequestUtil;
+import com.zeydie.telegrambot.api.utils.RequestUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

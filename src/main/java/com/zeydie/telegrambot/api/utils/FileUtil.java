@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.utils;
+package com.zeydie.telegrambot.api.utils;
 
 import lombok.NonNull;
 import lombok.val;

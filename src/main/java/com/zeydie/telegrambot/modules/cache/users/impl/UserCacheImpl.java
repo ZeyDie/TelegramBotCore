@@ -6,8 +6,8 @@ import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
-import com.zeydie.telegrambot.utils.FileUtil;
-import com.zeydie.telegrambot.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.FileUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.*;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.*;
 
 public class UserCacheImpl implements IUserCache {
     private final @NotNull Cache<Long, UserData> userDataCache = CacheBuilder.newBuilder().build();

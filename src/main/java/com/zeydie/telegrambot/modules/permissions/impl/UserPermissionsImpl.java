@@ -7,8 +7,8 @@ import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionsData;
-import com.zeydie.telegrambot.utils.FileUtil;
-import com.zeydie.telegrambot.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.FileUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.*;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.*;
 
 public class UserPermissionsImpl implements IPermissions {
     private final @NotNull Cache<Long, PermissionsData> usersPermissionsCache = CacheBuilder.newBuilder().build();

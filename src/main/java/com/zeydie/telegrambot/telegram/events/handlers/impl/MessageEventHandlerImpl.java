@@ -1,12 +1,12 @@
-package com.zeydie.telegrambot.telegram.handlers.events.impl;
+package com.zeydie.telegrambot.telegram.events.handlers.impl;
 
 import com.pengrad.telegrambot.model.Message;
 import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
-import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
-import com.zeydie.telegrambot.api.telegram.handlers.events.IMessageEventHandler;
-import com.zeydie.telegrambot.telegram.events.MessageEvent;
+import com.zeydie.telegrambot.api.telegram.events.MessageEvent;
+import com.zeydie.telegrambot.api.telegram.events.handlers.IMessageEventHandler;
+import com.zeydie.telegrambot.api.telegram.events.subscribes.MessageEventSubscribe;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;

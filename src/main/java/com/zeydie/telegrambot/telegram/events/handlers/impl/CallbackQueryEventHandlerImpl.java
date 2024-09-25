@@ -1,10 +1,10 @@
-package com.zeydie.telegrambot.telegram.handlers.events.impl;
+package com.zeydie.telegrambot.telegram.events.handlers.impl;
 
 import com.pengrad.telegrambot.model.CallbackQuery;
 import com.zeydie.telegrambot.api.handlers.AbstractEventHandler;
-import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
-import com.zeydie.telegrambot.api.telegram.handlers.events.ICallbackQueryEventHandler;
-import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
+import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEvent;
+import com.zeydie.telegrambot.api.telegram.events.handlers.ICallbackQueryEventHandler;
+import com.zeydie.telegrambot.api.telegram.events.subscribes.CallbackQueryEventSubscribe;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

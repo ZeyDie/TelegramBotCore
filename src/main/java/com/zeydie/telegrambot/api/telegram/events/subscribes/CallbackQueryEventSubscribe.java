@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.telegram.events;
+package com.zeydie.telegrambot.api.telegram.events.subscribes;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,8 +8,8 @@ import java.lang.annotation.*;
 @Inherited
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MessageEventSubscribe {
-    @NotNull String[] messages() default "";
+public @interface CallbackQueryEventSubscribe {
+    @NotNull String[] callbacks();
 
     boolean startWith() default false;
 

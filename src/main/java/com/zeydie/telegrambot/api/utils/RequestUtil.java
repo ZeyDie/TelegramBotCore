@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.utils;
+package com.zeydie.telegrambot.api.utils;
 
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.response.BaseResponse;

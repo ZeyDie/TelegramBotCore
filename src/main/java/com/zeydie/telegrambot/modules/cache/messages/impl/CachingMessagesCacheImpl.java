@@ -10,8 +10,8 @@ import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.ListMessagesData;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
-import com.zeydie.telegrambot.utils.FileUtil;
-import com.zeydie.telegrambot.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.FileUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.zeydie.telegrambot.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_FILE;
-import static com.zeydie.telegrambot.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_PATH;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_FILE;
+import static com.zeydie.telegrambot.api.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_PATH;
 
 public class CachingMessagesCacheImpl implements IMessagesCache {
     @Getter
@@ -97,9 +97,8 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                                     Files.walk(chatId.toPath())
                                             .forEachOrdered(
                                                     message -> {
-                                                        if (Files.isDirectory(message)) return;
-
-                                                        messages.add(SGsonFile.create(message).fromJsonToObject(new MessageData(null)));
+                                                        if (!Files.isDirectory(message))
+                                                            messages.add(SGsonFile.create(message).fromJsonToObject(new MessageData(null)));
                                                     }
                                             );
 

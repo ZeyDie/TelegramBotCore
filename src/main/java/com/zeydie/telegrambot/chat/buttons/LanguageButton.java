@@ -2,10 +2,10 @@ package com.zeydie.telegrambot.chat.buttons;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.zeydie.telegrambot.TelegramBotCore;
-import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEventSubscribe;
+import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEvent;
+import com.zeydie.telegrambot.api.telegram.events.subscribes.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
-import com.zeydie.telegrambot.telegram.events.CallbackQueryEvent;
-import com.zeydie.telegrambot.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;

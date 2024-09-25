@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.telegram.events;
+package com.zeydie.telegrambot.api.telegram.events;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.User;

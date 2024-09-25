@@ -3,7 +3,7 @@ package com.zeydie.telegrambot.handlers.exceptions.impl;
 import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramException;
 import com.zeydie.telegrambot.TelegramBotCore;
-import com.zeydie.telegrambot.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;

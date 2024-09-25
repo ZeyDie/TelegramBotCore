@@ -1,6 +1,6 @@
 package com.zeydie.telegrambot.api.events.config;
 
-import com.zeydie.telegrambot.utils.ReferencePaths;
+import com.zeydie.telegrambot.api.utils.ReferencePaths;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

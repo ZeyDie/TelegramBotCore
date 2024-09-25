@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.api.telegram.events;
+package com.zeydie.telegrambot.api.telegram.events.subscribes;
 
 import org.jetbrains.annotations.Nullable;
 

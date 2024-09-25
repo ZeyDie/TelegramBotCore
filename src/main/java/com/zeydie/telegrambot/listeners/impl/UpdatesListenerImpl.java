@@ -6,7 +6,6 @@ import com.zeydie.sgson.SGsonBase;
 import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.util.List;

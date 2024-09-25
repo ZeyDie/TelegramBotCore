@@ -8,7 +8,6 @@ import com.zeydie.telegrambot.api.telegram.events.MessageEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.handlers.events.IMessageEventHandler;
 import com.zeydie.telegrambot.telegram.events.MessageEvent;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

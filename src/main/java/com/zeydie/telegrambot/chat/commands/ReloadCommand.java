@@ -6,7 +6,6 @@ import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegi
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.telegram.events.CommandEvent;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 
 import java.util.concurrent.CompletableFuture;

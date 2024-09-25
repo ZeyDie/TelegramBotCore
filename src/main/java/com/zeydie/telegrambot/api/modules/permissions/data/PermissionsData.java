@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 public record PermissionsData(@Nullable List<PermissionData> permissions) {
     public PermissionsData {

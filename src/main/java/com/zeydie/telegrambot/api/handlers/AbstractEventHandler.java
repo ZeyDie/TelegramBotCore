@@ -18,7 +18,6 @@ import com.zeydie.telegrambot.telegram.events.CommandEvent;
 import com.zeydie.telegrambot.telegram.events.MessageEvent;
 import com.zeydie.telegrambot.utils.LoggerUtil;
 import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;

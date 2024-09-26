@@ -2,6 +2,7 @@ package com.zeydie.telegrambot.configs.data;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.experimental.NonFinal;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,4 +17,12 @@ public final class BotConfig {
     private boolean enableReloadCommand = true;
     @NonFinal
     private boolean debug = true;
+    @NonFinal
+    private @NonNull TestConfig testConfig = new TestConfig();
+
+    @Data
+    @EqualsAndHashCode(callSuper = false)
+    public static class TestConfig {
+        private long chatId = 0;
+    }
 }

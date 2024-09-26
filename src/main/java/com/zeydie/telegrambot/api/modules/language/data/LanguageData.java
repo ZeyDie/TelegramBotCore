@@ -14,6 +14,8 @@ public record LanguageData(String label, String uniqueId, @Nullable Map<String, 
             localization.put("messages.reloaded", "Bot was reloaded!");
             localization.put("messages.select_language", "Select a language");
             localization.put("messages.changed_language", "Language was changed!");
+            localization.put("messages.donate.title", "Donate to Bot");
+            localization.put("messages.donate.description", "Your support is very important!");
         }
     }
 

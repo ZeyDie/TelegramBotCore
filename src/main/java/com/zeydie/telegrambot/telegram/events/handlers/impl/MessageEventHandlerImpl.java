@@ -42,7 +42,10 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
     @Override
     public void handle(@NonNull final MessageData messageData) {
-        this.handle(messageData.message());
+        val message = messageData.message();
+
+        if (message != null)
+            this.handle(message);
     }
 
     @Override

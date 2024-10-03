@@ -2,7 +2,6 @@ package com.zeydie.telegrambot.api.utils;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +31,7 @@ public final class ReflectionUtil {
             @NonNull final Object classInstance,
             @Nullable final Object value
     ) {
-        val accessible = field.canAccess(classInstance);
-
         field.setAccessible(true);
         field.set(classInstance, value);
-        field.setAccessible(accessible);
     }
 }

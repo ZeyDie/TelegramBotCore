@@ -154,15 +154,15 @@ public final class TelegramBotCore implements ISubcore {
                             LoggerUtil.debug(this.getClass(), "{}", annotatedClass);
 
                             if (annotatedClass.getAnnotation(ConfigSubscribesRegister.class).enable()) {
-                                @NotNull val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
+                                @NonNull val annotatedClassInstance = ReflectionUtil.instance(annotatedClass);
 
                                 Arrays.stream(annotatedClassInstance.getClass().getDeclaredFields())
                                         .forEach(field -> {
                                                     if (field.isAnnotationPresent(ConfigSubscribe.class)) {
-                                                        @NotNull val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
+                                                        @NonNull val configSubscribe = field.getAnnotation(ConfigSubscribe.class);
 
-                                                        @NotNull val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
-                                                        @NotNull val config = !configSubscribe.file() ? objectInstance :
+                                                        @NonNull val objectInstance = ReflectionUtil.instance(ReflectionUtil.getClassField(field));
+                                                        @NonNull val config = !configSubscribe.file() ? objectInstance :
                                                                 new AbstractFileConfig(
                                                                         Paths.get(configSubscribe.category().toString(), configSubscribe.path()),
                                                                         objectInstance,
@@ -361,7 +361,7 @@ public final class TelegramBotCore implements ISubcore {
                                                 @NonNull val clazz = inlineKeyboardButton.getClass();
                                                 @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
 
-                                                @NotNull val textInlineKeyboardField = buttonClass.getDeclaredField("text");
+                                                @NonNull val textInlineKeyboardField = buttonClass.getDeclaredField("text");
                                                 @Nullable val textButton = inlineKeyboardButton.text();
 
                                                 if (textButton != null)
@@ -377,7 +377,7 @@ public final class TelegramBotCore implements ISubcore {
                                 )
                         );
             } else if (keyboard instanceof @NonNull final ReplyKeyboardMarkup replyKeyboardMarkup) {
-                @NotNull val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
+                @NonNull val field = replyKeyboardMarkup.getClass().getDeclaredField("keyboard");
                 @Nullable val replyKeyboardButtonsList = (List<List<KeyboardButton>>) ReflectionUtil.getValueField(field, replyKeyboardMarkup);
 
                 if (replyKeyboardButtonsList != null)
@@ -389,7 +389,7 @@ public final class TelegramBotCore implements ISubcore {
                                                     @NonNull val clazz = keyboardButton.getClass();
                                                     @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
 
-                                                    @NotNull val textKeyboardField = buttonClass.getDeclaredField("text");
+                                                    @NonNull val textKeyboardField = buttonClass.getDeclaredField("text");
                                                     @Nullable val textButton = (String) ReflectionUtil.getValueField(textKeyboardField, keyboardButton);
 
                                                     if (textButton != null)

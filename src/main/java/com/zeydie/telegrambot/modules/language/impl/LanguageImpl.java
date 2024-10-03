@@ -25,8 +25,8 @@ import java.util.List;
 
 import static com.zeydie.telegrambot.api.utils.ReferencePaths.*;
 
+@Getter
 public class LanguageImpl implements ILanguage {
-    @Getter
     private final @NotNull List<LanguageData> registeredLanguages = new ArrayList<>();
 
     @Override
@@ -51,7 +51,7 @@ public class LanguageImpl implements ILanguage {
                                 try {
                                     this.register(SGsonFile.create(file).fromJsonToObject(languageDataRegister));
                                 } catch (final LanguageRegisteredException exception) {
-                                    exception.printStackTrace();
+                                    exception.printStackTrace(System.out);
                                 }
                             }
                     );
@@ -78,7 +78,7 @@ public class LanguageImpl implements ILanguage {
                                 if (!this.isRegistered(languageData))
                                     this.register(languageData);
                             } catch (final LanguageRegisteredException exception) {
-                                exception.printStackTrace();
+                                exception.printStackTrace(System.out);
                             }
                         }
                 );

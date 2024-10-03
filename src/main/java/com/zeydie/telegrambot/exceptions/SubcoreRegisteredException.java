@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
+@Getter
 public class SubcoreRegisteredException extends Exception {
-    @Getter
     private final @NotNull String message;
 
     public SubcoreRegisteredException(@NonNull final ISubcore subcore) {

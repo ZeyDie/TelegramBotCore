@@ -10,7 +10,7 @@ import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DonateTest {
-    private static TelegramBotCore bot = new TelegramBotCore();
+    private static final TelegramBotCore bot = new TelegramBotCore();
     private static BotConfig.TestConfig testConfig;
 
     @BeforeAll

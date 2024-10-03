@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
+@Getter
 public final class LanguageNotRegisteredException extends Exception {
-    @Getter
     private final @NotNull String message;
 
     public LanguageNotRegisteredException(@NonNull final LanguageData languageData) {

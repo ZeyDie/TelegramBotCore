@@ -45,7 +45,7 @@ public class UserCacheImpl implements IUserCache {
                                     LoggerUtil.info("User {} restored {}", userId, userData);
                                     this.userDataCache.put(userId, userData);
                                 } catch (final Exception exception) {
-                                    exception.printStackTrace();
+                                    exception.printStackTrace(System.out);
                                 }
                             }
                     );

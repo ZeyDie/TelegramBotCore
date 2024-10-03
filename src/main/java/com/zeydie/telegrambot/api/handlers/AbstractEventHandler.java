@@ -115,7 +115,7 @@ public abstract class AbstractEventHandler implements IInitialize {
                           InvocationTargetException |
                           InstantiationException exception
             ) {
-                exception.printStackTrace();
+                exception.printStackTrace(System.out);
             }
         }
     }

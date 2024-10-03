@@ -7,8 +7,8 @@ import java.util.Random;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PermssionsTest {
-    private static long userId = new Random().nextLong();
-    private static String permissionName = "test";
+    private static final long userId = new Random().nextLong();
+    private static final String permissionName = "test";
 
     private static IPermissions permissions;
 
@@ -77,7 +77,7 @@ public class PermssionsTest {
     @Order(7)
     public void addPermissionsRandom() {
         for (int i = 0; i < new Random().nextInt(5); i++)
-            permissions.addPermission(userId, RandomStringUtils.randomAlphabetic(10));
+            permissions.addPermission(userId, RandomStringUtils.secure().nextAlphabetic(10));
     }
 
     @Test

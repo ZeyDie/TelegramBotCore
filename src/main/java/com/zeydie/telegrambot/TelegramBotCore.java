@@ -105,7 +105,7 @@ public final class TelegramBotCore implements ISubcore {
     @Getter
     private @NotNull ICommandEventHandler commandEventHandler = new CommandEventHandlerImpl();
 
-    private @NotNull Service saveScheduler = new AbstractScheduledService() {
+    private final @NotNull Service saveScheduler = new AbstractScheduledService() {
         @Override
         protected void runOneIteration() throws Exception {
             CompletableFuture.runAsync(messagesCache::save)
@@ -371,7 +371,7 @@ public final class TelegramBotCore implements ISubcore {
                                                             this.language.localizeObject(chatId, textButton)
                                                     );
                                             } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
-                                                exception.printStackTrace();
+                                                exception.printStackTrace(System.out);
                                             }
                                         }
                                 )
@@ -398,9 +398,8 @@ public final class TelegramBotCore implements ISubcore {
                                                                 keyboardButton,
                                                                 this.language.localizeObject(chatId, textButton)
                                                         );
-                                                } catch (final NoSuchFieldException |
-                                                               LanguageNotRegisteredException exception) {
-                                                    exception.printStackTrace();
+                                                } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
+                                                    exception.printStackTrace(System.out);
                                                 }
                                             }
                                     )

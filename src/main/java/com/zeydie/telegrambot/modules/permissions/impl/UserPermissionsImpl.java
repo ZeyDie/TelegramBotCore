@@ -45,7 +45,7 @@ public class UserPermissionsImpl implements IPermissions {
                                         this.usersPermissionsCache.put(userId, permissionData);
                                     }
                                 } catch (final Exception exception) {
-                                    exception.printStackTrace();
+                                    exception.printStackTrace(System.out);
                                 }
                             }
                     );

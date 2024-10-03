@@ -74,10 +74,8 @@ public abstract class AbstractEventHandler implements IInitialize {
                                                                 case LOWEST -> methodClassCache = this.lowestClassMethods;
                                                             }
 
-                                                            if (methodClassCache != null) {
+                                                            if (methodClassCache != null)
                                                                 methodClassCache.put(method, annotatedClass);
-                                                                LoggerUtil.debug(this.getClass(), "{} == {}", parameterTypes, eventParameters);
-                                                            }
                                                         }
                                                     }
                                                 }

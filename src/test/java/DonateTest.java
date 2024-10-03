@@ -1,6 +1,7 @@
 import com.pengrad.telegrambot.model.request.LabeledPrice;
 import com.pengrad.telegrambot.request.SendInvoice;
 import com.zeydie.telegrambot.TelegramBotCore;
+import com.zeydie.telegrambot.api.utils.LanguageUtil;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
 import lombok.NonNull;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DonateTest {
-    private static final TelegramBotCore bot = new TelegramBotCore();
+    private static final TelegramBotCore bot = TelegramBotCore.getInstance();
     private static BotConfig.TestConfig testConfig;
 
     @BeforeAll
@@ -24,18 +25,18 @@ public class DonateTest {
     @Test
     @Order(0)
     public void sendDonateButton() {
-        @NonNull val language = bot.getLanguage();
-
         @NonNull val donateConfig = ConfigStore.getDonateConfig();
 
+        val chatId = testConfig.getChatId();
+
         @NonNull val xtrPrice = new LabeledPrice(
-                language.localize("messages.donate.title"),
+                LanguageUtil.localize(chatId, "messages.donate.title"),
                 donateConfig.getAmount()
         );
         @NonNull val invoice = new SendInvoice(
-                testConfig.getChatId(),
-                language.localize("messages.donate.title"),
-                language.localize("messages.donate.description"),
+                chatId,
+                LanguageUtil.localize(chatId, "messages.donate.title"),
+                LanguageUtil.localize(chatId, "messages.donate.description"),
                 donateConfig.getPayload(),
                 donateConfig.getCurrency(),
                 xtrPrice

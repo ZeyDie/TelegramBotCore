@@ -40,7 +40,7 @@ public class UserCacheImpl implements IUserCache {
                                     LoggerUtil.info("Restoring {}", fileName);
 
                                     val userId = Long.parseLong(fileName);
-                                    @NonNull val userData = SGsonFile.create(file).fromJsonToObject(new UserData(null));
+                                    @NonNull val userData = SGsonFile.createPretty(file).fromJsonToObject(new UserData(null));
 
                                     LoggerUtil.info("User {} restored {}", userId, userData);
                                     this.userDataCache.put(userId, userData);

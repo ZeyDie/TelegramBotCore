@@ -49,7 +49,7 @@ public class LanguageImpl implements ILanguage {
             Arrays.stream(files)
                     .forEach(file -> {
                                 try {
-                                    this.register(SGsonFile.create(file).fromJsonToObject(languageDataRegister));
+                                    this.register(SGsonFile.createPretty(file).fromJsonToObject(languageDataRegister));
                                 } catch (final LanguageRegisteredException exception) {
                                     exception.printStackTrace(System.out);
                                 }
@@ -57,7 +57,7 @@ public class LanguageImpl implements ILanguage {
                     );
         else
             this.register(
-                    SGsonFile.create(
+                    SGsonFile.createPretty(
                             LANGUAGE_FOLDER_FILE.toPath().resolve(
                                     FileUtil.createFileNameWithType(
                                             "en",
@@ -195,7 +195,7 @@ public class LanguageImpl implements ILanguage {
     }
 
     public @NotNull LanguageData initLangFile(@NonNull final LanguageData languageData) {
-        return SGsonFile.create(
+        return SGsonFile.createPretty(
                 FileUtil.createFileWithNameAndType(LANGUAGE_FOLDER_PATH, languageData.uniqueId(), LANGUAGE_TYPE)
         ).fromJsonToObject(languageData);
     }

@@ -37,7 +37,7 @@ public class UserPermissionsImpl implements IPermissions {
                                     LoggerUtil.info("Restoring {}", file.getName());
 
                                     val userId = Long.parseLong(FileUtil.getFileName(file));
-                                    @NonNull val permissionData = SGsonFile.create(file).fromJsonToObject(new PermissionsData());
+                                    @NonNull val permissionData = SGsonFile.createPretty(file).fromJsonToObject(new PermissionsData());
 
                                     if (permissionData.getPermissions().isEmpty()) FileUtil.deleteFile(file);
                                     else {

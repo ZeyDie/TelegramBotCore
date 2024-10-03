@@ -6,6 +6,7 @@ import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.telegram.events.CommandEvent;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
+import com.zeydie.telegrambot.api.utils.LanguageUtil;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -19,7 +20,6 @@ public final class DonateCommand {
         if (!ConfigStore.getDonateConfig().isEnabled()) return;
 
         @NonNull val instance = TelegramBotCore.getInstance();
-        @NonNull val language = instance.getLanguage();
 
         val chatId = event.getSender().id();
         @NonNull val messages = event.getMessage().text().split(" ");
@@ -38,13 +38,13 @@ public final class DonateCommand {
             @NonNull val donateConfig = ConfigStore.getDonateConfig();
 
             @NonNull val xtrPrice = new LabeledPrice(
-                    language.localize("messages.donate_title"),
+                    LanguageUtil.localize(chatId, "messages.donate_title"),
                     amount
             );
             @NonNull val invoice = new SendInvoice(
                     chatId,
-                    "messages.donate_title",
-                    "messages.donate_description",
+                    LanguageUtil.localize(chatId, "messages.donate_title"),
+                    LanguageUtil.localize(chatId, "messages.donate_description"),
                     donateConfig.getPayload(),
                     donateConfig.getCurrency(),
                     xtrPrice

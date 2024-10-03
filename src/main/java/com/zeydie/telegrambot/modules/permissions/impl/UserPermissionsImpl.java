@@ -23,7 +23,7 @@ public class UserPermissionsImpl implements IPermissions {
 
     @Override
     public void preInit() {
-        PERMISSIONS_FOLDER_FILE.mkdirs();
+        FileUtil.createFolder(PERMISSIONS_FOLDER_FILE);
     }
 
     @Override
@@ -37,9 +37,9 @@ public class UserPermissionsImpl implements IPermissions {
                                     LoggerUtil.info("Restoring {}", file.getName());
 
                                     val userId = Long.parseLong(FileUtil.getFileName(file));
-                                    @NonNull val permissionData = SGsonFile.create(file).fromJsonToObject(new PermissionsData(null));
+                                    @NonNull val permissionData = SGsonFile.create(file).fromJsonToObject(new PermissionsData());
 
-                                    if (permissionData.permissions().isEmpty()) file.delete();
+                                    if (permissionData.getPermissions().isEmpty()) FileUtil.deleteFile(file);
                                     else {
                                         LoggerUtil.info("User {} restored {}", userId, permissionData);
                                         this.usersPermissionsCache.put(userId, permissionData);
@@ -63,7 +63,7 @@ public class UserPermissionsImpl implements IPermissions {
         this.usersPermissionsCache.asMap()
                 .forEach(
                         (id, userData) -> {
-                            if (userData.permissions().isEmpty()) return;
+                            if (userData.getPermissions().isEmpty()) return;
 
                             LoggerUtil.info("Saving user data permissions for {}", id);
                             SGsonFile.createPretty(FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, id, PERMISSION_TYPE)).writeJsonFile(userData);
@@ -105,12 +105,12 @@ public class UserPermissionsImpl implements IPermissions {
         @Nullable var permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null) {
-            permissionData = new PermissionsData(null);
+            permissionData = new PermissionsData();
 
             this.usersPermissionsCache.put(chatId, permissionData);
         }
 
-        permissionData.permissions().add(permission);
+        permissionData.getPermissions().add(permission);
     }
 
     @Override

@@ -212,7 +212,7 @@ public abstract class AbstractEventHandler implements IInitialize {
 
         @NonNull val selectiveMessage = new AtomicBoolean(true);
 
-        if (messageEventSubscribe != null && messages.length > 0)
+        if (messages.length > 0)
             Arrays.stream(objects)
                     .forEach(object -> {
                                 if (object instanceof final MessageEvent event) {

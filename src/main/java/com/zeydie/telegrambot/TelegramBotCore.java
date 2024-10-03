@@ -362,13 +362,14 @@ public final class TelegramBotCore implements ISubcore {
                                                 @NonNull val buttonClass = clazz.getSuperclass() == Object.class ? clazz : clazz.getSuperclass();
 
                                                 @NotNull val textInlineKeyboardField = buttonClass.getDeclaredField("text");
-                                                @NotNull val textButton = inlineKeyboardButton.text();
+                                                @Nullable val textButton = inlineKeyboardButton.text();
 
-                                                ReflectionUtil.setValueField(
-                                                        textInlineKeyboardField,
-                                                        inlineKeyboardButton,
-                                                        this.language.localizeObject(chatId, textButton)
-                                                );
+                                                if (textButton != null)
+                                                    ReflectionUtil.setValueField(
+                                                            textInlineKeyboardField,
+                                                            inlineKeyboardButton,
+                                                            this.language.localizeObject(chatId, textButton)
+                                                    );
                                             } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
                                                 exception.printStackTrace();
                                             }
@@ -397,7 +398,8 @@ public final class TelegramBotCore implements ISubcore {
                                                                 keyboardButton,
                                                                 this.language.localizeObject(chatId, textButton)
                                                         );
-                                                } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
+                                                } catch (final NoSuchFieldException |
+                                                               LanguageNotRegisteredException exception) {
                                                     exception.printStackTrace();
                                                 }
                                             }

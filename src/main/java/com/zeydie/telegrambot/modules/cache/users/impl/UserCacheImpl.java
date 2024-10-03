@@ -23,7 +23,7 @@ public class UserCacheImpl implements IUserCache {
 
     @Override
     public void preInit() {
-        CACHE_USERS_FOLDER_FILE.mkdirs();
+        FileUtil.createFolder(CACHE_USERS_FOLDER_FILE);
     }
 
     @SneakyThrows

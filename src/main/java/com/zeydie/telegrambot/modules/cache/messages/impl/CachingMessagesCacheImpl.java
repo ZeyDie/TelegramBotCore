@@ -61,16 +61,19 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
                         messageDatas.forEach(
                                 messageData -> {
-                                    CompletableFuture.runAsync(() -> TelegramBotCore.getInstance().getMessageEventHandler().handle(messageData.message()))
-                                            .thenRun(() ->
-                                                    SGsonFile.create(
-                                                                    FileUtil.createFileWithName(
-                                                                            CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chatId)),
-                                                                            FileUtil.createFileNameWithType(messageData.message().messageId(), "data")
-                                                                    )
-                                                            )
-                                                            .writeJsonFile(messageData)
-                                            );
+                                    @Nullable val message = messageData.message();
+
+                                    if (message != null)
+                                        CompletableFuture.runAsync(() -> TelegramBotCore.getInstance().getMessageEventHandler().handle(message))
+                                                .thenRun(() ->
+                                                        SGsonFile.create(
+                                                                        FileUtil.createFileWithName(
+                                                                                CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chatId)),
+                                                                                FileUtil.createFileNameWithType(messageData.message().messageId(), "data")
+                                                                        )
+                                                                )
+                                                                .writeJsonFile(messageData)
+                                                );
                                 }
                         );
                     }
@@ -78,7 +81,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
     @Override
     public void preInit() {
-        CACHE_MESSAGES_FOLDER_FILE.mkdirs();
+        FileUtil.createFolder(CACHE_MESSAGES_FOLDER_FILE);
     }
 
     @SneakyThrows
@@ -91,8 +94,8 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                     .forEach(
                             chatId -> {
                                 try {
-                                    @NonNull final ListMessagesData listMessagesData = new ListMessagesData(null);
-                                    @NonNull final List<MessageData> messages = listMessagesData.messages();
+                                    @NonNull final ListMessagesData listMessagesData = new ListMessagesData();
+                                    @NonNull final List<MessageData> messages = listMessagesData.getMessages();
 
                                     try (val stream = Files.walk(chatId.toPath())) {
                                         stream.forEachOrdered(
@@ -123,12 +126,20 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
     @Override
     public void put(@NonNull final MessageData messageData) {
-        val id = messageData.message().chat().id();
+        val message = messageData.message();
+
+        if (message == null) return;
+
+        val chat = message.chat();
+
+        if (chat == null) return;
+
+        val id = chat.id();
 
         @Nullable var listMessagesData = this.chatMessageCache.getIfPresent(id);
 
         if (listMessagesData == null) {
-            listMessagesData = new ListMessagesData(null);
+            listMessagesData = new ListMessagesData();
 
             this.chatMessageCache.put(id, listMessagesData);
         }

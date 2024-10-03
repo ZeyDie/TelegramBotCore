@@ -8,6 +8,30 @@ import java.io.File;
 import java.nio.file.Path;
 
 public final class FileUtil {
+    public static void createFolder(@NonNull final Path path) {
+        createFolder(path.toFile());
+    }
+
+    public static void createFolder(@NonNull final File file) {
+        if (file.mkdirs())
+            LoggerUtil.info("Created folder: {}", file.getPath());
+    }
+
+    public static void deleteFile(@NonNull final Path path) {
+        deleteFile(path.toFile());
+    }
+
+    public static void deleteFile(@NonNull final File file) {
+        val path = file.toPath();
+
+        if (file.delete())
+            LoggerUtil.info("Deleted file: {}", path);
+        else {
+            file.deleteOnExit();
+            LoggerUtil.info("Failed to delete file: {}", path);
+        }
+    }
+
     public static @NotNull File createFileWithNameAndType(
             @NonNull final Path path,
             @NonNull final Object name,

@@ -31,7 +31,7 @@ public class LanguageImpl implements ILanguage {
 
     @Override
     public void preInit() {
-        LANGUAGE_FOLDER_FILE.mkdirs();
+        FileUtil.createFolder(LANGUAGE_FOLDER_FILE);
     }
 
     @SneakyThrows

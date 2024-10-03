@@ -56,26 +56,27 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                         @NonNull val listMessagesData = notification.getValue();
                         @Nullable val messageDatas = listMessagesData.getMessages();
 
-                        if (messageDatas != null)
+                        if (messageDatas != null) {
                             LoggerUtil.debug("{} {}", chatId, Arrays.toString(messageDatas.toArray()));
 
-                        messageDatas.forEach(
-                                messageData -> {
-                                    @Nullable val message = messageData.message();
+                            messageDatas.forEach(
+                                    messageData -> {
+                                        @Nullable val message = messageData.message();
 
-                                    if (message != null)
-                                        CompletableFuture.runAsync(() -> TelegramBotCore.getInstance().getMessageEventHandler().handle(message))
-                                                .thenRun(() ->
-                                                        SGsonFile.create(
-                                                                        FileUtil.createFileWithName(
-                                                                                CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chatId)),
-                                                                                FileUtil.createFileNameWithType(messageData.message().messageId(), "data")
-                                                                        )
-                                                                )
-                                                                .writeJsonFile(messageData)
-                                                );
-                                }
-                        );
+                                        if (message != null)
+                                            CompletableFuture.runAsync(() -> TelegramBotCore.getInstance().getMessageEventHandler().handle(message))
+                                                    .thenRun(() ->
+                                                            SGsonFile.create(
+                                                                            FileUtil.createFileWithName(
+                                                                                    CACHE_MESSAGES_FOLDER_PATH.resolve(String.valueOf(chatId)),
+                                                                                    FileUtil.createFileNameWithType(messageData.message().messageId(), "data")
+                                                                            )
+                                                                    )
+                                                                    .writeJsonFile(messageData)
+                                                    );
+                                    }
+                            );
+                        }
                     }
             ).build();
 

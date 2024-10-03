@@ -33,8 +33,13 @@ public final class LanguageButton {
             return;
         }
 
-        userCache.getUserData(userId).setLanguageCode(languageCode);
+        val userData = userCache.getUserData(userId);
 
-        instance.sendMessage(userId, "messages.changed_language");
+        if (userData != null) {
+            userData.setLanguageCode(languageCode);
+
+            instance.sendMessage(userId, "messages.changed_language");
+        } else
+            instance.sendMessage(userId, "messages.no_user_data");
     }
 }

@@ -10,6 +10,7 @@ import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.modules.keyboard.impl.MessageKeyboardImpl;
 import lombok.NonNull;
 import lombok.val;
+import org.jetbrains.annotations.Nullable;
 
 @EventSubscribesRegister
 public final class StartCommand {
@@ -29,7 +30,9 @@ public final class StartCommand {
             @NonNull val registeredLanguages = language.getRegisteredLanguages();
 
             @NonNull val languageCode = sender.languageCode();
-            @NonNull val languageData = language.getLanguageData(language.isRegistered(languageCode) ? languageCode : "en");
+            @Nullable val languageData = language.getLanguageData(language.isRegistered(languageCode) ? languageCode : "en");
+
+            if (languageData == null) return;
 
             @NonNull val messageKeyboard = new MessageKeyboardImpl();
 

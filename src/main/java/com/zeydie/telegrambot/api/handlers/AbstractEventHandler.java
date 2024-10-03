@@ -208,6 +208,9 @@ public abstract class AbstractEventHandler implements IInitialize {
             @NonNull final Object... objects
     ) {
         @Nullable val messageEventSubscribe = method.getAnnotation(MessageEventSubscribe.class);
+
+        if (messageEventSubscribe == null) return false;
+
         @NonNull val messages = messageEventSubscribe.messages();
 
         @NonNull val selectiveMessage = new AtomicBoolean(true);

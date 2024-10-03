@@ -54,7 +54,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
                         @NonNull val chatId = notification.getKey();
                         @NonNull val listMessagesData = notification.getValue();
-                        @Nullable val messageDatas = listMessagesData.messages();
+                        @Nullable val messageDatas = listMessagesData.getMessages();
 
                         if (messageDatas != null)
                             LoggerUtil.debug("{} {}", chatId, Arrays.toString(messageDatas.toArray()));

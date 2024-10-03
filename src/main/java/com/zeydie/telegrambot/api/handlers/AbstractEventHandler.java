@@ -109,9 +109,10 @@ public abstract class AbstractEventHandler implements IInitialize {
                 return;
 
             try {
-                method.invoke(annotatedClass.newInstance(), objects);
+                method.invoke(annotatedClass.getDeclaredConstructor().newInstance(), objects);
             } catch (
-                    final IllegalAccessException |
+                    final NoSuchMethodException |
+                          IllegalAccessException |
                           InvocationTargetException |
                           InstantiationException exception
             ) {

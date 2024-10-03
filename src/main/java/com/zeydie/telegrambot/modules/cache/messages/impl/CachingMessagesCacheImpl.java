@@ -108,7 +108,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                                     LoggerUtil.info("Chat: {} restored {} messages", chatId, messages.size());
                                     this.chatMessageCache.put(Long.parseLong(FileUtil.getFileName(chatId)), listMessagesData);
                                 } catch (final Exception exception) {
-                                    exception.printStackTrace();
+                                    exception.printStackTrace(System.out);
                                 }
                             }
                     );

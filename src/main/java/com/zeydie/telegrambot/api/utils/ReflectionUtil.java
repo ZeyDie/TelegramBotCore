@@ -32,7 +32,7 @@ public final class ReflectionUtil {
             @NonNull final Object classInstance,
             @Nullable final Object value
     ) {
-        val accessible = field.isAccessible();
+        val accessible = field.canAccess(classInstance);
 
         field.setAccessible(true);
         field.set(classInstance, value);

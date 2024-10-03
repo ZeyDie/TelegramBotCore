@@ -25,8 +25,8 @@ public class LanguageRegisterEvent extends AbstractEvent {
         this.languageRegister = languageRegister;
     }
 
+    @Getter
     public static class LanguageRegister {
-        @Getter
         private final @NotNull List<LanguageData> languageDataList = new ArrayList<>();
 
         public void register(@NonNull final LanguageData languageData) throws LanguageRegisteredException {

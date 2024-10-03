@@ -40,7 +40,7 @@ public class LanguageImpl implements ILanguage {
         @Nullable val files = LANGUAGE_FOLDER_FILE.listFiles();
 
         @NonNull val languageDataRegister = new LanguageData(
-                "English",
+                "\uD83C\uDDEC\uD83C\uDDE7 English",
                 "en",
                 null
         );

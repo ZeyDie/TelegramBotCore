@@ -49,7 +49,7 @@ public final class StartCommand {
                                 )
                 );
 
-                if (i % 5 == 0)
+                if (i != 0 && i % 5 == 0)
                     messageKeyboard.completeRow();
             }
 

@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 public final class ReflectionUtil {
     @SneakyThrows
     public static @NotNull Object instance(@NonNull final Class<?> clazz) {
-        return clazz.newInstance();
+        return clazz.getDeclaredConstructor().newInstance();
     }
 
     public static @NotNull Class<?> getClassField(@NonNull final Field field) {

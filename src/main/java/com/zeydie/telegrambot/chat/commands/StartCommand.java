@@ -40,10 +40,10 @@ public final class StartCommand {
                 @NonNull val registeredLanguage = registeredLanguages.get(i);
 
                 messageKeyboard.addButton(
-                        LanguageButton.create(registeredLanguage.label())
+                        LanguageButton.create(registeredLanguage.getLabel())
                                 .callbackData(
                                         "language.select." +
-                                                registeredLanguage.uniqueId() +
+                                                registeredLanguage.getUniqueId() +
                                                 "." +
                                                 sender.id()
                                 )

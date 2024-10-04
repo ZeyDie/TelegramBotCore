@@ -1,5 +1,6 @@
 package com.zeydie.telegrambot.modules.keyboard.impl;
 
+import com.google.common.collect.Lists;
 import com.pengrad.telegrambot.model.request.KeyboardButton;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.zeydie.telegrambot.api.modules.keyboard.IUserKeyboard;
@@ -8,11 +9,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserKeyboardImpl extends AbstractKeyboardImpl implements IUserKeyboard {
-    private final @NotNull List<KeyboardButton> rowKeyboardButtonList = new ArrayList<>();
+    private final @NotNull List<KeyboardButton> rowKeyboardButtonList = Lists.newArrayList();
 
     @Getter
     private final @NotNull ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup(this.rowKeyboardButtonList.toArray(new KeyboardButton[]{}));

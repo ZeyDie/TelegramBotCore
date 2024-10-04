@@ -5,8 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
+import com.zeydie.telegrambot.api.modules.permissions.data.ListPermissionData;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
-import com.zeydie.telegrambot.api.modules.permissions.data.PermissionsData;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 import static com.zeydie.telegrambot.api.utils.ReferencePaths.*;
 
 public class UserPermissionsImpl implements IPermissions {
-    private final @NotNull Cache<Long, PermissionsData> usersPermissionsCache = CacheBuilder.newBuilder().build();
+    private final @NotNull Cache<Long, ListPermissionData> usersPermissionsCache = CacheBuilder.newBuilder().build();
 
     @Override
     public void preInit() {
@@ -37,7 +37,7 @@ public class UserPermissionsImpl implements IPermissions {
                                     LoggerUtil.info("Restoring {}", file.getName());
 
                                     val userId = Long.parseLong(FileUtil.getFileName(file));
-                                    @NonNull val permissionData = SGsonFile.createPretty(file).fromJsonToObject(new PermissionsData());
+                                    @NonNull val permissionData = SGsonFile.createPretty(file).fromJsonToObject(new ListPermissionData());
 
                                     if (permissionData.getPermissions().isEmpty()) FileUtil.deleteFile(file);
                                     else {
@@ -105,7 +105,7 @@ public class UserPermissionsImpl implements IPermissions {
         @Nullable var permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null) {
-            permissionData = new PermissionsData();
+            permissionData = new ListPermissionData();
 
             this.usersPermissionsCache.put(chatId, permissionData);
         }
@@ -151,12 +151,12 @@ public class UserPermissionsImpl implements IPermissions {
     }
 
     @Override
-    public @Nullable PermissionsData getPermissionData(@NonNull final UserData userData) {
+    public @Nullable ListPermissionData getPermissionData(@NonNull final UserData userData) {
         return this.getPermissionData(userData.getUser().id());
     }
 
     @Override
-    public @Nullable PermissionsData getPermissionData(final long chatId) {
+    public @Nullable ListPermissionData getPermissionData(final long chatId) {
         return this.usersPermissionsCache.getIfPresent(chatId);
     }
 

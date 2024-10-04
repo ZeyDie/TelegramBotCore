@@ -1,5 +1,6 @@
 package com.zeydie.telegrambot.modules.language.impl;
 
+import com.google.common.collect.Lists;
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.TelegramBotCore;
@@ -10,8 +11,8 @@ import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import com.zeydie.telegrambot.configs.ConfigStore;
-import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
-import com.zeydie.telegrambot.exceptions.LanguageRegisteredException;
+import com.zeydie.telegrambot.exceptions.language.LanguageNotRegisteredException;
+import com.zeydie.telegrambot.exceptions.language.LanguageRegisteredException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -19,7 +20,6 @@ import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +27,7 @@ import static com.zeydie.telegrambot.api.utils.ReferencePaths.*;
 
 @Getter
 public class LanguageImpl implements ILanguage {
-    private final @NotNull List<LanguageData> registeredLanguages = new ArrayList<>();
+    private final @NotNull List<LanguageData> registeredLanguages = Lists.newArrayList();
 
     @Override
     public void preInit() {
@@ -47,7 +47,8 @@ public class LanguageImpl implements ILanguage {
 
         if (files != null && files.length > 0)
             Arrays.stream(files)
-                    .forEach(file -> {
+                    .forEach(
+                            file -> {
                                 try {
                                     this.register(SGsonFile.createPretty(file).fromJsonToObject(languageDataRegister));
                                 } catch (final LanguageRegisteredException exception) {
@@ -66,7 +67,10 @@ public class LanguageImpl implements ILanguage {
                             )
                     ).fromJsonToObject(languageDataRegister)
             );
+    }
 
+    @Override
+    public void postInit() {
         @NonNull val languageRegisterEvent = new LanguageRegisterEvent();
 
         TelegramBotCore.getInstance().getLanguageEventHandler().handle(languageRegisterEvent);
@@ -85,13 +89,9 @@ public class LanguageImpl implements ILanguage {
     }
 
     @Override
-    public void postInit() {
-    }
-
-    @Override
     public boolean register(@NonNull final LanguageData languageData) throws LanguageRegisteredException {
-        @NonNull val label = languageData.label();
-        @NonNull val uniqueId = languageData.uniqueId();
+        @NonNull val label = languageData.getLabel();
+        @NonNull val uniqueId = languageData.getUniqueId();
 
         if (isRegistered(languageData))
             throw new LanguageRegisteredException(uniqueId, label);
@@ -105,24 +105,24 @@ public class LanguageImpl implements ILanguage {
 
     @Override
     public boolean isRegistered(@NonNull final LanguageData languageData) {
-        return this.isRegistered(languageData.uniqueId());
+        return this.isRegistered(languageData.getUniqueId());
     }
 
     @Override
     public boolean isRegistered(@NonNull final String uniqueId) {
         return this.registeredLanguages.stream()
-                .anyMatch(languageData -> languageData.uniqueId().equals(uniqueId));
+                .anyMatch(languageData -> languageData.getUniqueId().equals(uniqueId));
     }
 
     @Override
     public @Nullable LanguageData getLanguageData(@NonNull final LanguageData languageData) {
-        return this.getLanguageData(languageData.uniqueId());
+        return this.getLanguageData(languageData.getUniqueId());
     }
 
     @Override
     public @Nullable LanguageData getLanguageData(@NonNull final String uniqueId) {
         return this.registeredLanguages.stream()
-                .filter(languageData -> languageData.uniqueId().equals(uniqueId))
+                .filter(languageData -> languageData.getUniqueId().equals(uniqueId))
                 .findFirst()
                 .orElse(null);
     }
@@ -196,7 +196,7 @@ public class LanguageImpl implements ILanguage {
 
     public @NotNull LanguageData initLangFile(@NonNull final LanguageData languageData) {
         return SGsonFile.createPretty(
-                FileUtil.createFileWithNameAndType(LANGUAGE_FOLDER_PATH, languageData.uniqueId(), LANGUAGE_TYPE)
+                FileUtil.createFileWithNameAndType(LANGUAGE_FOLDER_PATH, languageData.getUniqueId(), LANGUAGE_TYPE)
         ).fromJsonToObject(languageData);
     }
 }

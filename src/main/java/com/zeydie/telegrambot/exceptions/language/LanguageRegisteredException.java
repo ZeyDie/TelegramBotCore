@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.exceptions;
+package com.zeydie.telegrambot.exceptions.language;
 
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import lombok.Getter;
@@ -10,7 +10,7 @@ public final class LanguageRegisteredException extends Exception {
     private final @NotNull String message;
 
     public LanguageRegisteredException(@NonNull final LanguageData languageData) {
-        this(languageData.uniqueId(), languageData.label());
+        this(languageData.getUniqueId(), languageData.getLabel());
     }
 
     public LanguageRegisteredException(

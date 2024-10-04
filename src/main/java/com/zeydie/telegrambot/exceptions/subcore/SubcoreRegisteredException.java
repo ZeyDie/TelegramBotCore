@@ -1,4 +1,4 @@
-package com.zeydie.telegrambot.exceptions;
+package com.zeydie.telegrambot.exceptions.subcore;
 
 import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-public class SubcoreRegisteredException extends Exception {
+public final class SubcoreRegisteredException extends Exception {
     private final @NotNull String message;
 
     public SubcoreRegisteredException(@NonNull final ISubcore subcore) {

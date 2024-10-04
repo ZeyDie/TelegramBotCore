@@ -30,3 +30,5 @@ cache
 configs
 language
 logs
+payment
+permissions

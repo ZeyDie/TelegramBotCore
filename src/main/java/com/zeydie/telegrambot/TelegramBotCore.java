@@ -1,5 +1,6 @@
 package com.zeydie.telegrambot;
 
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
 import com.pengrad.telegrambot.*;
@@ -22,6 +23,7 @@ import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
+import com.zeydie.telegrambot.api.modules.payment.IPayment;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.telegram.events.handlers.ICallbackQueryEventHandler;
 import com.zeydie.telegrambot.api.telegram.events.handlers.ICommandEventHandler;
@@ -34,8 +36,8 @@ import com.zeydie.telegrambot.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
 import com.zeydie.telegrambot.configs.data.CachingConfig;
-import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
-import com.zeydie.telegrambot.exceptions.SubcoreRegisteredException;
+import com.zeydie.telegrambot.exceptions.language.LanguageNotRegisteredException;
+import com.zeydie.telegrambot.exceptions.subcore.SubcoreRegisteredException;
 import com.zeydie.telegrambot.handlers.events.language.impl.LanguageEventHandlerImpl;
 import com.zeydie.telegrambot.handlers.exceptions.impl.ExceptionHandlerImpl;
 import com.zeydie.telegrambot.listeners.impl.UpdatesListenerImpl;
@@ -43,6 +45,7 @@ import com.zeydie.telegrambot.modules.cache.messages.impl.CachingMessagesCacheIm
 import com.zeydie.telegrambot.modules.cache.messages.impl.DirectlyMessagesCacheImpl;
 import com.zeydie.telegrambot.modules.cache.users.impl.UserCacheImpl;
 import com.zeydie.telegrambot.modules.language.impl.LanguageImpl;
+import com.zeydie.telegrambot.modules.payment.impl.PaymentImpl;
 import com.zeydie.telegrambot.modules.permissions.impl.UserPermissionsImpl;
 import com.zeydie.telegrambot.telegram.events.handlers.impl.CallbackQueryEventHandlerImpl;
 import com.zeydie.telegrambot.telegram.events.handlers.impl.CommandEventHandlerImpl;
@@ -56,7 +59,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -73,7 +75,7 @@ public final class TelegramBotCore implements ISubcore {
     @Getter
     private final @NotNull Status status = new Status();
 
-    private final @NotNull Map<String, ISubcore> subcores = new HashMap<>();
+    private final @NotNull Map<String, ISubcore> subcores = Maps.newHashMap();
 
     @Setter
     @Getter
@@ -84,6 +86,9 @@ public final class TelegramBotCore implements ISubcore {
     @Setter
     @Getter
     private IUserCache userCache;
+    @Setter
+    @Getter
+    private IPayment payment;
     @Setter
     @Getter
     private IPermissions permissions;
@@ -213,11 +218,13 @@ public final class TelegramBotCore implements ISubcore {
         this.language = new LanguageImpl();
         this.messagesCache = cachingConfig.isCaching() ? new CachingMessagesCacheImpl() : new DirectlyMessagesCacheImpl();
         this.userCache = new UserCacheImpl();
+        this.payment = new PaymentImpl();
         this.permissions = new UserPermissionsImpl();
 
         this.language.preInit();
         this.messagesCache.preInit();
         this.userCache.preInit();
+        this.payment.preInit();
         this.permissions.preInit();
 
         this.telegramBot = new TelegramBot(config.getToken());
@@ -243,6 +250,7 @@ public final class TelegramBotCore implements ISubcore {
         this.language.init();
         this.messagesCache.init();
         this.userCache.init();
+        this.payment.init();
         this.permissions.init();
 
         this.status.setUpdatingMessages(true);
@@ -267,6 +275,7 @@ public final class TelegramBotCore implements ISubcore {
         this.language.postInit();
         this.messagesCache.postInit();
         this.userCache.postInit();
+        this.payment.postInit();
         this.permissions.postInit();
 
         this.subcores.values().forEach(IInitialize::postInit);

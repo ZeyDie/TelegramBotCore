@@ -19,6 +19,10 @@ public final class ReferencePaths {
     public static final @NotNull Path LANGUAGE_FOLDER_PATH = Paths.get(Category.LANGUAGE.toString());
     public static final @NotNull File LANGUAGE_FOLDER_FILE = LANGUAGE_FOLDER_PATH.toFile();
 
+    public static final @NotNull Path PAYMENT_FOLDER_PATH = Paths.get(Category.PAYMENT.toString());
+    public static final @NotNull File PAYMENT_FOLDER_FILE = PAYMENT_FOLDER_PATH.toFile();
+    public static final @NotNull String TELEGRAM_CURRENCY_URL = "https://core.telegram.org/bots/payments/currencies.json";
+
     public static final @NotNull Path PERMISSIONS_FOLDER_PATH = Paths.get(Category.PERMISSIONS.toString());
     public static final @NotNull File PERMISSIONS_FOLDER_FILE = PERMISSIONS_FOLDER_PATH.toFile();
 
@@ -31,6 +35,7 @@ public final class ReferencePaths {
         CONFIGS,
         CACHE,
         LANGUAGE,
+        PAYMENT,
         PERMISSIONS;
 
         @Override

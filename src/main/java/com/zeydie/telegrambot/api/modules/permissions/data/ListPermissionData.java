@@ -1,15 +1,15 @@
 package com.zeydie.telegrambot.api.modules.permissions.data;
 
+import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class PermissionsData {
-    private @NotNull List<PermissionData> permissions = new ArrayList<>();
+public class ListPermissionData {
+    private @NotNull List<PermissionData> permissions = Lists.newArrayList();
 
     public boolean contains(@NonNull final PermissionData permission) {
         return this.contains(permission.getPermission());

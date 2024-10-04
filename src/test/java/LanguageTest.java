@@ -1,4 +1,4 @@
-import com.zeydie.telegrambot.exceptions.LanguageNotRegisteredException;
+import com.zeydie.telegrambot.exceptions.language.LanguageNotRegisteredException;
 import com.zeydie.telegrambot.modules.language.impl.LanguageImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

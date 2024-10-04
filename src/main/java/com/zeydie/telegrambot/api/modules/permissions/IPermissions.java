@@ -2,8 +2,8 @@ package com.zeydie.telegrambot.api.modules.permissions;
 
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.interfaces.IData;
+import com.zeydie.telegrambot.api.modules.permissions.data.ListPermissionData;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
-import com.zeydie.telegrambot.api.modules.permissions.data.PermissionsData;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,10 +49,10 @@ public interface IPermissions extends IData {
     );
 
     @Nullable
-    PermissionsData getPermissionData(@NonNull final UserData userData);
+    ListPermissionData getPermissionData(@NonNull final UserData userData);
 
     @Nullable
-    PermissionsData getPermissionData(final long chatId);
+    ListPermissionData getPermissionData(final long chatId);
 
     void removePermission(
             @NonNull final UserData userData,

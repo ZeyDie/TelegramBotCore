@@ -3,13 +3,15 @@ package com.zeydie.telegrambot.api.modules.permissions.data;
 import com.zeydie.telegrambot.api.utils.RequestUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Data
 @RequiredArgsConstructor
 public class PermissionData {
-    private final String permission;
-    private String description;
-    private String expireDate;
+    private final @NotNull String permission;
+    private @Nullable String description;
+    private @Nullable String expireDate;
 
     private boolean hasExpire() {
         return this.expireDate != null;

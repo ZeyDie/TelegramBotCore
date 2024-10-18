@@ -49,26 +49,17 @@ public class PaymentTest {
     @Test
     @Order(1)
     public void checkPaymentFile() {
-        boolean value = false;
-
         try (@NonNull val stream = Files.walk(PAYMENT_FOLDER_PATH)) {
-            value = stream.anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()));
+            Assertions.assertTrue(stream.anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath())));
         }
-
-        Assertions.assertTrue(value);
     }
 
     @SneakyThrows
     @Test
     @Order(2)
     public void deletePaymentFile() {
-        boolean value = false;
-
         try (@NonNull val stream = Files.walk(PAYMENT_FOLDER_PATH)) {
-            value = Files.walk(PAYMENT_FOLDER_PATH)
-                    .anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()) && path.toFile().delete());
+            Assertions.assertTrue(stream.anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()) && path.toFile().delete()));
         }
-
-        Assertions.assertTrue(value);
     }
 }

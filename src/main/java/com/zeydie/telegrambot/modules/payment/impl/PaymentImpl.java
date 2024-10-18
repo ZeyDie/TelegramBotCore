@@ -46,44 +46,48 @@ public class PaymentImpl implements IPayment {
                 return;
             }
 
-            @Nullable val json = response.body().string();
+            @Nullable val body = response.body();
+
+            if (body == null)
+                return;
+
+            @NonNull val json = body.string();
 
             LoggerUtil.info("Body: {}", json);
 
-            if (json != null)
-                SGsonBase.create()
-                        .fromJsonToObject(json, Maps.newTreeMap())
-                        .forEach(
-                                (value, key) -> {
-                                    @NonNull val code = (String) value;
-                                    @Nullable val linkedTreeMap = (LinkedTreeMap<String, Object>) key;
+            SGsonBase.create()
+                    .fromJsonToObject(json, Maps.newTreeMap())
+                    .forEach(
+                            (value, key) -> {
+                                @NonNull val code = (String) value;
+                                @Nullable val linkedTreeMap = (LinkedTreeMap<String, Object>) key;
 
-                                    if (linkedTreeMap == null) return;
+                                if (linkedTreeMap == null) return;
 
-                                    @NonNull val paymentData = new PaymentData(
-                                            String.valueOf(linkedTreeMap.get("code")),
-                                            String.valueOf(linkedTreeMap.get("title")),
-                                            String.valueOf(linkedTreeMap.get("symbol")),
-                                            String.valueOf(linkedTreeMap.get("native")),
-                                            String.valueOf(linkedTreeMap.get("thousands_sep")),
-                                            String.valueOf(linkedTreeMap.get("decimal_sep")),
-                                            Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("symbol_left"))),
-                                            Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("space_between"))),
-                                            Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("drop_zeros"))),
-                                            Double.valueOf(String.valueOf(linkedTreeMap.get("exp"))),
-                                            Double.valueOf(String.valueOf(linkedTreeMap.get("min_amount"))),
-                                            Double.valueOf(String.valueOf(linkedTreeMap.get("max_amount"))),
-                                            Lists.newArrayList()
-                                    );
-                                    @NonNull val file = getFileName(paymentData);
+                                @NonNull val paymentData = new PaymentData(
+                                        String.valueOf(linkedTreeMap.get("code")),
+                                        String.valueOf(linkedTreeMap.get("title")),
+                                        String.valueOf(linkedTreeMap.get("symbol")),
+                                        String.valueOf(linkedTreeMap.get("native")),
+                                        String.valueOf(linkedTreeMap.get("thousands_sep")),
+                                        String.valueOf(linkedTreeMap.get("decimal_sep")),
+                                        Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("symbol_left"))),
+                                        Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("space_between"))),
+                                        Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("drop_zeros"))),
+                                        Double.valueOf(String.valueOf(linkedTreeMap.get("exp"))),
+                                        Double.valueOf(String.valueOf(linkedTreeMap.get("min_amount"))),
+                                        Double.valueOf(String.valueOf(linkedTreeMap.get("max_amount"))),
+                                        Lists.newArrayList()
+                                );
+                                @NonNull val file = getFileName(paymentData);
 
-                                    if (!file.exists()) {
-                                        LoggerUtil.info("New Telegram currency {} - {}", code, linkedTreeMap);
+                                if (!file.exists()) {
+                                    LoggerUtil.info("New Telegram currency {} - {}", code, linkedTreeMap);
 
-                                        SGsonFile.createPretty(file).writeJsonFile(paymentData);
-                                    }
+                                    SGsonFile.createPretty(file).writeJsonFile(paymentData);
                                 }
-                        );
+                            }
+                    );
         }
     }
 

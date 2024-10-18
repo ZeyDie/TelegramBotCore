@@ -10,6 +10,8 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ "main" ]
+    tags: 
+      - "v*"
   pull_request:
     branches: [ "main" ]
 
@@ -18,9 +20,7 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -37,6 +37,13 @@ jobs:
       with:
         arguments: build
     - uses: actions/upload-artifact@v3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         name: Package
         path: build/libs
+        tagName: ${{ github.ref_name }}
+        releaseName: 'TelegramBotCore v__VERSION__'
+        releaseBody: ''
+        releaseDraft: false
+        prerelease: false

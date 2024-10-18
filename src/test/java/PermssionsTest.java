@@ -37,7 +37,7 @@ public class PermssionsTest {
 
     @Test
     @Order(3)
-    public  void userIsExist() {
+    public void userIsExist() {
         Assertions.assertNotNull(permissions.getPermissionData(userId));
     }
 
@@ -51,7 +51,7 @@ public class PermssionsTest {
 
     @Test
     @Order(5)
-    public  void addPermissions() {
+    public void addPermissions() {
         permissions.addPermission(userId, permissionName + 1);
         permissions.addPermission(userId, permissionName + 2);
         permissions.addPermission(userId, permissionName + 3);

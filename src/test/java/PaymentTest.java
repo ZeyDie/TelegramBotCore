@@ -1,10 +1,11 @@
 import com.google.common.collect.Lists;
-import com.zeydie.telegrambot.TelegramBotCore;
+import com.zeydie.telegrambot.api.modules.payment.IPayment;
 import com.zeydie.telegrambot.api.modules.payment.data.PaymentData;
-import com.zeydie.telegrambot.configs.ConfigStore;
-import com.zeydie.telegrambot.configs.data.BotConfig;
 import com.zeydie.telegrambot.modules.payment.impl.PaymentImpl;
+import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 
 import java.nio.file.Files;
@@ -13,10 +14,8 @@ import static com.zeydie.telegrambot.api.utils.ReferencePaths.PAYMENT_FOLDER_PAT
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PaymentTest {
-    private static final TelegramBotCore bot = TelegramBotCore.getInstance();
-    private static BotConfig.TestConfig testConfig;
-
-    private static PaymentData paymentData = new PaymentData(
+    private static final @NotNull IPayment payment = new PaymentImpl();
+    private static final @NotNull PaymentData paymentData = new PaymentData(
             "BTS",
             "BTS Coin",
             "BTS",
@@ -34,35 +33,42 @@ public class PaymentTest {
 
     @BeforeAll
     public static void init() {
-        bot.launch();
-
-        testConfig = ConfigStore.getBotConfig().getTestConfig();
+        payment.preInit();
+        payment.init();
+        payment.postInit();
     }
 
     @SneakyThrows
     @Test
     @Order(0)
     public void initPayment() {
-        bot.getPayment().register(paymentData);
+        payment.register(paymentData);
     }
 
     @SneakyThrows
     @Test
     @Order(1)
     public void checkPaymentFile() {
-        Assertions.assertTrue(
-                Files.walk(PAYMENT_FOLDER_PATH)
-                        .anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()))
-        );
+        boolean value = false;
+
+        try (@NonNull val stream = Files.walk(PAYMENT_FOLDER_PATH)) {
+            value = stream.anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()));
+        }
+
+        Assertions.assertTrue(value);
     }
 
     @SneakyThrows
     @Test
     @Order(2)
     public void deletePaymentFile() {
-        Assertions.assertTrue(
-                Files.walk(PAYMENT_FOLDER_PATH)
-                        .anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()) ? path.toFile().delete() : false)
-        );
+        boolean value = false;
+
+        try (@NonNull val stream = Files.walk(PAYMENT_FOLDER_PATH)) {
+            value = Files.walk(PAYMENT_FOLDER_PATH)
+                    .anyMatch(path -> path.equals(PaymentImpl.getFileName(paymentData).toPath()) && path.toFile().delete());
+        }
+
+        Assertions.assertTrue(value);
     }
 }

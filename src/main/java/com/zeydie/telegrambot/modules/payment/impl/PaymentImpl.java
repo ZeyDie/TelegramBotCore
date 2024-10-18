@@ -40,45 +40,51 @@ public class PaymentImpl implements IPayment {
         @NonNull val request = new Request.Builder()
                 .url(TELEGRAM_CURRENCY_URL)
                 .build();
-        @NonNull val response = httpClient.newCall(request).execute();
+        try (@NonNull val response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                LoggerUtil.warn("Failed connect to {}", TELEGRAM_CURRENCY_URL);
+                return;
+            }
 
-        if (response.isSuccessful()) {
-            @NonNull val json = response.body().string();
+            @Nullable val json = response.body().string();
 
             LoggerUtil.info("Body: {}", json);
 
-            SGsonBase.create()
-                    .fromJsonToObject(json, Maps.newTreeMap())
-                    .forEach(
-                            (value, key) -> {
-                                val code = (String) value;
-                                val linkedTreeMap = (LinkedTreeMap<String, Object>) key;
+            if (json != null)
+                SGsonBase.create()
+                        .fromJsonToObject(json, Maps.newTreeMap())
+                        .forEach(
+                                (value, key) -> {
+                                    @NonNull val code = (String) value;
+                                    @Nullable val linkedTreeMap = (LinkedTreeMap<String, Object>) key;
 
-                                @NonNull val paymentData = new PaymentData(
-                                        String.valueOf(linkedTreeMap.get("code")),
-                                        String.valueOf(linkedTreeMap.get("title")),
-                                        String.valueOf(linkedTreeMap.get("symbol")),
-                                        String.valueOf(linkedTreeMap.get("native")),
-                                        String.valueOf(linkedTreeMap.get("thousands_sep")),
-                                        String.valueOf(linkedTreeMap.get("decimal_sep")),
-                                        Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("symbol_left"))),
-                                        Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("space_between"))),
-                                        Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("drop_zeros"))),
-                                        Double.valueOf(String.valueOf(linkedTreeMap.get("exp"))),
-                                        Double.valueOf(String.valueOf(linkedTreeMap.get("min_amount"))),
-                                        Double.valueOf(String.valueOf(linkedTreeMap.get("max_amount"))),
-                                        Lists.newArrayList()
-                                );
-                                @NonNull val file = getFileName(paymentData);
+                                    if (linkedTreeMap == null) return;
 
-                                if (!file.exists()) {
-                                    LoggerUtil.info("New Telegram currency {} - {}", code, linkedTreeMap);
+                                    @NonNull val paymentData = new PaymentData(
+                                            String.valueOf(linkedTreeMap.get("code")),
+                                            String.valueOf(linkedTreeMap.get("title")),
+                                            String.valueOf(linkedTreeMap.get("symbol")),
+                                            String.valueOf(linkedTreeMap.get("native")),
+                                            String.valueOf(linkedTreeMap.get("thousands_sep")),
+                                            String.valueOf(linkedTreeMap.get("decimal_sep")),
+                                            Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("symbol_left"))),
+                                            Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("space_between"))),
+                                            Boolean.parseBoolean(String.valueOf(linkedTreeMap.get("drop_zeros"))),
+                                            Double.valueOf(String.valueOf(linkedTreeMap.get("exp"))),
+                                            Double.valueOf(String.valueOf(linkedTreeMap.get("min_amount"))),
+                                            Double.valueOf(String.valueOf(linkedTreeMap.get("max_amount"))),
+                                            Lists.newArrayList()
+                                    );
+                                    @NonNull val file = getFileName(paymentData);
 
-                                    SGsonFile.createPretty(file).writeJsonFile(paymentData);
+                                    if (!file.exists()) {
+                                        LoggerUtil.info("New Telegram currency {} - {}", code, linkedTreeMap);
+
+                                        SGsonFile.createPretty(file).writeJsonFile(paymentData);
+                                    }
                                 }
-                            }
-                    );
-        } else LoggerUtil.warn("Failed connect to {}", TELEGRAM_CURRENCY_URL);
+                        );
+        }
     }
 
     @Override

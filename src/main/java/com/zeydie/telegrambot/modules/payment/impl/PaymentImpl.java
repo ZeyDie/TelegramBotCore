@@ -18,6 +18,7 @@ import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,11 +69,7 @@ public class PaymentImpl implements IPayment {
                                         Double.valueOf(String.valueOf(linkedTreeMap.get("max_amount"))),
                                         Lists.newArrayList()
                                 );
-                                @NonNull val file = FileUtil.createFileWithNameAndType(
-                                        PAYMENT_FOLDER_PATH,
-                                        code + " - " + paymentData.getTitle(),
-                                        CONFIG_TYPE
-                                );
+                                @NonNull val file = getFileName(paymentData);
 
                                 if (!file.exists()) {
                                     LoggerUtil.info("New Telegram currency {} - {}", code, linkedTreeMap);
@@ -102,32 +99,54 @@ public class PaymentImpl implements IPayment {
     }
 
     @Override
-    public boolean register(@NonNull PaymentData paymentData) throws PaymentRegisteredException {
-        return false;
+    public boolean register(@NonNull final PaymentData paymentData) throws PaymentRegisteredException {
+        if (this.isRegistered(paymentData))
+            throw new PaymentRegisteredException(paymentData);
+
+        @NonNull val code = paymentData.getCode();
+        @NonNull val title = paymentData.getTitle();
+
+        this.registeredPayments.put(code, this.initPaymentFile(paymentData));
+
+        LoggerUtil.info("{} ({}) was registered!", title, code);
+
+        return true;
     }
 
     @Override
     public @NotNull List<PaymentData> getRegisteredPayments() {
-        return null;
+        return this.registeredPayments.values().stream().toList();
     }
 
     @Override
-    public boolean isRegistered(@NonNull PaymentData paymentData) {
-        return false;
+    public boolean isRegistered(@NonNull final PaymentData paymentData) {
+        return this.isRegistered(paymentData.getCode());
     }
 
     @Override
-    public boolean isRegistered(@NonNull String code) {
-        return false;
+    public boolean isRegistered(@NonNull final String code) {
+        return this.registeredPayments.containsKey(code);
     }
 
     @Override
-    public @Nullable PaymentData getPaymentData(@NonNull PaymentData paymentData) {
-        return null;
+    public @Nullable PaymentData getPaymentData(@NonNull final PaymentData paymentData) {
+        return this.getPaymentData(paymentData.getCode());
     }
 
     @Override
-    public @Nullable PaymentData getPaymentData(@NonNull String code) {
-        return null;
+    public @Nullable PaymentData getPaymentData(@NonNull final String code) {
+        return this.registeredPayments.get(code);
+    }
+
+    public @NotNull PaymentData initPaymentFile(@NonNull final PaymentData paymentData) {
+        return SGsonFile.createPretty(getFileName(paymentData)).fromJsonToObject(paymentData);
+    }
+
+    public static @NotNull File getFileName(@NonNull final PaymentData paymentData) {
+        return FileUtil.createFileWithNameAndType(
+                PAYMENT_FOLDER_PATH,
+                paymentData.getCode() + " - " + paymentData.getTitle(),
+                CONFIG_TYPE
+        );
     }
 }

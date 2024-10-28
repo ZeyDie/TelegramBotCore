@@ -3,6 +3,7 @@ package com.zeydie.telegrambot.modules.permissions.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.zeydie.sgson.SGsonFile;
+import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.ListPermissionData;
@@ -142,6 +143,10 @@ public class UserPermissionsImpl implements IPermissions {
             final long chatId,
             @NonNull final PermissionData permission
     ) {
+        val userData = TelegramBotCore.getInstance().getUserCache().getUserData(chatId);
+
+        if (userData != null && userData.isAdmin()) return true;
+
         @Nullable val permissionData = this.getPermissionData(chatId);
 
         if (permissionData == null)

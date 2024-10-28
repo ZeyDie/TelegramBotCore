@@ -12,6 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class UserKeyboardImpl extends AbstractKeyboardImpl implements IUserKeyboard {
+    public static @NotNull UserKeyboardImpl create() {
+        return new UserKeyboardImpl();
+    }
+
     private final @NotNull List<KeyboardButton> rowKeyboardButtonList = Lists.newArrayList();
 
     @Getter

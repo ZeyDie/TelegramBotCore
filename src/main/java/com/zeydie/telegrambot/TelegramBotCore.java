@@ -303,6 +303,7 @@ public final class TelegramBotCore implements ISubcore {
     @Getter
     private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
 
+    @Deprecated(forRemoval = true, since = "0.3.7")
     public void sendMessage(
             @NonNull final UserData userData,
             @NonNull final String message
@@ -310,6 +311,7 @@ public final class TelegramBotCore implements ISubcore {
         SendMessageUtil.sendMessage(userData, message);
     }
 
+    @Deprecated(forRemoval = true, since = "0.3.7")
     public void sendMessage(
             @NonNull final User user,
             @NonNull final String message
@@ -317,6 +319,7 @@ public final class TelegramBotCore implements ISubcore {
         SendMessageUtil.sendMessage(user, message);
     }
 
+    @Deprecated(forRemoval = true, since = "0.3.7")
     public void sendMessage(
             final long chatId,
             @NonNull final String message
@@ -324,6 +327,7 @@ public final class TelegramBotCore implements ISubcore {
         SendMessageUtil.sendMessage(chatId, message);
     }
 
+    @Deprecated(forRemoval = true, since = "0.3.7")
     public void sendMessage(
             @NonNull final UserData userData,
             @NonNull final String message,
@@ -332,6 +336,7 @@ public final class TelegramBotCore implements ISubcore {
         SendMessageUtil.sendMessage(userData, message, parseMode);
     }
 
+    @Deprecated(forRemoval = true, since = "0.3.7")
     public void sendMessage(
             @NonNull final User user,
             @NonNull final String message,
@@ -340,6 +345,7 @@ public final class TelegramBotCore implements ISubcore {
         SendMessageUtil.sendMessage(user, message, parseMode);
     }
 
+    @Deprecated(forRemoval = true, since = "0.3.7")
     public void sendMessage(
             final long chatId,
             @NonNull final String message,

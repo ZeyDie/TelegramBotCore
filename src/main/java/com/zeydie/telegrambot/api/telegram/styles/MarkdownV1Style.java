@@ -3,7 +3,6 @@ package com.zeydie.telegrambot.api.telegram.styles;
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import lombok.NonNull;
-import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
@@ -53,7 +52,7 @@ public class MarkdownV1Style {
     }
 
     public static @NotNull String inlineFixedCode(@NonNull final String text) {
-        return inlineCode(Strings.EMPTY, text);
+        return "`" + text + "`";
     }
 
     public static @NotNull String inlineCode(

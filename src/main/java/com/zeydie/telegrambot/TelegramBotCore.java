@@ -6,13 +6,9 @@ import com.google.common.util.concurrent.Service;
 import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.model.File;
 import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.GetFile;
-import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 import com.zeydie.telegrambot.api.events.config.ConfigSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
@@ -32,6 +28,7 @@ import com.zeydie.telegrambot.api.telegram.events.handlers.IUpdateEventHandler;
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import com.zeydie.telegrambot.api.utils.ReflectionUtil;
 import com.zeydie.telegrambot.api.utils.RequestUtil;
+import com.zeydie.telegrambot.api.utils.SendMessageUtil;
 import com.zeydie.telegrambot.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
@@ -310,21 +307,45 @@ public final class TelegramBotCore implements ISubcore {
             @NonNull final UserData userData,
             @NonNull final String message
     ) {
-        this.sendMessage(userData.getUser(), message);
+        SendMessageUtil.sendMessage(userData, message);
     }
 
     public void sendMessage(
             @NonNull final User user,
             @NonNull final String message
     ) {
-        this.sendMessage(user.id(), message);
+        SendMessageUtil.sendMessage(user, message);
     }
 
     public void sendMessage(
             final long chatId,
             @NonNull final String message
     ) {
-        this.execute(new SendMessage(chatId, message));
+        SendMessageUtil.sendMessage(chatId, message);
+    }
+
+    public void sendMessage(
+            @NonNull final UserData userData,
+            @NonNull final String message,
+            @NonNull final ParseMode parseMode
+    ) {
+        SendMessageUtil.sendMessage(userData, message, parseMode);
+    }
+
+    public void sendMessage(
+            @NonNull final User user,
+            @NonNull final String message,
+            @NonNull final ParseMode parseMode
+    ) {
+        SendMessageUtil.sendMessage(user, message, parseMode);
+    }
+
+    public void sendMessage(
+            final long chatId,
+            @NonNull final String message,
+            @NonNull final ParseMode parseMode
+    ) {
+        SendMessageUtil.sendMessage(chatId, message, parseMode);
     }
 
     public @Nullable File getFile(@NonNull final String fileId) {
@@ -407,7 +428,8 @@ public final class TelegramBotCore implements ISubcore {
                                                                 keyboardButton,
                                                                 this.language.localizeObject(chatId, textButton)
                                                         );
-                                                } catch (final NoSuchFieldException | LanguageNotRegisteredException exception) {
+                                                } catch (final NoSuchFieldException |
+                                                               LanguageNotRegisteredException exception) {
                                                     exception.printStackTrace(System.out);
                                                 }
                                             }

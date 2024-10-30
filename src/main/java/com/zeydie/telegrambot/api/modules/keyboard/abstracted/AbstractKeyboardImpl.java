@@ -6,8 +6,29 @@ import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.keyboard.IKeyboard;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
+@RequiredArgsConstructor
 public abstract class AbstractKeyboardImpl implements IKeyboard {
+    private final @NotNull String text;
+
+    @Override
+    public void sendKeyboard(@NonNull final UserData userData) {
+        this.sendKeyboard(userData, this.text);
+    }
+
+    @Override
+    public void sendKeyboard(@NonNull final User user) {
+        this.sendKeyboard(user, this.text);
+    }
+
+
+    @Override
+    public void sendKeyboard(final long chatId) {
+        this.sendKeyboard(chatId, this.text);
+    }
+
     @Override
     public void sendKeyboard(
             @NonNull final UserData userData,
@@ -29,6 +50,8 @@ public abstract class AbstractKeyboardImpl implements IKeyboard {
             final long chatId,
             @NonNull final String text
     ) {
-        TelegramBotCore.getInstance().execute(new SendMessage(chatId, text).replyMarkup(this.getKeyboard()));
+        TelegramBotCore.getInstance()
+                .execute(new SendMessage(chatId, text)
+                .replyMarkup(this.getKeyboard()));
     }
 }

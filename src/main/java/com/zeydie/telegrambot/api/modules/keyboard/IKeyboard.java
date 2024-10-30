@@ -10,8 +10,14 @@ public interface IKeyboard {
     @NotNull
     Keyboard getKeyboard();
 
+    void sendKeyboard(@NonNull final UserData userData);
+
+    void sendKeyboard(@NonNull final User user);
+
+    void sendKeyboard(final long chatId);
+
     void sendKeyboard(
-            @NonNull final UserData user,
+            @NonNull final UserData userData,
             @NonNull final String text
     );
 

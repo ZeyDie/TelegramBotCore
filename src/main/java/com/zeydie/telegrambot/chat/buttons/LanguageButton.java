@@ -6,6 +6,7 @@ import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEvent;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.CallbackQueryEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
+import com.zeydie.telegrambot.api.utils.SendMessageUtil;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -25,8 +26,7 @@ public final class LanguageButton {
         val userId = Long.parseLong(datas[datas.length - 1]);
         @NonNull val languageCode = datas[datas.length - 2];
 
-        @NonNull val instance = TelegramBotCore.getInstance();
-        @NonNull val userCache = instance.getUserCache();
+        @NonNull val userCache = TelegramBotCore.getInstance().getUserCache();
 
         if (!userCache.contains(userId)) {
             LoggerUtil.error(this.getClass(), "Can't find user {}", userId);
@@ -38,8 +38,8 @@ public final class LanguageButton {
         if (userData != null) {
             userData.setLanguageCode(languageCode);
 
-            instance.sendMessage(userId, "messages.changed_language");
+            SendMessageUtil.sendMessage(userId, "messages.changed_language");
         } else
-            instance.sendMessage(userId, "messages.no_user_data");
+            SendMessageUtil.sendMessage(userId, "messages.no_user_data");
     }
 }

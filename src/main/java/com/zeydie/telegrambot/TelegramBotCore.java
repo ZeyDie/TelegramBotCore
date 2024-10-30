@@ -5,8 +5,10 @@ import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
 import com.pengrad.telegrambot.*;
 import com.pengrad.telegrambot.model.File;
-import com.pengrad.telegrambot.model.User;
-import com.pengrad.telegrambot.model.request.*;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.KeyboardButton;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.response.BaseResponse;
@@ -15,7 +17,6 @@ import com.zeydie.telegrambot.api.events.subscribes.ConfigSubscribesRegister;
 import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
-import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
 import com.zeydie.telegrambot.api.modules.interfaces.ISubcore;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
@@ -28,7 +29,6 @@ import com.zeydie.telegrambot.api.telegram.events.handlers.IUpdateEventHandler;
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import com.zeydie.telegrambot.api.utils.ReflectionUtil;
 import com.zeydie.telegrambot.api.utils.RequestUtil;
-import com.zeydie.telegrambot.api.utils.SendMessageUtil;
 import com.zeydie.telegrambot.configs.AbstractFileConfig;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import com.zeydie.telegrambot.configs.data.BotConfig;
@@ -302,57 +302,6 @@ public final class TelegramBotCore implements ISubcore {
     @Setter
     @Getter
     private @NotNull ExceptionHandler exceptionHandler = new ExceptionHandlerImpl();
-
-    @Deprecated(forRemoval = true, since = "0.3.7")
-    public void sendMessage(
-            @NonNull final UserData userData,
-            @NonNull final String message
-    ) {
-        SendMessageUtil.sendMessage(userData, message);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.3.7")
-    public void sendMessage(
-            @NonNull final User user,
-            @NonNull final String message
-    ) {
-        SendMessageUtil.sendMessage(user, message);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.3.7")
-    public void sendMessage(
-            final long chatId,
-            @NonNull final String message
-    ) {
-        SendMessageUtil.sendMessage(chatId, message);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.3.7")
-    public void sendMessage(
-            @NonNull final UserData userData,
-            @NonNull final String message,
-            @NonNull final ParseMode parseMode
-    ) {
-        SendMessageUtil.sendMessage(userData, message, parseMode);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.3.7")
-    public void sendMessage(
-            @NonNull final User user,
-            @NonNull final String message,
-            @NonNull final ParseMode parseMode
-    ) {
-        SendMessageUtil.sendMessage(user, message, parseMode);
-    }
-
-    @Deprecated(forRemoval = true, since = "0.3.7")
-    public void sendMessage(
-            final long chatId,
-            @NonNull final String message,
-            @NonNull final ParseMode parseMode
-    ) {
-        SendMessageUtil.sendMessage(chatId, message, parseMode);
-    }
 
     public @Nullable File getFile(@NonNull final String fileId) {
         @NonNull val fileRequest = new GetFile(fileId);

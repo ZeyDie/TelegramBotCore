@@ -34,7 +34,7 @@ public final class StartCommand {
 
             if (languageData == null) return;
 
-            @NonNull val messageKeyboard = new MessageKeyboardImpl();
+            @NonNull val messageKeyboard = new MessageKeyboardImpl(languageData.localize("messages.select_language"));
 
             for (int i = 0; i < registeredLanguages.size(); i++) {
                 @NonNull val registeredLanguage = registeredLanguages.get(i);
@@ -53,7 +53,7 @@ public final class StartCommand {
                     messageKeyboard.completeRow();
             }
 
-            messageKeyboard.sendKeyboard(sender, languageData.localize("messages.select_language"));
+            messageKeyboard.sendKeyboard(sender);
         }
     }
 }

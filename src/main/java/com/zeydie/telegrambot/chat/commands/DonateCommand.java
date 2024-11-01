@@ -2,11 +2,11 @@ package com.zeydie.telegrambot.chat.commands;
 
 import com.pengrad.telegrambot.model.request.LabeledPrice;
 import com.pengrad.telegrambot.request.SendInvoice;
-import com.zeydie.telegrambot.TelegramBotCore;
 import com.zeydie.telegrambot.api.telegram.events.CommandEvent;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.CommandEventSubscribe;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegister;
 import com.zeydie.telegrambot.api.utils.LanguageUtil;
+import com.zeydie.telegrambot.api.utils.SendMessageUtil;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -17,40 +17,40 @@ public final class DonateCommand {
     @SneakyThrows
     @CommandEventSubscribe(commands = "/donate")
     public void pay(@NonNull final CommandEvent event) {
-        if (!ConfigStore.getDonateConfig().isEnabled()) return;
+        @NonNull val donateConfig = ConfigStore.getDonateConfig();
 
-        @NonNull val instance = TelegramBotCore.getInstance();
+        if (!donateConfig.isEnabled()) return;
 
         val chatId = event.getSender().id();
         @NonNull val messages = event.getMessage().text().split(" ");
 
-        if (messages.length > 1) {
-            int amount;
+        var amount = donateConfig.getAmount();
 
+        if (messages.length > 1)
             try {
                 amount = Integer.parseInt(messages[1]);
             } catch (final Exception exception) {
-                //TODO Message that cant parse amount
+                SendMessageUtil.sendMessage(
+                        chatId,
+                        LanguageUtil.localize(chatId, "messages.donate.no_parse")
+                );
 
                 return;
             }
 
-            @NonNull val donateConfig = ConfigStore.getDonateConfig();
+        @NonNull val xtrPrice = new LabeledPrice(
+                LanguageUtil.localize(chatId, "messages.donate.title"),
+                amount
+        );
+        @NonNull val invoice = new SendInvoice(
+                chatId,
+                LanguageUtil.localize(chatId, "messages.donate.title"),
+                LanguageUtil.localize(chatId, "messages.donate.description"),
+                donateConfig.getPayload(),
+                donateConfig.getCurrency(),
+                xtrPrice
+        );
 
-            @NonNull val xtrPrice = new LabeledPrice(
-                    LanguageUtil.localize(chatId, "messages.donate_title"),
-                    amount
-            );
-            @NonNull val invoice = new SendInvoice(
-                    chatId,
-                    LanguageUtil.localize(chatId, "messages.donate_title"),
-                    LanguageUtil.localize(chatId, "messages.donate_description"),
-                    donateConfig.getPayload(),
-                    donateConfig.getCurrency(),
-                    xtrPrice
-            );
-
-            instance.execute(invoice);
-        }
+        SendMessageUtil.execute(invoice);
     }
 }

@@ -40,6 +40,7 @@ public class LanguageData {
             this.localization.put("messages.no_user_data", "Can't load user data!");
             this.localization.put("messages.donate.title", "Donate to Bot");
             this.localization.put("messages.donate.description", "Your support is very important!");
+            this.localization.put("messages.donate.no_parse", "Can't parsing amount. Please try type as example /donate 10");
 
             if (localization != null && !localization.isEmpty())
                 this.localization.putAll(localization);

@@ -15,7 +15,7 @@ import lombok.val;
 @EventSubscribesRegister
 public final class DonateCommand {
     @SneakyThrows
-    @CommandEventSubscribe(commands = "/donate", permissions = "telegrambotcore.donate")
+    @CommandEventSubscribe(commands = "/donate")
     public void pay(@NonNull final CommandEvent event) {
         if (!ConfigStore.getDonateConfig().isEnabled()) return;
 

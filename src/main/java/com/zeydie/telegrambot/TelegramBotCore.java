@@ -191,7 +191,6 @@ public final class TelegramBotCore implements ISubcore {
     }
 
     @Override
-    @SneakyThrows
     public void preInit() {
         setup(
                 ConfigStore.getBotConfig(),
@@ -199,7 +198,6 @@ public final class TelegramBotCore implements ISubcore {
         );
     }
 
-    @SneakyThrows
     public void setup(
             @NonNull final BotConfig config,
             @NonNull final CachingConfig cachingConfig
@@ -234,7 +232,6 @@ public final class TelegramBotCore implements ISubcore {
     }
 
     @Override
-    @SneakyThrows
     public void init() {
         val startTime = System.currentTimeMillis();
 

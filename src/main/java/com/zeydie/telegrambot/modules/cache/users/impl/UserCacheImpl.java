@@ -9,7 +9,6 @@ import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.utils.FileUtil;
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +25,6 @@ public class UserCacheImpl implements IUserCache {
         FileUtil.createFolder(CACHE_USERS_FOLDER_FILE);
     }
 
-    @SneakyThrows
     @Override
     public void init() {
         @Nullable val files = CACHE_USERS_FOLDER_FILE.listFiles();

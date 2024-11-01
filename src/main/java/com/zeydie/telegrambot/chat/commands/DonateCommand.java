@@ -9,12 +9,10 @@ import com.zeydie.telegrambot.api.utils.LanguageUtil;
 import com.zeydie.telegrambot.api.utils.SendMessageUtil;
 import com.zeydie.telegrambot.configs.ConfigStore;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.val;
 
 @EventSubscribesRegister
 public final class DonateCommand {
-    @SneakyThrows
     @CommandEventSubscribe(commands = "/donate")
     public void pay(@NonNull final CommandEvent event) {
         @NonNull val donateConfig = ConfigStore.getDonateConfig();

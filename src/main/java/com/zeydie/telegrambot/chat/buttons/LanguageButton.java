@@ -8,7 +8,6 @@ import com.zeydie.telegrambot.api.telegram.events.subscribes.EventSubscribesRegi
 import com.zeydie.telegrambot.api.utils.LoggerUtil;
 import com.zeydie.telegrambot.api.utils.SendMessageUtil;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,6 @@ public final class LanguageButton {
         return new InlineKeyboardButton(text);
     }
 
-    @SneakyThrows
     @CallbackQueryEventSubscribe(callbacks = "language.select", startWith = true)
     public void select(@NonNull final CallbackQueryEvent event) {
         @NonNull val datas = event.getCallbackQuery().data().split("\\.");

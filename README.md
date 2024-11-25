@@ -1,6 +1,5 @@
 # TelegramBotCore
 
-![Static Badge](https://img.shields.io/badge/TelegramBotCore-TelegramBotCore-TelegramBotCore)
 ![GitHub top language](https://img.shields.io/github/languages/top/ZeyDie/TelegramBotCore)
 ![GitHub](https://img.shields.io/github/license/ZeyDie/TelegramBotCore)
 ![GitHub Repo stars](https://img.shields.io/github/stars/ZeyDie/TelegramBotCore)

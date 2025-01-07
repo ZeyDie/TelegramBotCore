@@ -39,7 +39,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
     implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '7.11.+'
     // https://mvnrepository.com/artifact/com.squareup.okio/okio-jvm
-    runtimeOnly group: 'com.squareup.okio', name: 'okio-jvm', version: '3.9.+'
+    runtimeOnly group: 'com.squareup.okio', name: 'okio-jvm', version: '3.10.+'
 
     // https://github.com/ZeyDie/Simple-GSON
     implementation group: 'com.zeydie', name: 'SGson', version: '2.11.x-1.+'

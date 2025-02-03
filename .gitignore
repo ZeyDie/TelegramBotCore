@@ -24,12 +24,12 @@ replay_pid*
 
 .idea
 .gradle
-out
-build
-cache
-configs
-language
-permissions
-logs
-payment
-permissions
+/out
+/build
+/cache
+/configs
+/language
+/permissions
+/logs
+/payment
+/permissions

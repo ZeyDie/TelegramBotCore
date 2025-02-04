@@ -31,7 +31,7 @@ public final class ExampleBotTest implements ISubcore {
         return this.getClass().getName();
     }
 
-    // Главный метод запуска и регистрация в роле дополнения
+    // Главный метод запуска и регистрация в роли дополнения
     @SneakyThrows
     @Override
     public static void main(@Nullable final String[] args) {
@@ -68,7 +68,7 @@ public final class ExampleBotTest implements ISubcore {
 
     }
 
-    // Метод конечной инициализации меодулей, сервисов
+    // Метод конечной инициализации модулей, сервисов
     @Override
     public void postInit() {
 

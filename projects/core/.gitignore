@@ -1,2 +1,11 @@
+.idea
 .gradle
-build
+/out
+/build
+/cache
+/configs
+/language
+/permissions
+/logs
+/payment
+/permissions

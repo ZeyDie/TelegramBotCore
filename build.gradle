@@ -78,25 +78,13 @@ subprojects {
         testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.+'
     }
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 
     compileJava.options.encoding = 'UTF-8'
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        options.compilerArgs += "--enable-preview"
-    }
-
-    tasks.withType(Test).configureEach {
-        jvmArgs += "--enable-preview"
-    }
-
-    tasks.withType(JavaExec).configureEach {
-        jvmArgs += "--enable-preview"
     }
 
     jar {
@@ -112,6 +100,5 @@ subprojects {
 
     test {
         useJUnitPlatform()
-        jvmArgs(['--enable-preview'])
     }
 }

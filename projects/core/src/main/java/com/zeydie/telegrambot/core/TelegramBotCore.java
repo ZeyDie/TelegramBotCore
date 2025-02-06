@@ -51,11 +51,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public final class TelegramBotCore implements ISubcore {
     @Getter
@@ -113,7 +113,7 @@ public final class TelegramBotCore implements ISubcore {
 
         @Override
         protected @NotNull Scheduler scheduler() {
-            return Scheduler.newFixedRateSchedule(0, 1, TimeUnit.MINUTES);
+            return Scheduler.newFixedRateSchedule(Duration.ofMinutes(0), Duration.ofMinutes(1));
         }
     };
 

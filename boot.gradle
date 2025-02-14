@@ -1,0 +1,15 @@
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.4.2')
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.4.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: '3.4.2'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: '3.4.2'
+}

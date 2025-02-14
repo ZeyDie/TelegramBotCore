@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="ALL">
     <Appenders>
+        <DefaultRolloverStrategy max="30">
+            <Delete basePath="logs/" maxDepth="2">
+                <IfFileName glob="*/app-*.log.gz" />
+                <IfLastModified age="30d" />
+            </Delete>
+        </DefaultRolloverStrategy>
         <Console name="Console">
             <PatternLayout pattern="[%date %highlight{%-5level} (%t) %logger{36}:%M] -> %msg%n%throwable"/>
         </Console>

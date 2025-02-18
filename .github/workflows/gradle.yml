@@ -9,11 +9,11 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "spring/3.4.2" ]
     tags: 
       - "v*"
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "spring/3.4.2" ]
 
 permissions:
   contents: read

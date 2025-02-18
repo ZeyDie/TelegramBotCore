@@ -1,0 +1,9 @@
+services:
+  telegram-bot:
+    build: .
+    ports:
+      - '6969:8080'
+    volumes:
+      - telegram-bot-data:/var/lib/telegram-bot/data
+volumes:
+  telegram-bot-data:

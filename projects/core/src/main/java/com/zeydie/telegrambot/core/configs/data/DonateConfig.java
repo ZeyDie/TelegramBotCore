@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public final class DonateConfig {
+    @NonFinal
     private boolean enabled = false;
+    @NonFinal
     private int amount = 10;
     @NonFinal
     private @NotNull String currency = "XTR";

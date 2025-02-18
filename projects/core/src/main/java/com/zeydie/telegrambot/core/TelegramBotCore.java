@@ -62,7 +62,8 @@ public class TelegramBotCore implements ISubcore {
 
     public static void main(@Nullable final String[] args) {
         arguments = args;
-        SpringApplication.run(TelegramBotCore.class, arguments);
+
+        SpringApplication.run(TelegramBotCore.class, args);
     }
 
     @Autowired

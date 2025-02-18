@@ -23,6 +23,7 @@ public final class BotConfig {
     @Data
     @EqualsAndHashCode(callSuper = false)
     public static class TestConfig {
+        @NonFinal
         private long chatId = 0;
     }
 }

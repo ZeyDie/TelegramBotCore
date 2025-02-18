@@ -3,22 +3,24 @@ package com.zeydie.telegrambot.core.impl.modules.language;
 import com.google.common.collect.Lists;
 import com.pengrad.telegrambot.model.User;
 import com.zeydie.sgson.SGsonFile;
-import com.zeydie.telegrambot.core.TelegramBotCore;
 import com.zeydie.telegrambot.api.events.language.LanguageRegisterEvent;
+import com.zeydie.telegrambot.api.handlers.events.language.ILanguageEventHandler;
+import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import com.zeydie.telegrambot.api.modules.language.data.LanguageData;
 import com.zeydie.telegrambot.core.configs.ConfigStore;
-import com.zeydie.telegrambot.exceptions.language.LanguageNotRegisteredException;
-import com.zeydie.telegrambot.exceptions.language.LanguageRegisteredException;
 import com.zeydie.telegrambot.core.utils.FileUtil;
 import com.zeydie.telegrambot.core.utils.LoggerUtil;
+import com.zeydie.telegrambot.exceptions.language.LanguageNotRegisteredException;
+import com.zeydie.telegrambot.exceptions.language.LanguageRegisteredException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +29,11 @@ import static com.zeydie.telegrambot.core.utils.ReferencePaths.*;
 
 @Getter
 public class LanguageImpl implements ILanguage {
+    @Autowired
+    private ILanguageEventHandler languageEventHandler;
+    @Autowired
+    private IUserCache userCache;
+
     private final @NotNull List<LanguageData> registeredLanguages = Lists.newArrayList();
 
     @Override
@@ -52,7 +59,7 @@ public class LanguageImpl implements ILanguage {
                                 try {
                                     this.register(SGsonFile.createPretty(file).fromJsonToObject(languageDataRegister));
                                 } catch (final LanguageRegisteredException exception) {
-                                    exception.printStackTrace(System.out);
+                                    LoggerUtil.error(exception);
                                 }
                             }
                     );
@@ -73,7 +80,7 @@ public class LanguageImpl implements ILanguage {
     public void postInit() {
         @NonNull val languageRegisterEvent = new LanguageRegisterEvent();
 
-        TelegramBotCore.getInstance().getLanguageEventHandler().handle(languageRegisterEvent);
+        this.languageEventHandler.handle(languageRegisterEvent);
 
         languageRegisterEvent.getLanguageRegister()
                 .getLanguageDataList()
@@ -82,7 +89,7 @@ public class LanguageImpl implements ILanguage {
                                 if (!this.isRegistered(languageData))
                                     this.register(languageData);
                             } catch (final LanguageRegisteredException exception) {
-                                exception.printStackTrace(System.out);
+                                LoggerUtil.error(exception);
                             }
                         }
                 );
@@ -134,15 +141,11 @@ public class LanguageImpl implements ILanguage {
     ) throws LanguageNotRegisteredException {
         if (object == null) return this.localize(key);
 
-        switch (object) {
-            case User user -> {
-                return this.localize(user, key);
-            }
-            case Long chatId -> {
-                return this.localize(chatId, key);
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + object);
-        }
+        if (object instanceof final User user)
+            return this.localize(user, key);
+        else if (object instanceof final Long chatId)
+            return this.localize(chatId, key);
+        else throw new IllegalStateException("Unexpected value: " + object);
     }
 
     @Override
@@ -166,7 +169,7 @@ public class LanguageImpl implements ILanguage {
             final long id,
             @NonNull final String key
     ) throws LanguageNotRegisteredException {
-        @Nullable val userData = TelegramBotCore.getInstance().getUserCache().getUserData(id);
+        @Nullable val userData = this.userCache.getUserData(id);
 
         @NonNull var language = ConfigStore.getLanguageConfig().getDefaultLanguageId();
 

@@ -10,7 +10,9 @@ import com.zeydie.telegrambot.core.utils.LanguageUtil;
 import com.zeydie.telegrambot.core.utils.SendMessageUtil;
 import lombok.NonNull;
 import lombok.val;
+import org.springframework.stereotype.Component;
 
+@Component
 @EventSubscribesRegister
 public final class DonateCommand {
     @CommandEventSubscribe(commands = "/donate")

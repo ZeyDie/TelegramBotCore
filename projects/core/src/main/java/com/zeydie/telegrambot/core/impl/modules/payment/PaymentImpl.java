@@ -7,9 +7,9 @@ import com.zeydie.sgson.SGsonBase;
 import com.zeydie.sgson.SGsonFile;
 import com.zeydie.telegrambot.api.modules.payment.IPayment;
 import com.zeydie.telegrambot.api.modules.payment.data.PaymentData;
-import com.zeydie.telegrambot.exceptions.payment.PaymentRegisteredException;
 import com.zeydie.telegrambot.core.utils.FileUtil;
 import com.zeydie.telegrambot.core.utils.LoggerUtil;
+import com.zeydie.telegrambot.exceptions.payment.PaymentRegisteredException;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -53,7 +53,7 @@ public class PaymentImpl implements IPayment {
 
             @NonNull val json = body.string();
 
-            LoggerUtil.info("Body: {}", json);
+            LoggerUtil.debug("Body: {}", json);
 
             SGsonBase.create()
                     .fromJsonToObject(json, Maps.newTreeMap())
@@ -102,7 +102,7 @@ public class PaymentImpl implements IPayment {
                                 try {
                                     this.register(SGsonFile.create(file).fromJsonToObject(new PaymentData()));
                                 } catch (final PaymentRegisteredException exception) {
-                                    exception.printStackTrace(System.out);
+                                    LoggerUtil.error(exception);
                                 }
                             }
                     );

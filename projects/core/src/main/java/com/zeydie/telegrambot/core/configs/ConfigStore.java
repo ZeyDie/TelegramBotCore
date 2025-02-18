@@ -15,17 +15,17 @@ public final class ConfigStore {
     @Getter
     @NonFinal
     @ConfigSubscribe(name = "config")
-    public static @NotNull BotConfig botConfig = new BotConfig();
+    private static @NotNull BotConfig botConfig = new BotConfig();
     @Getter
     @NonFinal
     @ConfigSubscribe(name = "language")
-    public static @NotNull LanguageConfig languageConfig = new LanguageConfig();
+    private static @NotNull LanguageConfig languageConfig = new LanguageConfig();
     @Getter
     @NonFinal
     @ConfigSubscribe(name = "caching")
-    public static @NotNull CachingConfig cachingConfig = new CachingConfig();
+    private static @NotNull CachingConfig cachingConfig = new CachingConfig();
     @Getter
     @NonFinal
     @ConfigSubscribe(name = "donate")
-    public static @NotNull DonateConfig donateConfig = new DonateConfig();
+    private static @NotNull DonateConfig donateConfig = new DonateConfig();
 }

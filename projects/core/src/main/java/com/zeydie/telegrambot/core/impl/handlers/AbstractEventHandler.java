@@ -2,12 +2,12 @@ package com.zeydie.telegrambot.core.impl.handlers;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.zeydie.telegrambot.core.TelegramBotCore;
 import com.zeydie.telegrambot.api.events.AbstractEvent;
 import com.zeydie.telegrambot.api.events.EventPriority;
 import com.zeydie.telegrambot.api.events.subscribes.CancelableSubscribe;
 import com.zeydie.telegrambot.api.events.subscribes.PrioritySubscribe;
 import com.zeydie.telegrambot.api.modules.interfaces.IInitialize;
+import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.PermissionData;
 import com.zeydie.telegrambot.api.telegram.events.CallbackQueryEvent;
 import com.zeydie.telegrambot.api.telegram.events.CommandEvent;
@@ -19,9 +19,10 @@ import com.zeydie.telegrambot.api.telegram.events.subscribes.MessageEventSubscri
 import com.zeydie.telegrambot.core.utils.LoggerUtil;
 import lombok.NonNull;
 import lombok.val;
-import org.atteo.classindex.ClassIndex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +31,12 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractEventHandler implements IInitialize {
+    @Autowired
+    private @NotNull ApplicationContext applicationContext;
+
+    @Autowired
+    private IPermissions permissions;
+
     public abstract @NotNull Class<? extends Annotation> getEventAnnotation();
 
     public abstract @Nullable Class<?>[] getParameters();
@@ -45,17 +52,19 @@ public abstract class AbstractEventHandler implements IInitialize {
         @NonNull val eventAnnotation = this.getEventAnnotation();
         @Nullable val eventParameters = this.getParameters();
 
-        LoggerUtil.debug(this.getClass(), "Scanning events {}...", eventAnnotation);
+        LoggerUtil.debug("Scanning events {}...", eventAnnotation);
 
-        ClassIndex.getAnnotated(EventSubscribesRegister.class)
-                .forEach(annotatedClass -> {
-                            LoggerUtil.debug(this.getClass(), "{}", annotatedClass);
+        this.applicationContext.getBeansWithAnnotation(EventSubscribesRegister.class).values()
+                .forEach(
+                        annotatedClassInstance -> {
+                            @NonNull val annotatedClass = annotatedClassInstance.getClass();
 
-                            if (annotatedClass.getAnnotation(EventSubscribesRegister.class).enable())
+                            if (annotatedClass.getAnnotation(EventSubscribesRegister.class).enable()) {
                                 Arrays.stream(annotatedClass.getMethods())
-                                        .forEach(method -> {
+                                        .forEach(
+                                                method -> {
                                                     if (method.isAnnotationPresent(eventAnnotation)) {
-                                                        LoggerUtil.debug(this.getClass(), "{}", method);
+                                                        LoggerUtil.debug("{} {}", eventAnnotation, method);
 
                                                         @NonNull val parameterTypes = method.getParameterTypes();
 
@@ -67,11 +76,14 @@ public abstract class AbstractEventHandler implements IInitialize {
                                                             @Nullable Cache<Method, Class<?>> methodClassCache = null;
 
                                                             switch (eventPriority) {
-                                                                case HIGHEST -> methodClassCache = this.highestClassMethods;
+                                                                case HIGHEST ->
+                                                                        methodClassCache = this.highestClassMethods;
                                                                 case HIGHT -> methodClassCache = this.highClassMethods;
-                                                                case DEFAULT -> methodClassCache = this.defaultClassMethods;
+                                                                case DEFAULT ->
+                                                                        methodClassCache = this.defaultClassMethods;
                                                                 case LOW -> methodClassCache = this.lowClassMethods;
-                                                                case LOWEST -> methodClassCache = this.lowestClassMethods;
+                                                                case LOWEST ->
+                                                                        methodClassCache = this.lowestClassMethods;
                                                             }
 
                                                             if (methodClassCache != null)
@@ -80,6 +92,7 @@ public abstract class AbstractEventHandler implements IInitialize {
                                                     }
                                                 }
                                         );
+                            }
                         }
                 );
     }
@@ -107,14 +120,9 @@ public abstract class AbstractEventHandler implements IInitialize {
                 return;
 
             try {
-                method.invoke(annotatedClass.getDeclaredConstructor().newInstance(), objects);
-            } catch (
-                    final NoSuchMethodException |
-                          IllegalAccessException |
-                          InvocationTargetException |
-                          InstantiationException exception
-            ) {
-                exception.printStackTrace(System.out);
+                method.invoke(this.applicationContext.getBean(annotatedClass), objects);
+            } catch (final IllegalAccessException | InvocationTargetException exception) {
+                LoggerUtil.error(exception);
             }
         }
     }
@@ -185,14 +193,12 @@ public abstract class AbstractEventHandler implements IInitialize {
 
                                     hasCommand.set(
                                             Arrays.stream(commandEventSubscribe.commands())
-                                                    .anyMatch(command -> {
-                                                                @NonNull val permissionsImpl = TelegramBotCore.getInstance().getPermissions();
-
-                                                                return text.startsWith(command) && (
-                                                                        permissions.length == 0 ||
-                                                                                Arrays.stream(permissions).anyMatch(permission -> permissionsImpl.hasPermission(chatId, new PermissionData(permission)))
-                                                                );
-                                                            }
+                                                    .anyMatch(command ->
+                                                            text.startsWith(command) && (
+                                                                    permissions.length == 0 ||
+                                                                            Arrays.stream(permissions)
+                                                                                    .anyMatch(permission -> this.permissions.hasPermission(chatId, new PermissionData(permission)))
+                                                            )
                                                     )
                                     );
                                 }

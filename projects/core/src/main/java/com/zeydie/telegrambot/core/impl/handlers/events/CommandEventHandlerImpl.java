@@ -8,10 +8,12 @@ import com.zeydie.telegrambot.core.impl.handlers.AbstractEventHandler;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Service;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 
+@Service
 public class CommandEventHandlerImpl extends AbstractEventHandler implements ICommandEventHandler {
     @Override
     public @NotNull Class<? extends Annotation> getEventAnnotation() {

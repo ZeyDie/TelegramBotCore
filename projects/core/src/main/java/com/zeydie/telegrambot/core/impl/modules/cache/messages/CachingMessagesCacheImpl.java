@@ -6,10 +6,10 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
 import com.zeydie.sgson.SGsonFile;
-import com.zeydie.telegrambot.core.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.messages.IMessagesCache;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.ListMessagesData;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
+import com.zeydie.telegrambot.api.telegram.events.handlers.IMessageEventHandler;
 import com.zeydie.telegrambot.core.utils.FileUtil;
 import com.zeydie.telegrambot.core.utils.LoggerUtil;
 import lombok.Getter;
@@ -17,17 +17,21 @@ import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import static com.zeydie.telegrambot.core.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_FILE;
 import static com.zeydie.telegrambot.core.utils.ReferencePaths.CACHE_MESSAGES_FOLDER_PATH;
 
 public class CachingMessagesCacheImpl implements IMessagesCache {
+    @Autowired
+    private IMessageEventHandler messageEventHandler;
+
     @Getter
     private final @NotNull Service scheduledService;
 
@@ -40,13 +44,13 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
 
             @Override
             protected @NotNull Scheduler scheduler() {
-                return Scheduler.newFixedRateSchedule(0, 250, TimeUnit.MILLISECONDS);
+                return Scheduler.newFixedRateSchedule(Duration.ZERO, Duration.ofMillis(250));
             }
         }.startAsync();
     }
 
     private final @NotNull Cache<Long, ListMessagesData> chatMessageCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(100, TimeUnit.MILLISECONDS)
+            .expireAfterWrite(Duration.ofMillis(250))
             .removalListener((RemovalListener<Long, ListMessagesData>) notification -> {
                         if (notification.getKey() == null) return;
                         if (notification.getValue() == null) return;
@@ -62,7 +66,7 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                                     @Nullable val message = messageData.message();
 
                                     if (message != null)
-                                        CompletableFuture.runAsync(() -> TelegramBotCore.getInstance().getMessageEventHandler().handle(message))
+                                        CompletableFuture.runAsync(() -> this.messageEventHandler.handle(message))
                                                 .thenRun(() ->
                                                         SGsonFile.create(
                                                                         FileUtil.createFileWithName(
@@ -103,10 +107,10 @@ public class CachingMessagesCacheImpl implements IMessagesCache {
                                         );
                                     }
 
-                                    LoggerUtil.info("Chat: {} restored {} messages", chatId, messages.size());
+                                    LoggerUtil.debug("Chat: {} restored {} messages", chatId, messages.size());
                                     this.chatMessageCache.put(Long.parseLong(FileUtil.getFileName(chatId)), listMessagesData);
                                 } catch (final Exception exception) {
-                                    exception.printStackTrace(System.out);
+                                    LoggerUtil.error(exception);
                                 }
                             }
                     );

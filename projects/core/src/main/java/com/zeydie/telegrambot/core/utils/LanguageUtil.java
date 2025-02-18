@@ -1,16 +1,20 @@
 package com.zeydie.telegrambot.core.utils;
 
 import com.pengrad.telegrambot.model.User;
-import com.zeydie.telegrambot.core.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
+import com.zeydie.telegrambot.api.modules.language.ILanguage;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public final class LanguageUtil {
+    @Autowired
+    private static ILanguage language;
+
     @SneakyThrows
     public static @NotNull String localize(@NonNull final String key) {
-        return TelegramBotCore.getInstance().getLanguage().localize(key);
+        return language.localize(key);
     }
 
     @SneakyThrows
@@ -18,7 +22,7 @@ public final class LanguageUtil {
             @NonNull final UserData userData,
             @NonNull final String key
     ) {
-        return TelegramBotCore.getInstance().getLanguage().localize(userData, key);
+        return language.localize(userData, key);
     }
 
     @SneakyThrows
@@ -26,7 +30,7 @@ public final class LanguageUtil {
             @NonNull final User user,
             @NonNull final String key
     ) {
-        return TelegramBotCore.getInstance().getLanguage().localize(user, key);
+        return language.localize(user, key);
     }
 
     @SneakyThrows
@@ -34,6 +38,6 @@ public final class LanguageUtil {
             final long userId,
             @NonNull final String key
     ) {
-        return TelegramBotCore.getInstance().getLanguage().localize(userId, key);
+        return language.localize(userId, key);
     }
 }

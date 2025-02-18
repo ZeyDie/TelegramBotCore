@@ -41,7 +41,7 @@ subprojects {
     }
 
     group = 'com.zeydie'
-    version = '8.1-0.4.0A'
+    version = 'S3.4.2-T8.1-A0.5.0-alfa'
 
     dependencies {
         // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
@@ -49,10 +49,6 @@ subprojects {
 
         // https://github.com/ZeyDie/Simple-GSON
         implementation group: 'com.zeydie', name: 'SGson', version: '2.11.x-1.+'
-
-        // https://mvnrepository.com/artifact/org.atteo.classindex/classindex
-        implementation group: 'org.atteo.classindex', name: 'classindex', version: '3.13'
-        annotationProcessor group: 'org.atteo.classindex', name: 'classindex', version: '3.13'
 
         // https://mvnrepository.com/artifact/com.google.guava/guava
         implementation group: 'com.google.guava', name: 'guava', version: '33.4.+'

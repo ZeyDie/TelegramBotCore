@@ -1,11 +1,9 @@
 package com.zeydie.telegrambot.api.telegram.events.subscribes;
 
-import org.atteo.classindex.IndexAnnotated;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.*;
 
-@IndexAnnotated
 @Inherited
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -3,7 +3,7 @@ package com.zeydie.telegrambot.core.impl.modules.permissions;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.zeydie.sgson.SGsonFile;
-import com.zeydie.telegrambot.core.TelegramBotCore;
+import com.zeydie.telegrambot.api.modules.cache.users.IUserCache;
 import com.zeydie.telegrambot.api.modules.cache.users.data.UserData;
 import com.zeydie.telegrambot.api.modules.permissions.IPermissions;
 import com.zeydie.telegrambot.api.modules.permissions.data.ListPermissionData;
@@ -14,12 +14,16 @@ import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 
 import static com.zeydie.telegrambot.core.utils.ReferencePaths.*;
 
 public class UserPermissionsImpl implements IPermissions {
+    @Autowired
+    private IUserCache userCache;
+
     private final @NotNull Cache<Long, ListPermissionData> usersPermissionsCache = CacheBuilder.newBuilder().build();
 
     @Override
@@ -35,18 +39,18 @@ public class UserPermissionsImpl implements IPermissions {
             Arrays.stream(files)
                     .forEach(file -> {
                                 try {
-                                    LoggerUtil.info("Restoring {}", file.getName());
+                                    LoggerUtil.debug("Restoring {}", file.getName());
 
                                     val userId = Long.parseLong(FileUtil.getFileName(file));
                                     @NonNull val permissionData = SGsonFile.createPretty(file).fromJsonToObject(new ListPermissionData());
 
                                     if (permissionData.getPermissions().isEmpty()) FileUtil.deleteFile(file);
                                     else {
-                                        LoggerUtil.info("User {} restored {}", userId, permissionData);
+                                        LoggerUtil.debug("User {} restored {}", userId, permissionData);
                                         this.usersPermissionsCache.put(userId, permissionData);
                                     }
                                 } catch (final Exception exception) {
-                                    exception.printStackTrace(System.out);
+                                    LoggerUtil.error(exception);
                                 }
                             }
                     );
@@ -66,7 +70,7 @@ public class UserPermissionsImpl implements IPermissions {
                         (id, userData) -> {
                             if (userData.getPermissions().isEmpty()) return;
 
-                            LoggerUtil.info("Saving user data permissions for {}", id);
+                            LoggerUtil.debug("Saving user data permissions for {}", id);
                             SGsonFile.createPretty(FileUtil.createFileWithNameAndType(PERMISSIONS_FOLDER_PATH, id, PERMISSION_TYPE)).writeJsonFile(userData);
                         }
                 );
@@ -143,7 +147,7 @@ public class UserPermissionsImpl implements IPermissions {
             final long chatId,
             @NonNull final PermissionData permission
     ) {
-        val userData = TelegramBotCore.getInstance().getUserCache().getUserData(chatId);
+        val userData = this.userCache.getUserData(chatId);
 
         if (userData != null && userData.isAdmin()) return true;
 

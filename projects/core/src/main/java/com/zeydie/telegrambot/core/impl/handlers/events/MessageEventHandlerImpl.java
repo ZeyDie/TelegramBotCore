@@ -1,9 +1,9 @@
 package com.zeydie.telegrambot.core.impl.handlers.events;
 
 import com.pengrad.telegrambot.model.Message;
-import com.zeydie.telegrambot.core.TelegramBotCore;
 import com.zeydie.telegrambot.api.modules.cache.messages.data.MessageData;
 import com.zeydie.telegrambot.api.telegram.events.MessageEvent;
+import com.zeydie.telegrambot.api.telegram.events.handlers.ICommandEventHandler;
 import com.zeydie.telegrambot.api.telegram.events.handlers.IMessageEventHandler;
 import com.zeydie.telegrambot.api.telegram.events.subscribes.MessageEventSubscribe;
 import com.zeydie.telegrambot.core.impl.handlers.AbstractEventHandler;
@@ -11,12 +11,18 @@ import lombok.NonNull;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
 
+@Service
 public class MessageEventHandlerImpl extends AbstractEventHandler implements IMessageEventHandler {
+    @Autowired
+    private ICommandEventHandler commandEventHandler;
+
     @Override
     public @NotNull Class<? extends Annotation> getEventAnnotation() {
         return MessageEventSubscribe.class;
@@ -59,8 +65,7 @@ public class MessageEventHandlerImpl extends AbstractEventHandler implements IMe
 
                                 if (type != null)
                                     switch (type) {
-                                        case bot_command ->
-                                                TelegramBotCore.getInstance().getCommandEventHandler().handle(message);
+                                        case bot_command -> this.commandEventHandler.handle(message);
                                     }
                             }
                     );

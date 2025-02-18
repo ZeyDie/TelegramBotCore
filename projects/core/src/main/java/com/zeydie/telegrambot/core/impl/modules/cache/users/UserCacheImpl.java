@@ -35,15 +35,15 @@ public class UserCacheImpl implements IUserCache {
                                 try {
                                     val fileName = FileUtil.getFileName(file);
 
-                                    LoggerUtil.info("Restoring {}", fileName);
+                                    LoggerUtil.debug("Restoring {}", fileName);
 
                                     val userId = Long.parseLong(fileName);
                                     @NonNull val userData = SGsonFile.createPretty(file).fromJsonToObject(new UserData(null));
 
-                                    LoggerUtil.info("User {} restored {}", userId, userData);
+                                    LoggerUtil.debug("User {} restored {}", userId, userData);
                                     this.userDataCache.put(userId, userData);
                                 } catch (final Exception exception) {
-                                    exception.printStackTrace(System.out);
+                                    LoggerUtil.error(exception);
                                 }
                             }
                     );
@@ -63,12 +63,12 @@ public class UserCacheImpl implements IUserCache {
         this.userDataCache.asMap()
                 .forEach(
                         (id, userData) -> {
-                            LoggerUtil.info("Saving user data cache for {}", id);
+                            LoggerUtil.debug("Saving user data cache for {}", id);
                             SGsonFile.createPretty(FileUtil.createFileWithNameAndType(CACHE_USERS_FOLDER_PATH, id, DATA_TYPE)).writeJsonFile(userData);
                         }
                 );
 
-        LoggerUtil.info("Saved data in {} sec.", ((System.currentTimeMillis() - startTime) / 1000.0));
+        LoggerUtil.debug("Saved data in {} sec.", ((System.currentTimeMillis() - startTime) / 1000.0));
     }
 
     @Override

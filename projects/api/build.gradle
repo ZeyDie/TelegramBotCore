@@ -4,18 +4,10 @@ plugins {
 
 repositories {
     mavenCentral()
-
-    flatDir {
-        dirs '../../libs'
-    }
 }
 
 compileJava.options.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-}
-
-bootJar {
-    mainClass = ""
 }

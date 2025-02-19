@@ -25,10 +25,7 @@ public class ExceptionHandlerImpl implements ExceptionHandler {
 
         LoggerUtil.error("{}: {}", code, description);
 
-        if (code == 404) {
+        if (code == 404)
             LoggerUtil.error("Bad token {}", ConfigStore.getBotConfig().getToken());
-
-            Runtime.getRuntime().exit(0);
-        }
     }
 }

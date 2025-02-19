@@ -4,10 +4,6 @@ plugins {
 
 repositories {
     mavenCentral()
-
-    flatDir {
-        dirs '../../libs'
-    }
 }
 
 compileJava.options.encoding = 'UTF-8'

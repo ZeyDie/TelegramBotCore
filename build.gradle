@@ -8,16 +8,8 @@ repositories {
     mavenCentral()
 }
 
-def mainClassProject = "com.zeydie.telegrambot.core.TelegramBotCore"
-def librariesFolder = "libraries";
-def librariesPath = "$rootProject.buildDir/libs/$librariesFolder"
-
-configurations {
-    runtimeClasspath
-}
-
 bootJar {
-    mainClass = mainClassProject
+    mainClass = ""
 }
 
 jar {
@@ -30,12 +22,6 @@ jar {
         configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)
         }
-    }
-    manifest {
-        attributes (
-                "Main-Class": mainClassProject,
-                'Class-Path': file(librariesPath).listFiles().collect { println("$librariesFolder/" + it.getName()); return "$librariesFolder/" + it.getName() }.join(' ')
-        )
     }
 }
 
@@ -54,6 +40,10 @@ subprojects {
 
     group = 'com.zeydie'
     version = 'S3.4.2-T8.1-A0.5.0-alfa'
+
+    bootJar {
+        mainClass = ""
+    }
 
     dependencies {
         // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
@@ -103,7 +93,7 @@ subprojects {
 
             copy {
                 from path
-                into "$librariesPath"
+                into "$rootProject.buildDir/libs/libraries"
             }
         }
     }

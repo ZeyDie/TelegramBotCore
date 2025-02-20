@@ -43,7 +43,7 @@ subprojects {
 
     dependencies {
         // https://mvnrepository.com/artifact/com.github.pengrad/java-telegram-bot-api
-        implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '8.1.+'
+        implementation group: 'com.github.pengrad', name: 'java-telegram-bot-api', version: '8.3.+'
 
         // https://github.com/ZeyDie/Simple-GSON
         implementation group: 'com.zeydie', name: 'SGson', version: '2.11.x-1.+'

@@ -12,8 +12,10 @@ COPY build.gradle settings.gradle boot.gradle /app/
 
 WORKDIR /app
 
-RUN gradle build -x test
-RUN gradle build -x test
+CMD gradle build -x test
+CMD gradle build -x test
+
+CMD ls && pwd
 
 FROM openjdk:21-slim
 

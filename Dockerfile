@@ -12,8 +12,8 @@ COPY build.gradle settings.gradle boot.gradle /app/
 
 WORKDIR /app
 
-CMD gradle build -x test
-CMD gradle build -x test
+RUN gradle build -x test
+RUN gradle build -x test
 
 FROM openjdk:21-slim
 

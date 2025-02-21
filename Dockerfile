@@ -10,11 +10,9 @@ COPY gradlew gradlew.bat  /app/
 COPY build.gradle settings.gradle boot.gradle /app/
 
 WORKDIR /app
+
 RUN chmod +x ./gradlew
-
 RUN ./gradlew build -x test
-
-RUN ls && pwd
 
 FROM openjdk:21-slim
 

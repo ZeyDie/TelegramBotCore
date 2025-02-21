@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         tag:
-          - spring/3.4.2
+          - spring-3.4.2
     steps:
       - name: Git checkout for Github repository workspace
         uses: actions/checkout@v4

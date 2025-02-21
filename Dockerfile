@@ -3,19 +3,19 @@ FROM openjdk:21-slim AS builder
 RUN apt-get update && \
     apt-get install -y gradle
 
-RUN mkdir -p /app
-
 COPY gradle /app/gradle
 COPY libs /app/libs
 COPY projects /app/projects
+COPY gradlew gradlew.bat  /app/
 COPY build.gradle settings.gradle boot.gradle /app/
 
 WORKDIR /app
 
-CMD gradle build -x test
-CMD gradle build -x test
+RUN ./gradlew clean
+RUN ./gradlew build -x test
+RUN ./gradlew build -x test
 
-CMD ls && pwd
+RUN ls && pwd
 
 FROM openjdk:21-slim
 

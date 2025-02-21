@@ -1,5 +1,8 @@
 FROM openjdk:21-slim AS builder
 
+RUN apt-get update && \
+    apt-get install -y gradle
+
 ENV HOME=/home/telegram-bot
 RUN mkdir -p $HOME
 
@@ -10,8 +13,8 @@ COPY build.gradle settings.gradle boot.gradle $HOME/
 
 WORKDIR $HOME
 
-RUN gradle build -x test
-RUN gradle build -x test
+CMD gradle build -x test
+CMD gradle build -x test
 
 WORKDIR $HOME/build/libs
 

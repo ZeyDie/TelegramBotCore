@@ -11,6 +11,8 @@ COPY build.gradle settings.gradle boot.gradle /app/
 
 WORKDIR /app
 
+RUN chmod +X gradlew
+
 RUN ./gradlew clean
 RUN ./gradlew build -x test
 RUN ./gradlew build -x test

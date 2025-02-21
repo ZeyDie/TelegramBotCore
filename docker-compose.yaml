@@ -2,12 +2,14 @@ services:
   telegram-bot:
     image: openjdk:21-slim
     build:
-      context: .
+      context: ./
       dockerfile: Dockerfile
     container_name: telegram-bot
     ports:
       - '6969:8080'
     volumes:
-      - ./app:/app/build/libs
-    working_dir: /app/build/libs
-    command: ls
+      - ./telegram-bot-data:/home/telegram-bot/build/libs
+
+volumes:
+  telegram-bot-data:
+    driver: local

@@ -33,3 +33,6 @@ replay_pid*
 /logs
 /payment
 /permissions
+
+# Docker volume ignore
+/telegram-bot-data

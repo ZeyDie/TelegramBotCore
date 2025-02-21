@@ -1,4 +1,4 @@
-name: build docker-image
+name: TelegramBotCore Docker Image
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         tag:
-          - spring-3.4.2
+          - S3.4.2-T8.1-A0.5.0-alfa
     steps:
       - name: Git checkout for Github repository workspace
         uses: actions/checkout@v4
@@ -51,4 +51,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/zeydie/telegram-bot:core-${{ matrix.tag }}
+          tags: ghcr.io/zeydie/telegram-bot-core:${{ matrix.tag }}

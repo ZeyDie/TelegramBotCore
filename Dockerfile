@@ -16,6 +16,10 @@ WORKDIR $HOME
 CMD gradle build -x test
 CMD gradle build -x test
 
-WORKDIR $HOME/build/libs
+FROM openjdk:21-slim
 
-CMD java -jar TelegramBotCore.jar
+WORKDIR /container
+
+COPY --from=builder $HOME/build/libs/*.jar TelegramBotCore.jar
+
+ENTRYPOINT ["java", "-jar", "/container/TelegramBotCore.jar"]

@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - spring/3.4.2
-    paths:
-      - *
 
 permissions:
   actions: read

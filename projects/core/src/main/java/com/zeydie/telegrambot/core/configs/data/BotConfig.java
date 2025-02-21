@@ -13,6 +13,7 @@ public final class BotConfig {
     private @NotNull String name = "name";
     @NonFinal
     private @NotNull String token = "token";
+    //TODO Create Spring restarter
     @NonFinal
     private boolean enableReloadCommand = true;
     @NonFinal

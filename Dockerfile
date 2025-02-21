@@ -10,9 +10,9 @@ COPY build.gradle settings.gradle boot.gradle $HOME/
 
 WORKDIR $HOME
 
-RUN gradle jar -x test
-RUN gradle jar -x test
+RUN gradle build -x test
+RUN gradle build -x test
 
 WORKDIR $HOME/build/libs
 
-CMD java -jar TelegramBotCore-plain.jar
+CMD java -jar TelegramBotCore.jar

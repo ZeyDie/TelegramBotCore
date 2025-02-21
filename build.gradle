@@ -6,9 +6,21 @@ plugins {
 
 repositories {
     mavenCentral()
+
+    flatDir {
+        dirs 'libs'
+    }
 }
 
-def librariesFolder = "libraries";
+apply from: 'boot.gradle'
+
+dependencies {
+    implementation project(":api")
+    implementation project(":core")
+}
+
+def mainClassApp = "com.zeydie.telegrambot.core.TelegramBotCore"
+def librariesFolder = "libraries"
 def librariesPath = "$rootProject.buildDir/libs/$librariesFolder"
 
 jar {
@@ -17,18 +29,21 @@ jar {
             project.sourceSets.main.output
         }
     }
-    from {
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
 
     manifest {
         attributes (
-                "Class-Path": file(librariesPath).listFiles().collect { "$librariesFolder/" + it.getName() }.join(' '),
-                "Main-Class": "com.zeydie.telegrambot.core.TelegramBotCore"
+                "Main-Class": mainClassApp,
+                "Class-Path": file(librariesPath).listFiles().collect { "$librariesFolder/" + it.getName() }.join(' ')
         )
     }
+}
+
+bootJar {
+    mainClass = mainClassApp
+}
+
+bootRun {
+    mainClass = mainClassApp
 }
 
 subprojects {
@@ -98,6 +113,10 @@ subprojects {
                 into "$rootProject.buildDir/libs/libraries"
             }
         }
+    }
+
+    bootJar {
+        mainClass = mainClassApp
     }
 
     test {

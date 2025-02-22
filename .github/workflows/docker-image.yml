@@ -52,3 +52,12 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/zeydie/telegram-bot-core:${{ matrix.tag }}
+          
+      - name: Build and push executable image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./
+          platforms: linux/amd64,linux/arm64
+          file: ./Dockerfile-exec
+          push: true
+          tags: ghcr.io/zeydie/telegram-bot-core:${{ matrix.tag }}-exec

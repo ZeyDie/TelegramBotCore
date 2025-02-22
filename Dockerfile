@@ -1,4 +1,4 @@
-FROM openjdk:21-slim AS builder
+FROM openjdk:21-slim
 
 RUN apt-get update && \
     apt-get install -y gradle
@@ -20,4 +20,4 @@ WORKDIR /app/container
 
 COPY --from=builder /app/build/libs/*.jar TelegramBotCore.jar
 
-ENTRYPOINT ["java", "-jar", "/app/container/TelegramBotCore.jar"]
+ENTRYPOINT ["java", "-jar", "/TelegramBotCore.jar"]

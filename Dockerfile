@@ -9,7 +9,7 @@ COPY ./projects /home/source/projects
 COPY ./gradlew ./gradlew.bat  /home/source/
 COPY ./build.gradle ./settings.gradle ./boot.gradle /home/source/
 
-WORKDIR /home/container
+WORKDIR /home/source
 
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test

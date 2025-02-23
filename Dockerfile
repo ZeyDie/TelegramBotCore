@@ -11,7 +11,7 @@ COPY ./build.gradle ./settings.gradle ./boot.gradle /app/
 
 WORKDIR /app
 
-CMD chmod +x gradlew
+RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
 
 FROM openjdk:21-slim

@@ -70,7 +70,7 @@ subprojects {
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
         testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.+'
 
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.+'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.+'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.+'
 
         // https://mvnrepository.com/artifact/org.projectlombok/lombok
